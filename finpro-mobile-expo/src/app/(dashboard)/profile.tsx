@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 // Import the local JSON file
-import srlProfiles from '../data/srl_profiles_81.json';
+import srlProfiles from '../../data/srl_profiles_81.json';
 
 export default function ProfileScreen() {
   const router = useRouter();

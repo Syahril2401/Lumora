@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Change this to your computer's local IP if testing on a physical device
 // e.g., 'http://192.168.1.100:8008'
-const BASE_URL = 'http://10.0.2.2:8008'; // Android emulator default
+const BASE_URL = 'http://10.39.30.165:8008'; // Physical Device via Wi-Fi
 const PHYSICAL_DEVICE_URL = 'http://192.168.0.100:8008'; // Will be configured
 
 // Detect and use correct URL
