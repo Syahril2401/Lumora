@@ -1,8 +1,8 @@
 <template>
   <DashboardLayout :showBuddy="false">
-    <div class="flex h-[calc(100vh-6rem)] -m-10 overflow-hidden bg-white rounded-tl-3xl shadow-inner border-t border-l border-slate-100">
+    <div class="flex h-[calc(100vh-6rem)] overflow-hidden rounded-[32px] shadow-sm border transition-colors" :class="isDark ? 'bg-[#1e293b] border-[#334155]' : 'bg-[#F7F9FB] border-slate-200'">
       
-      <!-- Left Mini Sidebar -->
+      <!-- Notes Sidebar Component -->
       <NotesSidebar 
         :notes="notes"
         :selectedNoteId="selectedNote?.id"
@@ -14,36 +14,113 @@
         @toggle-pin="togglePin"
       />
 
-      <!-- Main Editor -->
-      <div v-if="selectedNote" class="flex-1 flex flex-col relative overflow-hidden">
-        <NoteEditor 
-          v-model:title="selectedNote.title"
-          v-model:blocks="editorBlocks"
-          :saveStatus="saveStatus"
-          @save="saveNote"
-        />
+      <!-- Main Content: Notes Explorer + Editor Preview -->
+      <div class="flex-1 flex flex-col p-6 overflow-y-auto gap-6 bg-[#F7F9FB]">
+        
+        <!-- Recently Edited: Bento Grid Style -->
+        <div v-if="!selectedNote">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-xl font-black tracking-tight" :class="isDark ? 'text-white' : 'text-slate-900'">Recently Edited</h2>
+              <p class="text-sm font-medium mt-1" :class="isDark ? 'text-slate-400' : 'text-slate-500'">Pick up right where you left off</p>
+            </div>
+            <button class="text-sm font-bold flex items-center gap-1 transition-colors" :class="isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'">
+              View History
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4" v-if="notes.length > 0">
+            <!-- Small Stacked Cards -->
+            <div class="col-span-1 flex flex-col gap-4">
+              <div v-for="note in notes.slice(1, 3)" :key="note.id" class="flex-1 bg-white rounded-2xl p-4 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group cursor-pointer" @click="selectNote(note.id)">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-[9px] font-black uppercase tracking-widest border border-blue-100">{{ note.focus_dimension || 'General' }}</span>
+                </div>
+                <h3 class="text-sm font-black text-slate-900 leading-snug group-hover:text-indigo-600 transition-colors">{{ note.title || 'Untitled' }}</h3>
+                <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ note.content_text || 'No content' }}</p>
+              </div>
+            </div>
+
+            <!-- Large Card -->
+            <div v-if="notes.length > 0" class="col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group cursor-pointer" @click="selectNote(notes[0].id)">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex gap-2">
+                  <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[10px] font-black uppercase tracking-widest border border-slate-200">{{ notes[0].focus_dimension || 'General' }}</span>
+                </div>
+                <span class="text-[11px] font-bold text-slate-400">Recent</span>
+              </div>
+              <h3 class="text-xl font-black text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors max-w-sm leading-tight">{{ notes[0].title || 'Untitled' }}</h3>
+              <p class="text-sm text-slate-500 max-w-md line-clamp-2 mb-4">{{ notes[0].content_text || 'No content' }}</p>
+            </div>
+          </div>
+          <div v-else class="text-slate-500 text-sm font-bold text-center mt-10">No recent notes. Create one to get started!</div>
+        </div>
+
+        <!-- Distraction-Free Editor Preview Section -->
+        <div class="flex-1 bg-white rounded-[32px] border border-slate-200 shadow-sm flex flex-col overflow-hidden relative">
+          <!-- Editor Header -->
+          <div class="h-16 border-b border-slate-100 flex items-center justify-between px-6 bg-white shrink-0 z-10" v-if="selectedNote">
+            <!-- Formatting Controls -->
+            <div class="flex items-center gap-1 text-slate-500 overflow-x-auto scrollbar-hide">
+              <button @click="undo" :disabled="!canUndo" class="p-1.5 hover:bg-slate-100 rounded transition-colors disabled:opacity-30" title="Undo"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg></button>
+              <button @click="redo" :disabled="!canRedo" class="p-1.5 hover:bg-slate-100 rounded transition-colors mr-2 disabled:opacity-30" title="Redo"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"/></svg></button>
+              
+              <div class="w-px h-5 bg-slate-200 mx-1"></div>
+              
+              <button @click="editorRef?.formatFocusedBlock('paragraph')" class="p-1.5 hover:bg-slate-100 rounded transition-colors" title="Text"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg></button>
+              <button @click="editorRef?.formatFocusedBlock('heading1')" class="p-1.5 hover:bg-slate-100 rounded transition-colors" title="Heading 1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h2m0 0v14m0-14h2M13 5h2m0 0v14m0-14h2M5 12h10"/></svg></button>
+              <button @click="editorRef?.formatFocusedBlock('heading2')" class="p-1.5 hover:bg-slate-100 rounded transition-colors" title="Heading 2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5h2m0 0v14m0-14h2M14 5h2v6h2V5h2v14h-2v-6h-2v6h-2V5z"/></svg></button>
+              <button @click="editorRef?.formatFocusedBlock('bullet')" class="p-1.5 hover:bg-slate-100 rounded transition-colors" title="Bullet List"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" stroke-dasharray="2 4"/></svg></button>
+              <button @click="editorRef?.formatFocusedBlock('number')" class="p-1.5 hover:bg-slate-100 rounded transition-colors" title="Numbered List"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 6h13M7 12h13M7 18h13M4 6h.01M4 12h.01M4 18h.01"/></svg></button>
+              <button @click="editorRef?.formatFocusedBlock('todo')" class="p-1.5 hover:bg-slate-100 rounded transition-colors" title="To-do List"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></button>
+              <button @click="editorRef?.formatFocusedBlock('quote')" class="p-1.5 hover:bg-slate-100 rounded transition-colors" title="Quote"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></button>
+              <button @click="editorRef?.formatFocusedBlock('divider')" class="p-1.5 hover:bg-slate-100 rounded transition-colors" title="Divider"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg></button>
+              
+              <div class="w-px h-5 bg-slate-200 mx-1"></div>
+              
+              <button @click="editorRef?.formatFocusedBlock('image')" class="p-1.5 hover:bg-slate-100 rounded transition-colors text-indigo-500" title="Add Image"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></button>
+              <button @click="editorRef?.formatFocusedBlock('callout')" class="p-1.5 hover:bg-slate-100 rounded transition-colors text-yellow-500" title="Callout"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></button>
+              <button @click="editorRef?.formatFocusedBlock('reflection')" class="p-1.5 hover:bg-slate-100 rounded transition-colors text-rose-500" title="Reflection"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></button>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex items-center gap-2">
+              <div class="text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 mr-2" :class="saveStatusColor">
+                <span class="w-1.5 h-1.5 rounded-full animate-pulse" :class="saveStatusBg"></span>
+                <span class="hidden sm:inline">{{ saveStatusText }}</span>
+              </div>
+
+              
+              <button @click="confirmDelete" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Delete Note">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+              
+              <button @click="exportToPDF" class="px-4 py-1.5 text-sm font-bold text-white bg-[#3D3ACE] hover:bg-[#312E81] shadow-sm shadow-indigo-200 rounded-lg transition-all flex items-center gap-2 ml-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Export Note
+              </button>
+            </div>
+          </div>
+          
+          <!-- Mocking the NoteEditor functionality inside the specific view -->
+          <div class="flex-1 overflow-y-auto bg-white p-8 lg:px-16 scrollbar-hide">
+            <div v-if="selectedNote" class="max-w-4xl mx-auto w-full">
+              <input v-model="selectedNote.title" class="w-full text-4xl font-black text-[#1E1B4B] placeholder:text-slate-300 outline-none border-none focus:ring-0 p-0 mb-6 bg-transparent" placeholder="Untitled Note" @input="updateProperty('title', $event.target.value)" />
+              <NoteEditor 
+                ref="editorRef"
+                :blocks="editorBlocks"
+                @update:blocks="updateBlocksWithHistory"
+              />
+            </div>
+            <div v-else class="h-full flex flex-col items-center justify-center opacity-50 pointer-events-none">
+               <h3 class="text-2xl font-black text-slate-900 mb-2">Neural Pathways in Habit Formation</h3>
+               <p class="text-slate-500 font-medium text-sm">Select a note or create a new one to begin writing.</p>
+            </div>
+          </div>
+        </div>
+
       </div>
-
-      <!-- Empty Editor State -->
-      <div v-else class="flex-1 flex flex-col items-center justify-center bg-[#FDFDFF]">
-        <div class="w-20 h-20 bg-indigo-50 text-[#3D3ACE] rounded-full flex items-center justify-center text-3xl mb-6 shadow-inner border border-indigo-100">📝</div>
-        <h3 class="text-xl font-black text-[#1E1B4B] mb-2">No note selected</h3>
-        <p class="text-slate-500 font-medium max-w-sm mx-auto mb-8 text-center">Select a note from the sidebar or create a new reflection to start writing.</p>
-        <button @click="openTemplatePicker" class="bg-[#3D3ACE] hover:bg-[#322fb0] text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-indigo-200 transition-all active:scale-95 flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-          Create New Note
-        </button>
-      </div>
-
-      <!-- Right Properties Panel -->
-      <NotePropertiesPanel 
-        v-if="selectedNote"
-        :note="selectedNote"
-        @update="updateProperty"
-        @delete="deleteNote"
-        @toggle-archive="toggleArchive"
-      />
-
     </div>
 
     <!-- Modals -->
@@ -54,6 +131,25 @@
       @close="isTemplatePickerOpen = false"
       @select="createNoteFromTemplate"
     />
+
+    <!-- Delete Modal -->
+    <Teleport to="body">
+      <div v-if="showDeleteModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4" @click.self="showDeleteModal = false">
+        <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div class="p-6">
+            <div class="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 mb-4 mx-auto">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            <h3 class="text-xl font-black text-center text-slate-900 mb-2">Delete Note?</h3>
+            <p class="text-slate-500 text-sm text-center mb-6">Are you sure you want to delete this note? This action cannot be undone.</p>
+            <div class="flex gap-3">
+              <button @click="showDeleteModal = false" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors">Cancel</button>
+              <button @click="deleteNote" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-white bg-rose-500 hover:bg-rose-600 shadow-md shadow-rose-200 transition-colors">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
 
   </DashboardLayout>
 </template>
@@ -72,7 +168,20 @@ import { notesApi, setAuthToken } from '@/services/notesApi';
 const notes = ref([]);
 const selectedNote = ref(null);
 const editorBlocks = ref([]);
+const editorRef = ref(null);
 const templates = ref([]);
+
+// History for Undo/Redo
+const blockHistory = ref([]);
+const historyIndex = ref(-1);
+
+import { computed } from 'vue';
+const canUndo = computed(() => historyIndex.value > 0);
+const canRedo = computed(() => historyIndex.value < blockHistory.value.length - 1);
+const isDark = computed(() => document.documentElement.classList.contains('dark'));
+
+// Delete Modal State
+const showDeleteModal = ref(false);
 
 const filters = ref({
   search: '',
@@ -162,10 +271,76 @@ async function selectNote(id) {
   try {
     const fullNote = await notesApi.getNote(id);
     selectedNote.value = fullNote;
-    editorBlocks.value = fullNote.content_json ? JSON.parse(fullNote.content_json).blocks || [] : [];
+    const blocks = fullNote.content_json ? JSON.parse(fullNote.content_json).blocks || [] : [];
+    editorBlocks.value = blocks;
+    
+    // Initialize History
+    blockHistory.value = [JSON.stringify(blocks)];
+    historyIndex.value = 0;
+    
     saveStatus.value = 'saved';
+
+    // Auto-focus the last block
+    nextTick(() => {
+      if (editorRef.value && typeof editorRef.value.focusLastBlock === 'function') {
+        editorRef.value.focusLastBlock();
+      }
+    });
   } catch (err) {
     console.error('Failed to load note details', err);
+  }
+}
+
+function updateBlocksWithHistory(newBlocks) {
+  editorBlocks.value = newBlocks;
+  
+  // Add to history if changed
+  const newState = JSON.stringify(newBlocks);
+  if (newState !== blockHistory.value[historyIndex.value]) {
+    // Truncate future history if we're not at the end
+    blockHistory.value = blockHistory.value.slice(0, historyIndex.value + 1);
+    blockHistory.value.push(newState);
+    // Keep max 50 history states
+    if (blockHistory.value.length > 50) {
+      blockHistory.value.shift();
+    } else {
+      historyIndex.value++;
+    }
+  }
+  
+  triggerAutosave();
+}
+
+function undo() {
+  if (canUndo.value) {
+    historyIndex.value--;
+    editorBlocks.value = JSON.parse(blockHistory.value[historyIndex.value]);
+    triggerAutosave();
+  }
+}
+
+function redo() {
+  if (canRedo.value) {
+    historyIndex.value++;
+    editorBlocks.value = JSON.parse(blockHistory.value[historyIndex.value]);
+    triggerAutosave();
+  }
+}
+
+function confirmDelete() {
+  if (!selectedNote.value) return;
+  showDeleteModal.value = true;
+}
+
+async function deleteNote() {
+  if (!selectedNote.value) return;
+  try {
+    await notesApi.deleteNote(selectedNote.value.id);
+    notes.value = notes.value.filter(n => n.id !== selectedNote.value.id);
+    selectedNote.value = null;
+    showDeleteModal.value = false;
+  } catch (err) {
+    console.error('Failed to delete', err);
   }
 }
 
@@ -198,19 +373,7 @@ async function toggleArchive() {
   }
 }
 
-async function deleteNote() {
-  if (!selectedNote.value) return;
-  if (!confirm('Are you sure you want to delete this note?')) return;
-  
-  try {
-    await notesApi.deleteNote(selectedNote.value.id);
-    notes.value = notes.value.filter(n => n.id !== selectedNote.value.id);
-    selectedNote.value = null;
-  } catch (err) {
-    console.error('Delete failed', err);
-    alert('Failed to delete note.');
-  }
-}
+
 
 function extractText(blocks) {
   return blocks.map(b => b.content).join('\n');
@@ -264,5 +427,16 @@ watch(() => selectedNote.value?.title, () => {
 watch(editorBlocks, () => {
   if (selectedNote.value) triggerAutosave();
 }, { deep: true });
+
+function exportToPDF() {
+  if (!selectedNote.value) {
+    alert("Please select a note to export.");
+    return;
+  }
+  
+  // A simple and robust way to export to PDF without external libraries is to use the browser's print functionality 
+  // paired with @media print CSS rules (which should hide sidebars and nav).
+  window.print();
+}
 
 </script>

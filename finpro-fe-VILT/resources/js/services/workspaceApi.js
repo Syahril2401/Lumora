@@ -78,6 +78,21 @@ export const plannerApi = {
   async skipSession(id) {
     const res = await axios.patch(`${API_URL}/planner/${id}/skip`, {}, { headers: headers() });
     return res.data.data;
+  },
+
+  async getGoogleEvents(weekDate) {
+    const res = await axios.get(`${API_URL}/calendar/events`, { headers: headers() });
+    return res.data.data;
+  },
+
+  async getGoogleStatus() {
+    const res = await axios.get(`${API_URL}/calendar/status`, { headers: headers() });
+    return res.data.data;
+  },
+
+  async disconnectGoogle() {
+    const res = await axios.delete(`${API_URL}/calendar/disconnect`, { headers: headers() });
+    return res.data.data;
   }
 };
 
@@ -133,5 +148,17 @@ export const progressApi = {
   async getProgress() {
     const res = await axios.get(`${API_URL}/progress`, { headers: headers() });
     return res.data.data;
+  }
+};
+
+// ──── Assessment (Chat) ────
+export const assessmentApi = {
+  async chat(message, learningProfile) {
+    const BASE_URL = 'http://localhost:8008/api/assessment';
+    const res = await axios.post(`${BASE_URL}/chat`, {
+        message: message,
+        learning_profile: learningProfile
+    }, { headers: headers() });
+    return res.data;
   }
 };

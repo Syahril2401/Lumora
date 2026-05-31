@@ -168,32 +168,32 @@ func (ctrl *noteController) GetTemplates(c *gin.Context) {
 		{
 			"id": "daily",
 			"title": "Daily Reflection",
-			"content_json": "{\"blocks\":[{\"id\":\"t1\",\"type\":\"heading1\",\"content\":\"Daily Reflection\"},{\"id\":\"t2\",\"type\":\"paragraph\",\"content\":\"What did I study today?\"},{\"id\":\"t3\",\"type\":\"paragraph\",\"content\":\"What strategy did I use?\"},{\"id\":\"t4\",\"type\":\"paragraph\",\"content\":\"What worked well?\"},{\"id\":\"t5\",\"type\":\"paragraph\",\"content\":\"What was difficult?\"},{\"id\":\"t6\",\"type\":\"paragraph\",\"content\":\"What will I improve next time?\"}]}",
-			"content_text": "Daily Reflection\nWhat did I study today?\nWhat strategy did I use?\nWhat worked well?\nWhat was difficult?\nWhat will I improve next time?",
+			"content_json": "{\"blocks\":[{\"id\":\"t2\",\"type\":\"paragraph\",\"content\":\"What did I study today?\"},{\"id\":\"t3\",\"type\":\"paragraph\",\"content\":\"What strategy did I use?\"},{\"id\":\"t4\",\"type\":\"paragraph\",\"content\":\"What worked well?\"},{\"id\":\"t5\",\"type\":\"paragraph\",\"content\":\"What was difficult?\"},{\"id\":\"t6\",\"type\":\"paragraph\",\"content\":\"What will I improve next time?\"}]}",
+			"content_text": "What did I study today?\nWhat strategy did I use?\nWhat worked well?\nWhat was difficult?\nWhat will I improve next time?",
 		},
 		{
 			"id": "session",
 			"title": "Study Session Review",
-			"content_json": "{\"blocks\":[{\"id\":\"s1\",\"type\":\"heading1\",\"content\":\"Study Session Review\"},{\"id\":\"s2\",\"type\":\"paragraph\",\"content\":\"Session goal:\"},{\"id\":\"s3\",\"type\":\"paragraph\",\"content\":\"What I completed:\"},{\"id\":\"s4\",\"type\":\"paragraph\",\"content\":\"What distracted me:\"},{\"id\":\"s5\",\"type\":\"paragraph\",\"content\":\"What helped me focus:\"},{\"id\":\"s6\",\"type\":\"paragraph\",\"content\":\"Next action:\"}]}",
-			"content_text": "Study Session Review\nSession goal:\nWhat I completed:\nWhat distracted me:\nWhat helped me focus:\nNext action:",
+			"content_json": "{\"blocks\":[{\"id\":\"s2\",\"type\":\"paragraph\",\"content\":\"Session goal:\"},{\"id\":\"s3\",\"type\":\"paragraph\",\"content\":\"What I completed:\"},{\"id\":\"s4\",\"type\":\"paragraph\",\"content\":\"What distracted me:\"},{\"id\":\"s5\",\"type\":\"paragraph\",\"content\":\"What helped me focus:\"},{\"id\":\"s6\",\"type\":\"paragraph\",\"content\":\"Next action:\"}]}",
+			"content_text": "Session goal:\nWhat I completed:\nWhat distracted me:\nWhat helped me focus:\nNext action:",
 		},
 		{
 			"id": "weekly",
 			"title": "Weekly Learning Review",
-			"content_json": "{\"blocks\":[{\"id\":\"w1\",\"type\":\"heading1\",\"content\":\"Weekly Learning Review\"},{\"id\":\"w2\",\"type\":\"paragraph\",\"content\":\"This week’s main target:\"},{\"id\":\"w3\",\"type\":\"paragraph\",\"content\":\"What I completed:\"},{\"id\":\"w4\",\"type\":\"paragraph\",\"content\":\"What I struggled with:\"},{\"id\":\"w5\",\"type\":\"paragraph\",\"content\":\"Most effective strategy:\"},{\"id\":\"w6\",\"type\":\"paragraph\",\"content\":\"One improvement for next week:\"}]}",
-			"content_text": "Weekly Learning Review\nThis week’s main target:\nWhat I completed:\nWhat I struggled with:\nMost effective strategy:\nOne improvement for next week:",
+			"content_json": "{\"blocks\":[{\"id\":\"w2\",\"type\":\"paragraph\",\"content\":\"This week’s main target:\"},{\"id\":\"w3\",\"type\":\"paragraph\",\"content\":\"What I completed:\"},{\"id\":\"w4\",\"type\":\"paragraph\",\"content\":\"What I struggled with:\"},{\"id\":\"w5\",\"type\":\"paragraph\",\"content\":\"Most effective strategy:\"},{\"id\":\"w6\",\"type\":\"paragraph\",\"content\":\"One improvement for next week:\"}]}",
+			"content_text": "This week’s main target:\nWhat I completed:\nWhat I struggled with:\nMost effective strategy:\nOne improvement for next week:",
 		},
 		{
 			"id": "exam",
 			"title": "Exam Preparation Note",
-			"content_json": "{\"blocks\":[{\"id\":\"e1\",\"type\":\"heading1\",\"content\":\"Exam Preparation Note\"},{\"id\":\"e2\",\"type\":\"paragraph\",\"content\":\"Subject/topic:\"},{\"id\":\"e3\",\"type\":\"paragraph\",\"content\":\"Key concepts:\"},{\"id\":\"e4\",\"type\":\"paragraph\",\"content\":\"Weak areas:\"},{\"id\":\"e5\",\"type\":\"paragraph\",\"content\":\"Practice plan:\"},{\"id\":\"e6\",\"type\":\"paragraph\",\"content\":\"Review schedule:\"}]}",
-			"content_text": "Exam Preparation Note\nSubject/topic:\nKey concepts:\nWeak areas:\nPractice plan:\nReview schedule:",
+			"content_json": "{\"blocks\":[{\"id\":\"e2\",\"type\":\"paragraph\",\"content\":\"Subject/topic:\"},{\"id\":\"e3\",\"type\":\"paragraph\",\"content\":\"Key concepts:\"},{\"id\":\"e4\",\"type\":\"paragraph\",\"content\":\"Weak areas:\"},{\"id\":\"e5\",\"type\":\"paragraph\",\"content\":\"Practice plan:\"},{\"id\":\"e6\",\"type\":\"paragraph\",\"content\":\"Review schedule:\"}]}",
+			"content_text": "Subject/topic:\nKey concepts:\nWeak areas:\nPractice plan:\nReview schedule:",
 		},
 		{
 			"id": "cognitive",
 			"title": "Cognitive Strategy Note",
-			"content_json": "{\"blocks\":[{\"id\":\"c1\",\"type\":\"heading1\",\"content\":\"Cognitive Strategy Note\"},{\"id\":\"c2\",\"type\":\"paragraph\",\"content\":\"Topic learned:\"},{\"id\":\"c3\",\"type\":\"paragraph\",\"content\":\"Strategy used:\"},{\"id\":\"c4\",\"type\":\"paragraph\",\"content\":\"Recall result:\"},{\"id\":\"c5\",\"type\":\"paragraph\",\"content\":\"Mistakes found:\"},{\"id\":\"c6\",\"type\":\"paragraph\",\"content\":\"Better strategy next time:\"}]}",
-			"content_text": "Cognitive Strategy Note\nTopic learned:\nStrategy used:\nRecall result:\nMistakes found:\nBetter strategy next time:",
+			"content_json": "{\"blocks\":[{\"id\":\"c2\",\"type\":\"paragraph\",\"content\":\"Topic learned:\"},{\"id\":\"c3\",\"type\":\"paragraph\",\"content\":\"Strategy used:\"},{\"id\":\"c4\",\"type\":\"paragraph\",\"content\":\"Recall result:\"},{\"id\":\"c5\",\"type\":\"paragraph\",\"content\":\"Mistakes found:\"},{\"id\":\"c6\",\"type\":\"paragraph\",\"content\":\"Better strategy next time:\"}]}",
+			"content_text": "Topic learned:\nStrategy used:\nRecall result:\nMistakes found:\nBetter strategy next time:",
 		},
 	}
 	c.JSON(http.StatusOK, gin.H{"data": templates})

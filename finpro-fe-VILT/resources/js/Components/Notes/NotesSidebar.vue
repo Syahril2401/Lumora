@@ -1,5 +1,5 @@
 <template>
-  <aside class="w-80 bg-slate-50 border-r border-slate-100 flex flex-col h-full z-30">
+  <aside class="w-96 lg:w-[400px] shrink-0 bg-slate-50 border-r border-slate-100 flex flex-col h-full z-30">
     <div class="p-6 pb-4 border-b border-slate-100 bg-white">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-black text-[#1E1B4B]">My Notes</h2>
@@ -20,21 +20,6 @@
         >
       </div>
 
-      <!-- Filters -->
-      <div class="flex gap-2">
-        <select 
-          :value="dimensionFilter"
-          @change="$emit('update:dimensionFilter', $event.target.value)"
-          class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-600 focus:border-[#3D3ACE] outline-none cursor-pointer"
-        >
-          <option value="all">All Dimensions</option>
-          <option value="Planning">Planning</option>
-          <option value="Time Management">Time Management</option>
-          <option value="Cognitive Strategy">Cognitive Strategy</option>
-          <option value="Reflection">Reflection</option>
-          <option value="General">General</option>
-        </select>
-      </div>
     </div>
 
     <!-- Notes List -->

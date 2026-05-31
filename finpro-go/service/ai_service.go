@@ -1,15 +1,13 @@
 package service
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
 	"os"
-	"time"
+
+	"github.com/google/generative-ai-go/genai"
+	"google.golang.org/api/option"
 )
 
 type AIService interface {
@@ -23,13 +21,13 @@ type aiService struct {
 }
 
 func NewAIService() AIService {
-	apiKey := os.Getenv("ANTHROPIC_API_KEY")
-	modelName := "claude-3-5-sonnet-latest" // Mandated by audit matrix
+	apiKey := os.Getenv("GEMINI_API_KEY")
+	modelName := "gemini-flash-latest" // High token quota, fast, general knowledge
 
 	if apiKey == "" {
-		log.Printf("[AI] WARNING: ANTHROPIC_API_KEY is not set. Using mock responses to prevent blocking the user flow.")
+		log.Printf("[AI] WARNING: GEMINI_API_KEY is not set. Using mock responses to prevent blocking the user flow.")
 	} else {
-		log.Printf("[AI] Using Anthropic Claude API")
+		log.Printf("[AI] Using Google Gemini API via SDK")
 		log.Printf("[AI] Using model: %s", modelName)
 	}
 
@@ -39,102 +37,78 @@ func NewAIService() AIService {
 	}
 }
 
-type anthropicMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-type anthropicRequest struct {
-	Model     string             `json:"model"`
-	MaxTokens int                `json:"max_tokens"`
-	System    string             `json:"system,omitempty"`
-	Messages  []anthropicMessage `json:"messages"`
-}
-
-type anthropicResponse struct {
-	Content []struct {
-		Text string `json:"text"`
-		Type string `json:"type"`
-	} `json:"content"`
-}
-
-func (s *aiService) callAnthropic(ctx context.Context, systemContext, userPrompt string) (string, error) {
+func (s *aiService) callGemini(ctx context.Context, systemContext, userPrompt string) (string, error) {
 	if s.apiKey == "" {
 		// Mock response so the flow doesn't break during testing
-		return "This is a mock response from Claude Sonnet. Please add ANTHROPIC_API_KEY to your .env to enable real AI explanations.", nil
+		return "This is a mock response from Gemini Flash. Please add GEMINI_API_KEY to your .env to enable real AI explanations.", nil
 	}
 
-	url := "https://api.anthropic.com/v1/messages"
-
-	reqBody := anthropicRequest{
-		Model:     s.model,
-		MaxTokens: 1024,
-		System:    systemContext,
-		Messages: []anthropicMessage{
-			{Role: "user", Content: userPrompt},
-		},
-	}
-
-	jsonData, err := json.Marshal(reqBody)
+	client, err := genai.NewClient(ctx, option.WithAPIKey(s.apiKey))
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to create gemini client: %w", err)
 	}
+	defer client.Close()
 
-	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return "", err
-	}
+	model := client.GenerativeModel(s.model)
 	
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-api-key", s.apiKey)
-	req.Header.Set("anthropic-version", "2023-06-01")
+	// Set System Instruction
+	model.SystemInstruction = &genai.Content{
+		Parts: []genai.Part{genai.Text(systemContext)},
+	}
 
-	client := &http.Client{Timeout: 30 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := model.GenerateContent(ctx, genai.Text(userPrompt))
 	if err != nil {
-		return "", fmt.Errorf("anthropic request failed: %w", err)
+		// Fallback to gemini-pro-latest if the flash model fails
+		log.Printf("[AI] Model %s failed: %v. Falling back to gemini-pro-latest", s.model, err)
+		fallbackModel := client.GenerativeModel("gemini-pro-latest")
+		
+		// Note: gemini-pro-latest might not support SystemInstruction via the same field, 
+		// so we prepend it to the user prompt just to be safe in the fallback.
+		promptWithContext := fmt.Sprintf("System Context:\n%s\n\nUser Message:\n%s", systemContext, userPrompt)
+		
+		fallbackResp, fallbackErr := fallbackModel.GenerateContent(ctx, genai.Text(promptWithContext))
+		if fallbackErr != nil {
+			return "", fmt.Errorf("gemini fallback also failed: %w", fallbackErr)
+		}
+		
+		if len(fallbackResp.Candidates) > 0 && len(fallbackResp.Candidates[0].Content.Parts) > 0 {
+			if txt, ok := fallbackResp.Candidates[0].Content.Parts[0].(genai.Text); ok {
+				return string(txt), nil
+			}
+		}
+		return "", fmt.Errorf("gemini fallback returned empty response")
 	}
-	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("anthropic returned status %d: %s", resp.StatusCode, string(body))
+	if len(resp.Candidates) > 0 && len(resp.Candidates[0].Content.Parts) > 0 {
+		if txt, ok := resp.Candidates[0].Content.Parts[0].(genai.Text); ok {
+			return string(txt), nil
+		}
 	}
 
-	var anthropicResp anthropicResponse
-	if err := json.Unmarshal(body, &anthropicResp); err != nil {
-		return "", err
-	}
-
-	if len(anthropicResp.Content) > 0 {
-		return anthropicResp.Content[0].Text, nil
-	}
-
-	return "", fmt.Errorf("empty response from anthropic")
+	return "", fmt.Errorf("empty response from gemini")
 }
 
 func (s *aiService) AnalyzeLearningStyle(ctx context.Context, prompt string) (string, error) {
 	// For Lumora, AnalyzeLearningStyle is rule-based and not handled by AI anymore.
-	// This function remains to satisfy interface, but returns raw JSON if needed.
 	return "{}", nil
 }
 
 func (s *aiService) Chat(ctx context.Context, userMessage string, learningProfile string) (string, error) {
 	systemContext := fmt.Sprintf(`
-You are Lumora AI, an explainer module powered by Claude Sonnet.
-Your ONLY role is to elaborate and explain the pre-determined JSON rule-based outcome provided below.
-DO NOT diagnose, DO NOT change the scores, and DO NOT override any labels.
+You are Lumora AI, an explainer module powered by Google Gemini.
+You are a helpful Study Buddy with vast general knowledge.
+You can help the user with any academic topics or explain their study profile.
 Be concise, warm, and encouraging.
 
 The student's rule-based profile outcome is:
 %s
 
 Guidelines:
-- Explain the student's strengths and weaknesses based ONLY on the JSON.
-- Provide practical, actionable advice matching their profile.
+- If the user asks about general knowledge, answer them accurately and concisely.
+- Explain the student's strengths and weaknesses based on the JSON if they ask about it.
 - Stay focused on learning strategies and academic goals.
 - Respond in the language the student uses.
 `, learningProfile)
 
-	return s.callAnthropic(ctx, systemContext, userMessage)
+	return s.callGemini(ctx, systemContext, userMessage)
 }

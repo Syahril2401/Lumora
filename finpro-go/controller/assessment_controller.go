@@ -1,21 +1,27 @@
 package controller
 
 import (
-	"finpro/model"
-	"finpro/service"
-	"finpro/utils"
+	"fmt"
 	"net/http"
 
+	"finpro/model"
+	"finpro/repository"
+	"finpro/service"
+	"finpro/utils"
+
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"gorm.io/datatypes"
 )
 
 type AssessmentController struct {
-	service service.AssessmentService
-	aiSvc   service.AIService
+	service  service.AssessmentService
+	aiSvc    service.AIService
+	userRepo repository.UserRepository
 }
 
-func NewAssessmentController(s service.AssessmentService, ai service.AIService) *AssessmentController {
-	return &AssessmentController{service: s, aiSvc: ai}
+func NewAssessmentController(s service.AssessmentService, ai service.AIService, uRepo repository.UserRepository) *AssessmentController {
+	return &AssessmentController{service: s, aiSvc: ai, userRepo: uRepo}
 }
 
 // GetQuestions returns all active assessment questions.
@@ -77,6 +83,17 @@ func (ctrl *AssessmentController) Chat(c *gin.Context) {
 		utils.ResponseJSON(c, http.StatusInternalServerError, false, "AI service error: "+err.Error(), nil)
 		return
 	}
+
+	userID := c.MustGet("userID").(string)
+	aiOutputJSON := fmt.Sprintf(`{"reply": %q}`, reply)
+	aiLog := &model.AILog{
+		AILogID:     uuid.New().String(),
+		UserID:      userID,
+		PromptInput: body.Message,
+		AIOutput:    datatypes.JSON([]byte(aiOutputJSON)),
+	}
+	// Import datatypes and uuid at the top! I will add them in another replace chunk or just rely on goimports
+	ctrl.userRepo.SaveAILog(aiLog)
 
 	utils.ResponseJSON(c, http.StatusOK, true, "Success", gin.H{"reply": reply})
 }

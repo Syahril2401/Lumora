@@ -18,6 +18,7 @@ func SetupRoutes(
 	plannerCtrl *controller.PlannerController,
 	targetCtrl *controller.TargetController,
 	workspaceCtrl *controller.WorkspaceController,
+	googleCalCtrl *controller.GoogleCalendarController,
 ) {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
@@ -37,6 +38,10 @@ func SetupRoutes(
 		{
 			auth.POST("/register", authCtrl.Register)
 			auth.POST("/login", authCtrl.Login)
+
+			// Google OAuth (public — no auth middleware)
+			auth.GET("/google/login", googleCalCtrl.GoogleLogin)
+			auth.GET("/google/callback", googleCalCtrl.GoogleCallback)
 		}
 
 		// Assessment Routes
@@ -75,6 +80,11 @@ func SetupRoutes(
 			dashboard.DELETE("/planner/:id", plannerCtrl.DeleteSession)
 			dashboard.PATCH("/planner/:id/complete", plannerCtrl.CompleteSession)
 			dashboard.PATCH("/planner/:id/skip", plannerCtrl.SkipSession)
+
+			// Google Calendar Sync
+			dashboard.GET("/calendar/status", googleCalCtrl.GetStatus)
+			dashboard.GET("/calendar/events", googleCalCtrl.GetEvents)
+			dashboard.DELETE("/calendar/disconnect", googleCalCtrl.Disconnect)
 
 			// Weekly Targets CRUD
 			dashboard.GET("/weekly-targets", targetCtrl.GetTargets)

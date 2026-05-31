@@ -1,0 +1,52 @@
+# ✅ Lumora QA Fix Summary
+
+## Fixes Applied (Frontend)
+
+| Issue | Fix Applied | Status |
+|---|---|---|
+| Quote card white bg in dark mode | Redesigned as always-dark indigo gradient card | ✅ Fixed |
+| Notes page low contrast text | Dynamic `isDark` computed, conditional text colors | ✅ Fixed |
+| Dark mode page bg not switching | Content area now uses `:class` with `isDark` | ✅ Fixed |
+| Dark mode CSS coverage | Expanded to cover cards, inputs, borders, progress bars, modals | ✅ Fixed |
+| Header bg flicker in dark mode | CSS variables `--header-bg` / `--border-color` added | ✅ Fixed |
+
+---
+
+## ⚠️ Required: Database Migration
+
+The backend 500 errors (Weekly Targets + Notifications) are caused by **missing database table columns and tables**.
+
+**Run this SQL on your `pt_lumora` MySQL database to fix it:**
+
+```
+c:\Kuliah\Semester_4\WEB-PROGRAMMING\Lumora\finpro-go\migrations\fix_schema.sql
+```
+
+**What it does:**
+1. **Adds missing columns** to the `targets` table: `title`, `description`, `focus_dimension`, `priority`, `due_date`
+2. **Changes `status` column** from ENUM(`active/completed/cancelled`) to VARCHAR so it supports `not_started/in_progress/completed`
+3. **Creates `subtasks` table** if it doesn't exist (for target subtasks)
+4. **Creates `notifications` table** if it doesn't exist (fixes the 500 on every page load)
+
+### How to run:
+Open your MySQL client and run:
+```sql
+SOURCE C:/Kuliah/Semester_4/WEB-PROGRAMMING/Lumora/finpro-go/migrations/fix_schema.sql;
+```
+
+Or using the MySQL CLI:
+```bash
+mysql -u root -p pt_lumora < finpro-go/migrations/fix_schema.sql
+```
+
+> [!IMPORTANT]
+> After running the SQL, restart the Go server (`go run cmd/server/main.go`) to clear any cached connections.
+
+---
+
+## Remaining Known Issues
+
+| Issue | Priority | Notes |
+|---|---|---|
+| Edit Profile name doesn't persist across reload | Medium | Needs backend `PATCH /api/user/profile` endpoint |
+| Google Calendar 400 error | Low | OAuth token may have expired or invalid scope |

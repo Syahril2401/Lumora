@@ -11,6 +11,7 @@ type UserRepository interface {
 	FindByEmail(email string) (*model.User, error)
 	FindByID(id string) (*model.User, error)
 	FindAll() ([]model.User, error)
+	SaveAILog(log *model.AILog) error
 }
 
 type userRepository struct {
@@ -41,4 +42,8 @@ func (r *userRepository) FindAll() ([]model.User, error) {
 	var users []model.User
 	err := r.db.Find(&users).Error
 	return users, err
+}
+
+func (r *userRepository) SaveAILog(log *model.AILog) error {
+	return r.db.Create(log).Error
 }

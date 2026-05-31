@@ -1,5 +1,5 @@
 <template>
-  <div class="group relative flex items-start" :class="blockStyle">
+  <div class="group relative flex items-start w-full" :class="blockStyle">
     <!-- Drag Handle Placeholder (Optional for future) -->
     <div class="absolute -left-8 top-1 opacity-0 group-hover:opacity-20 cursor-grab px-1 text-slate-400">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
@@ -23,12 +23,29 @@
       <hr class="border-t-2 border-slate-100">
     </div>
 
+    <!-- Image -->
+    <div v-else-if="block.type === 'image'" class="w-full my-4 relative group" contenteditable="false">
+      <div v-if="block.content" class="relative rounded-xl overflow-hidden border border-slate-200">
+        <img :src="block.content" class="w-full h-auto max-h-[500px] object-contain bg-slate-50" />
+        <button @click="clearImage" class="absolute top-2 right-2 p-1.5 bg-black/50 hover:bg-black/80 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div v-else class="w-full h-32 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center bg-slate-50 relative group cursor-pointer hover:bg-slate-100 hover:border-indigo-300 transition-colors">
+        <input type="file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" @change="handleImageUpload" />
+        <div class="flex flex-col items-center text-slate-500 group-hover:text-indigo-500 transition-colors">
+          <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          <span class="text-sm font-bold">Click to upload image</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Editor Area -->
     <div 
       v-else
       ref="editorRef"
       contenteditable="true"
-      class="flex-1 outline-none min-h-[1.5em] empty:before:content-[attr(placeholder)] empty:before:text-slate-300"
+      class="flex-1 min-w-0 outline-none min-h-[1.5em] break-words whitespace-pre-wrap empty:before:content-[attr(placeholder)] empty:before:text-slate-300"
       :class="{ 'line-through text-slate-400': block.type === 'todo' && block.checked }"
       :placeholder="placeholderText"
       @input="onInput"
@@ -62,9 +79,10 @@ const blockStyle = computed(() => {
 });
 
 const placeholderText = computed(() => {
+  if (!props.isFocused) return '';
   if (props.block.type === 'heading1') return 'Heading 1';
   if (props.block.type === 'heading2') return 'Heading 2';
-  return 'Type \'/\' for commands';
+  return 'Type something...';
 });
 
 onMounted(() => {
@@ -97,12 +115,22 @@ function focusAtEnd() {
 
 function onInput(e) {
   const text = e.target.innerText;
-  
-  if (text === '/') {
-    emit('slash-command');
-  }
-
   emit('update', { ...props.block, content: text });
+}
+
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    emit('update', { ...props.block, content: event.target.result });
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage() {
+  emit('update', { ...props.block, content: '' });
 }
 
 function onKeydown(e) {

@@ -1,9 +1,9 @@
+/* ── Google Fonts ─────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* ── Google Fonts ─────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap');
 
 /* ── Base Resets ──────────────────────────────────────────────────── */
 @layer base {
@@ -99,4 +99,155 @@
 .slide-fade-leave-to {
   opacity: 0;
   transform: translateY(-4px);
+}
+
+/* ── Print Styles (PDF Export) ────────────────────────────────────── */
+@media print {
+  @page { margin: 0; }
+  body { 
+    background-color: white !important;
+  }
+  /* Hide sidebars and headers */
+  aside, header, .lumora-sidebar, .FloatingBuddy, .no-print {
+    display: none !important;
+  }
+  /* Expand the main content to fill the page */
+  main, .flex-1, .lumora-card {
+    height: auto !important;
+    overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+  /* Hide editor header / controls */
+  .border-b.flex.items-center.justify-between.bg-white.shrink-0 {
+    display: none !important;
+  }
+}
+
+/* ── Global Dark Theme Override ───────────────────────────────────────────── */
+/* CSS variables for dynamic theming */
+html.dark {
+  --header-bg: #1e293b;
+  --border-color: #334155;
+}
+
+html {
+  --header-bg: #F7F9FB;
+  --border-color: #e2e8f0;
+}
+
+html.dark body {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+/* Page backgrounds */
+html.dark .bg-\[\#FDFDFF\],
+html.dark .bg-\[\#F7F9FB\],
+html.dark .bg-surface {
+  background-color: #0f172a !important;
+}
+
+/* Card backgrounds */
+html.dark .bg-white, 
+html.dark .bg-slate-50,
+html.dark .lumora-card {
+  background-color: #1e293b !important;
+}
+
+html.dark .bg-slate-100 {
+  background-color: #1e293b !important;
+}
+
+html.dark .bg-slate-200,
+html.dark .bg-slate-200\/60 {
+  background-color: #334155 !important;
+}
+
+/* Text colors */
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+html.dark .text-slate-700,
+html.dark .text-\[\#1E1B4B\],
+html.dark .text-ink {
+  color: #f1f5f9 !important;
+}
+
+html.dark .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-500,
+html.dark .text-ink-secondary {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-slate-400,
+html.dark .text-ink-muted {
+  color: #64748b !important;
+}
+
+/* Borders */
+html.dark .border-slate-50,
+html.dark .border-slate-100,
+html.dark .border-slate-200,
+html.dark .border-slate-300,
+html.dark .border-border-light,
+html.dark .border-border {
+  border-color: #334155 !important;
+}
+
+/* Input fields in dark mode */
+html.dark input:not([class*="bg-"]),
+html.dark textarea:not([class*="bg-"]),
+html.dark select:not([class*="bg-"]) {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark input.bg-slate-50,
+html.dark input.bg-slate-200\/60,
+html.dark textarea.bg-slate-50 {
+  background-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Shadows */
+html.dark .shadow-sm,
+html.dark .shadow-md,
+html.dark .shadow-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Progress bars */
+html.dark .bg-slate-100.rounded-full {
+  background-color: #334155 !important;
+}
+
+/* Hover states */
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-slate-100:hover {
+  background-color: #334155 !important;
+}
+
+/* Sidebar exclusions - always dark */
+html.dark .bg-\[\#0B1120\] {
+  background-color: #0B1120 !important;
+}
+
+/* Weekly Targets & Settings cards */
+html.dark .rounded-\[24px\].bg-white,
+html.dark .rounded-\[28px\].bg-white,
+html.dark .rounded-\[32px\].bg-white {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+/* Modal backdrop */
+html.dark .bg-white.rounded-\[2rem\],
+html.dark .bg-white.rounded-\[32px\] {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
 }

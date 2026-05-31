@@ -90,10 +90,14 @@
 
       <!-- CTA Buttons -->
       <div class="flex flex-wrap gap-4">
-        <a :href="route('onboarding.sanctuary')" class="bg-[#3D3ACE] hover:bg-[#322fb0] text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-indigo-200 transition-all active:scale-95 flex items-center gap-2">
+        <a v-if="canRetake" :href="route('onboarding.sanctuary')" class="bg-[#3D3ACE] hover:bg-[#322fb0] text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-indigo-200 transition-all active:scale-95 flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           Retake Assessment
         </a>
+        <div v-else class="bg-slate-100 text-slate-400 px-6 py-3 rounded-2xl font-bold flex items-center gap-2 cursor-not-allowed">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Next assessment in: {{ timeUntilNextAssessment }}
+        </div>
       </div>
     </template>
 
@@ -101,7 +105,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { progressApi, setWorkspaceToken } from '@/services/workspaceApi'
@@ -137,10 +141,41 @@ const insightMessage = computed(() => {
   return 'Great consistency! Keep refining your learning strategies to improve your SRL scores.'
 })
 
+const timeUntilNextAssessment = ref('')
+let timerInterval = null
+
+const canRetake = computed(() => {
+  if (!progress.value.latest_result || !progress.value.latest_result.CreatedAt) return true;
+  const lastDate = new Date(progress.value.latest_result.CreatedAt);
+  const nextDate = new Date(lastDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+  return new Date() >= nextDate;
+})
+
+function updateCountdown() {
+  if (!progress.value.latest_result || !progress.value.latest_result.CreatedAt) return;
+  const lastDate = new Date(progress.value.latest_result.CreatedAt);
+  const nextDate = new Date(lastDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const diff = nextDate - now;
+  
+  if (diff <= 0) {
+    timeUntilNextAssessment.value = '';
+    return;
+  }
+  
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+  timeUntilNextAssessment.value = `${days}d ${hours}h ${minutes}m`;
+}
+
 onMounted(async () => {
   setWorkspaceToken(page.props.go_token)
   try {
     progress.value = await progressApi.getProgress()
+    updateCountdown()
+    timerInterval = setInterval(updateCountdown, 60000)
   } catch (err) {
     console.error('Failed to fetch progress', err)
   } finally {
@@ -148,11 +183,15 @@ onMounted(async () => {
   }
 })
 
+onUnmounted(() => {
+  if (timerInterval) clearInterval(timerInterval)
+})
+
 function avgScore(entry) {
   const scores = [entry.PlanningScore, entry.TimeManagementScore, entry.CognitiveScore, entry.ReflectionScore].filter(s => s != null)
   if (scores.length === 0) return 0
   const avg = scores.reduce((a, b) => a + b, 0) / scores.length
-  return Math.round(avg / 5 * 100) // Assuming max score 5 per dimension
+  return Math.round(avg / 25 * 100) // Max score is 25 per dimension
 }
 
 function formatDate(dateStr) {

@@ -4,141 +4,197 @@
     buddyContextTitle="Study Insight" 
     :buddyContextMessage="insightMessage"
   >
-    <!-- Greeting Hero -->
-    <div class="mb-12">
-        <p class="text-[11px] font-black text-[#3D3ACE] uppercase tracking-[0.3em] mb-3">Your Sanctuary Dashboard</p>
-        <h1 class="text-4xl font-black text-[#1E1B4B] mb-4">{{ greeting }}, {{ userName }}! Ready to focus today?</h1>
-        <p class="text-slate-500 font-medium max-w-2xl leading-relaxed">
-            Welcome back. You have <span class="text-[#3D3ACE] font-black">{{ data.focus_sessions || 0 }} focus sessions</span> completed this week.
+    <!-- Welcome Section (from Figma) -->
+    <div class="mb-8 flex flex-col justify-center">
+        <h1 class="text-[32px] font-black text-slate-900 mb-2 tracking-tight">{{ greeting }}, {{ userName }}. Ready for a deep focus session?</h1>
+        <p class="text-slate-500 font-medium text-sm flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+            Your cognitive readiness is at <strong class="text-slate-700">94%</strong> today. Optimal for intensive study.
         </p>
     </div>
 
-    <!-- Dashboard Grid -->
-    <div class="grid grid-cols-12 gap-8 mb-12">
-        <!-- Stats Cards -->
-        <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
-            <div v-for="stat in metrics" :key="stat.label" 
-                class="bg-white p-8 rounded-[36px] shadow-sm border border-slate-50 hover:shadow-xl hover:shadow-indigo-50 transition-all group">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl transition-transform group-hover:scale-110" :class="stat.bg">
-                        {{ stat.icon }}
-                    </div>
-                </div>
-                <p class="text-3xl font-black text-[#1E1B4B] mb-1">{{ stat.value }}</p>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ stat.label }}</p>
-            </div>
-        </div>
-
-        <!-- Focus Map -->
-        <div class="col-span-12 lg:col-span-8">
-            <div class="bg-white p-10 rounded-[48px] shadow-sm border border-slate-50 h-full flex flex-col relative overflow-hidden group">
-                <div class="flex items-center justify-between mb-10 relative z-10">
+    <!-- Dashboard Grid (Figma: Bento Grid Style) -->
+    <div class="grid grid-cols-12 gap-6 mb-8">
+        <!-- Left Column: Daily Overview & Recent Notes -->
+        <div class="col-span-12 xl:col-span-7 flex flex-col gap-6">
+            
+            <!-- Daily Overview: Bento Style -->
+            <div class="bg-indigo-600 rounded-[24px] p-6 text-white shadow-xl shadow-indigo-200 relative overflow-hidden group h-auto">
+                <div class="flex items-center justify-between mb-6 relative z-10">
                     <div>
-                        <h3 class="text-xl font-black text-[#1E1B4B]">Your Focus Map</h3>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Weekly Activity Tracking</p>
+                        <h3 class="text-lg font-black tracking-wide">Daily Overview</h3>
+                        <p class="text-indigo-200 text-xs font-bold mt-1">{{ new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }) }}</p>
                     </div>
-                </div>
-                
-                <div class="flex-1 flex items-end justify-between px-2 gap-4 relative z-10">
-                    <div v-for="(stat, i) in weeklyStats" :key="i" class="flex-1 flex flex-col items-center gap-4 group/bar">
-                        <div class="w-full bg-slate-50 rounded-2xl relative overflow-hidden flex items-end" style="height: 200px">
-                            <div class="w-full bg-indigo-50 group-hover/bar:bg-indigo-100 transition-all absolute bottom-0 left-0" :style="{ height: stat.value + '%' }"></div>
-                            <div class="w-full bg-[#3D3ACE] rounded-t-2xl transition-all duration-1000 relative z-10 group-hover/bar:shadow-[0_0_20px_rgba(61,58,206,0.4)]" 
-                                :style="{ height: (stat.value * 0.7) + '%' }">
-                                <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#1E1B4B] text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity font-black whitespace-nowrap">
-                                    {{ stat.count }} sessions
-                                </div>
-                            </div>
-                        </div>
-                        <span class="text-[10px] font-black uppercase tracking-widest" :class="stat.isToday ? 'text-[#3D3ACE]' : 'text-slate-400'">{{ stat.day }}</span>
-                    </div>
-                </div>
-
-                <div class="absolute bottom-0 right-0 opacity-[0.03] rotate-12 group-hover:scale-110 group-hover:rotate-6 transition-all duration-1000">
-                    <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bottom Sections -->
-    <div class="grid grid-cols-12 gap-8">
-        <!-- Recent Sessions -->
-        <div class="col-span-12 lg:col-span-7">
-            <div class="bg-white p-10 rounded-[48px] shadow-sm border border-slate-50 h-full">
-                <div class="flex items-center justify-between mb-10">
-                    <h3 class="text-xl font-black text-[#1E1B4B]">Recent Focus Sessions</h3>
-                    <Link :href="route('planner')" class="text-[11px] font-black text-[#3D3ACE] uppercase tracking-widest border-b-2 border-[#3D3ACE]">View All</Link>
-                </div>
-                <div class="space-y-4">
-                    <div v-if="!recentSessions.length" class="text-center py-10">
-                        <p class="text-slate-400 font-bold">No sessions yet. Start your first deep work cycle!</p>
-                        <Link :href="route('planner')" class="text-[#3D3ACE] font-bold mt-2 inline-block hover:underline">Go to Planner →</Link>
-                    </div>
-                    <div v-for="item in recentSessions.slice(0, 5)" :key="item.id"
-                        class="flex items-center gap-6 p-6 rounded-[32px] border border-slate-50 hover:border-[#3D3ACE]/20 hover:shadow-xl hover:shadow-indigo-50 transition-all cursor-pointer group">
-                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-transform group-hover:scale-110"
-                            :class="item.status === 'completed' ? 'bg-emerald-50 text-emerald-500' : 'bg-indigo-50 text-[#3D3ACE]'">
-                            {{ item.status === 'completed' ? '✅' : '🧠' }}
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="text-base font-black text-[#1E1B4B] group-hover:text-[#3D3ACE] transition-colors">{{ item.title }}</h4>
-                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">{{ item.start_time }} • {{ item.duration_minutes }}m • {{ item.focus_dimension }}</p>
-                        </div>
-                        <span class="text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest"
-                            :class="item.status === 'completed' ? 'text-emerald-500 bg-emerald-50' : 'text-[#3D3ACE] bg-indigo-50'">
-                            {{ item.status }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="col-span-12 lg:col-span-5 flex flex-col gap-8">
-            <div class="bg-indigo-600 p-10 rounded-[48px] text-white shadow-2xl shadow-indigo-100 relative overflow-hidden group h-full">
-                <div class="relative z-10">
-                    <div class="bg-white/10 p-4 rounded-3xl w-fit mb-8 border border-white/10 backdrop-blur-xl group-hover:scale-110 transition-transform">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                    </div>
-                    <h3 class="text-2xl font-black mb-4 leading-tight">Quick Actions</h3>
-                    <div class="space-y-3 mb-8">
-                      <Link :href="route('planner')" class="flex items-center gap-3 text-indigo-100 hover:text-white font-bold text-sm transition-colors">
-                        <span class="w-2 h-2 bg-white/50 rounded-full"></span> Create Study Session
-                      </Link>
-                      <Link :href="route('targets')" class="flex items-center gap-3 text-indigo-100 hover:text-white font-bold text-sm transition-colors">
-                        <span class="w-2 h-2 bg-white/50 rounded-full"></span> Set Weekly Target
-                      </Link>
-                      <Link :href="route('notes')" class="flex items-center gap-3 text-indigo-100 hover:text-white font-bold text-sm transition-colors">
-                        <span class="w-2 h-2 bg-white/50 rounded-full"></span> Write Reflection
-                      </Link>
-                      <Link :href="route('progress')" class="flex items-center gap-3 text-indigo-100 hover:text-white font-bold text-sm transition-colors">
-                        <span class="w-2 h-2 bg-white/50 rounded-full"></span> View Progress
-                      </Link>
-                    </div>
-                    <Link :href="route('planner')" class="inline-block bg-white text-indigo-600 px-8 py-4 rounded-[20px] font-black text-sm shadow-xl hover:shadow-white/20 hover:-translate-y-1 transition-all active:scale-[0.98]">
-                        Start Deep Work
+                    <Link :href="route('planner')" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-2 backdrop-blur-md">
+                        Full Schedule
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </Link>
                 </div>
-                <div class="absolute bottom-[-60px] right-[-60px] w-64 h-64 bg-white/10 rounded-full blur-3xl transition-all group-hover:bg-white/20"></div>
+
+                <!-- Timeline Items -->
+                <div class="space-y-4 relative z-10">
+                    <div v-if="!data.focus_sessions || data.focus_sessions.length === 0" class="text-indigo-200 text-sm font-medium italic mt-4">
+                        No sessions planned for today.
+                    </div>
+                    <!-- Dynamic Items -->
+                    <div v-for="(session, index) in data.focus_sessions" :key="index" class="flex items-start gap-4">
+                        <div class="flex flex-col items-center pt-1 w-12 shrink-0">
+                            <span class="text-xs font-black" :class="session.status === 'completed' ? 'text-indigo-200' : 'text-white'">
+                                {{ session.time.substring(0, 5) }}
+                            </span>
+                        </div>
+                        <div class="flex-1 border-l-4 rounded-xl p-4 transition-all backdrop-blur-sm"
+                             :class="session.status === 'completed' ? 'bg-white/5 border-indigo-400/50 hover:bg-white/10' : 'bg-white/10 border-indigo-300 hover:bg-white/20'">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="text-sm font-black" :class="session.status === 'completed' ? 'text-indigo-100 line-through opacity-70' : ''">{{ session.title }}</h4>
+                                    <p class="text-xs font-medium" :class="session.status === 'completed' ? 'text-indigo-200/70' : 'text-indigo-200'">{{ session.duration }}</p>
+                                </div>
+                                <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
+                                      :class="session.status === 'completed' ? 'bg-indigo-500/50 text-indigo-100' : 'bg-indigo-500 text-white'">
+                                    {{ session.status }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decorative Background -->
+                <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
+            </div>
+
+            <!-- Recent Notes Grid -->
+            <div>
+                <div class="flex items-center justify-between mb-4 px-1">
+                    <h3 class="text-base font-black text-slate-800">Recent Notes</h3>
+                    <Link :href="route('notes')" class="text-xs font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest transition-colors">View All</Link>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <template v-if="recentNotes.length > 0">
+                        <Link v-for="note in recentNotes" :key="note.id" :href="route('notes')" class="bg-white border border-slate-100 p-5 rounded-[20px] shadow-sm hover:shadow-md hover:border-indigo-100 transition-all cursor-pointer group">
+                            <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 mb-4 group-hover:scale-110 transition-transform">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            </div>
+                            <h4 class="text-sm font-black text-slate-900 mb-1">{{ note.title || 'Untitled Note' }}</h4>
+                            <p class="text-xs text-slate-500 font-medium line-clamp-2">{{ note.content_text || 'Empty note...' }}</p>
+                        </Link>
+                    </template>
+                    <div v-else class="col-span-2 text-center py-6 text-slate-400 text-sm font-bold">
+                        No recent notes found.
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Right Column: Stats, Targets, Actions & Quote -->
+        <div class="col-span-12 xl:col-span-5 flex flex-col gap-6">
+            
+            <!-- This Week's Targets -->
+            <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm">
+                <h3 class="text-lg font-black text-slate-900 mb-6">This Week's Targets</h3>
+                <div v-if="weeklyTargets.length === 0" class="text-slate-500 font-medium text-sm py-4">
+                    No active targets for this week.
+                </div>
+                <div v-else class="space-y-5">
+                    <div v-for="target in weeklyTargets" :key="target.id">
+                        <div class="flex justify-between items-end mb-2">
+                            <span class="text-xs font-bold text-slate-900 truncate pr-2">{{ target.title }}</span>
+                            <span class="text-[10px] font-black" :class="target.progress >= 100 ? 'text-emerald-500' : 'text-[#3D3ACE]'">{{ target.progress || 0 }}%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500" :class="target.progress >= 100 ? 'bg-emerald-500' : 'bg-[#3D3ACE]'" :style="{ width: `${target.progress || 0}%` }"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-2">Quick Actions</p>
+                <div class="space-y-3">
+                    <Link :href="route('notes')" class="w-full bg-white border border-slate-100 hover:border-indigo-200 rounded-[16px] p-4 flex items-center justify-between group transition-all shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            </div>
+                            <span class="text-sm font-bold text-slate-700 group-hover:text-slate-900">New Note</span>
+                        </div>
+                        <svg class="w-4 h-4 text-slate-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </Link>
+                    <Link :href="route('planner')" class="w-full bg-white border border-slate-100 hover:border-indigo-200 rounded-[16px] p-4 flex items-center justify-between group transition-all shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <span class="text-sm font-bold text-slate-700 group-hover:text-slate-900">Plan Session</span>
+                        </div>
+                        <svg class="w-4 h-4 text-slate-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </Link>
+                </div>
+            </div>
+
+            <!-- Quote Card -->
+            <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 p-6 rounded-[24px] mt-2 relative overflow-hidden group shadow-lg shadow-indigo-900/20">
+                <svg class="absolute top-3 left-4 w-8 h-8 text-white/20" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+                <p class="text-sm font-bold text-white italic leading-relaxed relative z-10 pt-4">
+                    {{ currentQuote.text }}
+                </p>
+                <p class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mt-4 relative z-10">— {{ currentQuote.author }}</p>
+            </div>
+
+        </div>
     </div>
+
+    <!-- Toast Notification -->
+    <Transition name="fade">
+        <div v-if="showToast" class="fixed bottom-8 right-8 z-[150] bg-white border border-indigo-500/20 shadow-xl shadow-indigo-100 p-4 rounded-xl flex items-center gap-4">
+            <div class="w-10 h-10 bg-indigo-50 text-indigo-600 flex items-center justify-center rounded-xl text-xl">
+                🔔
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Incoming Ping</p>
+                <p class="text-sm font-bold text-slate-900">{{ toastMessage }}</p>
+            </div>
+        </div>
+    </Transition>
+
   </DashboardLayout>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Link, usePage } from '@inertiajs/vue3'
+import { Link, usePage, router } from '@inertiajs/vue3'
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
-import { dashboardApi, setWorkspaceToken } from '@/services/workspaceApi'
+import { dashboardApi, plannerApi, targetsApi, setWorkspaceToken } from '@/services/workspaceApi'
+import { notesApi, setAuthToken as setNotesToken } from '@/services/notesApi'
+import axios from 'axios'
 
 const page = usePage()
 const data = ref({})
 const recentSessions = ref([])
+const recentNotes = ref([])
+const weeklyTargets = ref([])
 const isLoading = ref(true)
 
 const userName = computed(() => page.props.auth?.user?.name || 'User')
+
+const quotes = [
+  { text: "The beautiful thing about learning is that no one can take it away from you.", author: "B.B. King" },
+  { text: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
+  { text: "An investment in knowledge pays the best interest.", author: "Benjamin Franklin" },
+  { text: "Live as if you were to die tomorrow. Learn as if you were to live forever.", author: "Mahatma Gandhi" },
+  { text: "The more that you read, the more things you will know. The more that you learn, the more places you'll go.", author: "Dr. Seuss" },
+  { text: "Anyone who stops learning is old, whether at twenty or eighty.", author: "Henry Ford" },
+  { text: "Change is the end result of all true learning.", author: "Leo Buscaglia" },
+  { text: "Wisdom is not a product of schooling but of the lifelong attempt to acquire it.", author: "Albert Einstein" },
+  { text: "A mind that is stretched by a new experience can never go back to its old dimensions.", author: "Oliver Wendell Holmes" },
+  { text: "Learning is a treasure that will follow its owner everywhere.", author: "Chinese Proverb" }
+]
+
+const currentQuote = computed(() => {
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+  return quotes[dayOfYear % quotes.length];
+})
 
 const greeting = computed(() => {
   const hour = new Date().getHours()
@@ -185,15 +241,101 @@ const insightMessage = computed(() => {
   return `Great momentum! You've completed ${fs} sessions with ${Math.round(te)}% task efficiency.`
 })
 
+const showToast = ref(false)
+const toastMessage = ref('')
+
+const sendPing = () => {
+    console.log("Sending ping...");
+    axios.post('/ping', { message: 'Hello from ' + userName.value })
+        .then(response => {
+            console.log('Ping status:', response.data)
+        })
+        .catch(err => {
+            console.error('Error sending ping:', err)
+            alert('Failed to send ping. Check console.')
+        })
+}
+
 onMounted(async () => {
   setWorkspaceToken(page.props.go_token)
+  setNotesToken(page.props.go_token)
   try {
     data.value = await dashboardApi.getMetrics()
     recentSessions.value = data.value.recent_sessions || []
+    
+    // Fetch Recent Notes
+    try {
+      const allNotes = await notesApi.getNotes()
+      recentNotes.value = allNotes.slice(0, 2)
+    } catch (err) {
+      console.error('Failed to fetch recent notes:', err)
+    }
+
+    // Fetch Weekly Targets
+    try {
+      const tRes = await targetsApi.getTargets()
+      weeklyTargets.value = (tRes.data || []).slice(0, 3)
+    } catch (err) {
+      console.error('Failed to fetch weekly targets:', err)
+    }
+    // Fetch Google Events and sync with Daily Overview
+    try {
+      const gStatus = await plannerApi.getGoogleStatus()
+      if (gStatus?.connected) {
+        const gEvents = await plannerApi.getGoogleEvents() || []
+        
+        // Filter for today
+        const localDate = new Date()
+        const todayStr = localDate.getFullYear() + '-' + String(localDate.getMonth() + 1).padStart(2, '0') + '-' + String(localDate.getDate()).padStart(2, '0')
+
+        const todayGoogleEvents = gEvents.filter(e => {
+            const eDate = e.date?.split('T')[0]?.split(' ')[0]
+            return eDate === todayStr
+        })
+        
+        // Deduplicate based on title and time
+        const localTitlesAndTimes = (data.value.focus_sessions || []).map(s => s.title + s.time)
+        const uniqueGoogleEvents = todayGoogleEvents.filter(ge => {
+             return !localTitlesAndTimes.includes(ge.title + ge.start_time)
+        })
+
+        const formattedGoogle = uniqueGoogleEvents.map(ge => {
+            const [startH, startM] = (ge.start_time || '00:00').split(':').map(Number)
+            const [endH, endM] = (ge.end_time || '01:00').split(':').map(Number)
+            const dur = (endH * 60 + endM) - (startH * 60 + startM)
+            return {
+                title: ge.title,
+                time: ge.start_time,
+                duration: `${dur > 0 ? dur : 60}m`,
+                status: 'planned'
+            }
+        })
+
+        if (!data.value.focus_sessions) {
+            data.value.focus_sessions = []
+        }
+        data.value.focus_sessions = [...data.value.focus_sessions, ...formattedGoogle]
+        data.value.focus_sessions.sort((a, b) => a.time.localeCompare(b.time))
+      }
+    } catch (e) {
+      console.log('Failed to fetch google events for dashboard', e)
+    }
+
   } catch (err) {
     console.error('Failed to load dashboard', err)
   } finally {
     isLoading.value = false
+  }
+
+  // Listen for Reverb GlobalPingEvent
+  if (window.Echo) {
+      window.Echo.channel('public-ping')
+          .listen('GlobalPingEvent', (e) => {
+              console.log('Received ping from Reverb:', e)
+              toastMessage.value = `${e.message} (${e.time})`
+              showToast.value = true
+              setTimeout(() => { showToast.value = false }, 4000)
+          })
   }
 })
 </script>

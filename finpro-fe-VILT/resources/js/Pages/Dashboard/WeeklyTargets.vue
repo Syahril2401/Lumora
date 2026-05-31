@@ -43,7 +43,9 @@
 
     <!-- Empty State -->
     <div v-else-if="targets.length === 0" class="bg-slate-50 border-2 border-dashed border-slate-200 p-12 rounded-[40px] text-center">
-      <div class="text-3xl mb-4">🎯</div>
+      <div class="flex justify-center mb-4 text-[#3D3ACE]">
+        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+      </div>
       <p class="text-slate-500 font-bold mb-2">No targets set yet.</p>
       <p class="text-slate-400 text-sm">Create your first weekly target to start tracking your learning progress.</p>
       <button @click="openTargetModal()" class="mt-4 text-[#3D3ACE] font-bold hover:underline">+ Create Target</button>

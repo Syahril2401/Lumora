@@ -1,61 +1,25 @@
 <template>
-  <div class="flex-1 flex flex-col h-full overflow-hidden bg-white relative">
-    
-    <!-- Editor Header -->
-    <div class="h-16 border-b border-slate-100 flex items-center justify-between px-10 flex-shrink-0 bg-white z-20 relative">
-      <div class="text-[11px] font-black uppercase tracking-widest flex items-center gap-2" :class="saveStatusColor">
-        <span class="w-2 h-2 rounded-full animate-pulse" :class="saveStatusBg"></span>
-        {{ saveStatusText }}
-      </div>
-      <button v-if="saveStatus === 'error' || saveStatus === 'unsaved'" @click="$emit('save')" class="bg-[#3D3ACE] text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-[#322fb0]">
-        Save Now
-      </button>
+  <div class="flex-1 flex flex-col h-full w-full relative pb-32" @click="focusEditorEnd">
+    <!-- Empty State Hint -->
+    <div v-if="blocks.length === 0" class="text-slate-400 font-medium cursor-text" @click.stop="createFirstBlock">
+      Start writing your reflection, or use the toolbar above for formatting...
     </div>
 
-    <!-- Editor Scroll Area -->
-    <div class="flex-1 overflow-y-auto p-10 lg:px-20 xl:px-40 scrollbar-hide pb-32" @click="focusEditorEnd">
-      <div class="max-w-3xl mx-auto w-full">
-        
-        <!-- Title -->
-        <input 
-          type="text" 
-          :value="title"
-          @input="$emit('update:title', $event.target.value)"
-          placeholder="Untitled"
-          class="w-full text-4xl font-black text-[#1E1B4B] mb-8 outline-none bg-transparent placeholder-slate-300"
-        >
-
-        <!-- Empty State Hint -->
-        <div v-if="blocks.length === 0" class="text-slate-400 font-medium cursor-text" @click.stop="createFirstBlock">
-          Start writing your reflection, or type <span class="bg-slate-100 px-2 py-0.5 rounded text-slate-600 font-black">/</span> for commands...
-        </div>
-
-        <!-- Blocks -->
-        <div v-else class="space-y-1">
-          <NoteBlock 
-            v-for="(block, index) in blocks" 
-            :key="block.id"
-            :block="block"
-            :isFocused="focusedBlockIndex === index"
-            @update="updateBlock(index, $event)"
-            @split="splitBlock(index, $event)"
-            @delete="deleteBlock(index)"
-            @focus="focusedBlockIndex = index"
-            @move-up="moveFocusUp(index)"
-            @move-down="moveFocusDown(index)"
-            @slash-command="openSlashCommand(index)"
-          />
-        </div>
-      </div>
+    <!-- Blocks -->
+    <div v-else class="space-y-1 w-full">
+      <NoteBlock 
+        v-for="(block, index) in blocks" 
+        :key="block.id"
+        :block="block"
+        :isFocused="focusedBlockIndex === index"
+        @update="updateBlock(index, $event)"
+        @split="splitBlock(index, $event)"
+        @delete="deleteBlock(index)"
+        @focus="focusedBlockIndex = index"
+        @move-up="moveFocusUp(index)"
+        @move-down="moveFocusDown(index)"
+      />
     </div>
-
-    <!-- Slash Command Menu -->
-    <SlashCommandMenu 
-      v-if="slashMenuOpen" 
-      :style="{ top: slashMenuPos.y + 'px', left: slashMenuPos.x + 'px' }"
-      @select="applyCommand"
-      @close="closeSlashCommand"
-    />
   </div>
 </template>
 
@@ -167,33 +131,24 @@ function focusEditorEnd(e) {
   }
 }
 
-function openSlashCommand(index) {
-  // Attempt to position menu near selection
-  const sel = window.getSelection();
-  if (sel.rangeCount > 0) {
-    const rect = sel.getRangeAt(0).getBoundingClientRect();
-    slashMenuPos.value = { x: rect.left, y: rect.bottom + 10 };
-  } else {
-    slashMenuPos.value = { x: 300, y: 300 };
-  }
-  activeSlashBlockIndex.value = index;
-  slashMenuOpen.value = true;
-}
-
-function closeSlashCommand() {
-  slashMenuOpen.value = false;
-  activeSlashBlockIndex.value = -1;
-}
-
-function applyCommand(type) {
-  if (activeSlashBlockIndex.value >= 0) {
+function formatFocusedBlock(type) {
+  if (focusedBlockIndex.value >= 0 && focusedBlockIndex.value < props.blocks.length) {
     const newBlocks = [...props.blocks];
-    newBlocks[activeSlashBlockIndex.value].type = type;
-    newBlocks[activeSlashBlockIndex.value].content = newBlocks[activeSlashBlockIndex.value].content.replace('/', '');
+    newBlocks[focusedBlockIndex.value].type = type;
     emit('update:blocks', newBlocks);
+  } else if (props.blocks.length === 0) {
+    emit('update:blocks', [{ id: Date.now().toString(), type, content: '' }]);
+    focusedBlockIndex.value = 0;
   }
-  closeSlashCommand();
 }
+
+function focusLastBlock() {
+  if (props.blocks.length > 0) {
+    focusedBlockIndex.value = props.blocks.length - 1;
+  }
+}
+
+defineExpose({ formatFocusedBlock, focusLastBlock });
 
 import { computed } from 'vue';
 </script>

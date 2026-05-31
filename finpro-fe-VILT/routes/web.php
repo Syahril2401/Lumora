@@ -48,6 +48,12 @@ Route::middleware('go.auth')->group(function () {
         // Recommendation Detail
         Route::get('/recommendations/{id}', [DashboardController::class, 'recommendationDetail'])->name('recommendations.detail');
 
+        // Reverb Ping
+        Route::post('/ping', function (Illuminate\Http\Request $request) {
+            broadcast(new App\Events\GlobalPingEvent($request->input('message', 'Ping!')));
+            return response()->json(['status' => 'Ping sent!']);
+        })->name('ping');
+
         // AI Chatbot API endpoint
         Route::post('/chat', [ChatController::class, 'send'])->name('chat');
     });

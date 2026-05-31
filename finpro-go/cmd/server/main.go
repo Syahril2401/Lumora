@@ -21,6 +21,31 @@ import (
 func main() {
 	config.ConnectDatabase()
 
+	// HOTFIX: Drop and recreate schedules table to ensure correct schema for Go models
+	config.DB.Exec("DROP TABLE IF EXISTS schedules")
+	hotfixErr := config.DB.Exec(`
+		CREATE TABLE schedules (
+		  schedule_id CHAR(36) PRIMARY KEY,
+		  user_id CHAR(36) NOT NULL,
+		  title VARCHAR(200) NOT NULL,
+		  description TEXT,
+		  date DATE NOT NULL,
+		  start_time VARCHAR(10) NOT NULL,
+		  end_time VARCHAR(10) NOT NULL,
+		  duration_minutes INT DEFAULT 0,
+		  focus_dimension VARCHAR(100) DEFAULT 'General',
+		  status VARCHAR(50) DEFAULT 'planned',
+		  target_id CHAR(36),
+		  google_event_id VARCHAR(255),
+		  created_at DATETIME(3),
+		  updated_at DATETIME(3)
+		)
+	`).Error
+	if hotfixErr != nil {
+		log.Printf("HOTFIX TABLE CREATION FAILED: %v", hotfixErr)
+	} else {
+		log.Printf("HOTFIX TABLE CREATION SUCCESSFUL")
+	}
 	// Repositories
 	adminRepo := repository.NewAdminRepository(config.DB)
 	userRepo := repository.NewUserRepository(config.DB)
@@ -41,10 +66,11 @@ func main() {
 	noteService := service.NewNoteService(noteRepo)
 	plannerService := service.NewPlannerService(plannerRepo)
 	targetService := service.NewTargetService(targetRepo)
+	googleCalService := service.NewGoogleCalendarService()
 
 	// Controllers
 	authCtrl := controller.NewAuthController(authService)
-	assessCtrl := controller.NewAssessmentController(assessService, aiService)
+	assessCtrl := controller.NewAssessmentController(assessService, aiService, userRepo)
 	dashCtrl := controller.NewDashboardController(dashService)
 	adminCtrl := controller.NewAdminController(adminService)
 	testCtrl := controller.NewTestController()
@@ -52,6 +78,7 @@ func main() {
 	plannerCtrl := controller.NewPlannerController(plannerService)
 	targetCtrl := controller.NewTargetController(targetService)
 	workspaceCtrl := controller.NewWorkspaceController(plannerRepo, targetRepo, noteRepo, notifRepo, assessRepo)
+	googleCalCtrl := controller.NewGoogleCalendarController(googleCalService)
 
 	// Router
 	r := gin.Default()
@@ -64,7 +91,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	routes.SetupRoutes(r, authCtrl, assessCtrl, dashCtrl, adminCtrl, testCtrl, noteCtrl, plannerCtrl, targetCtrl, workspaceCtrl)
+	routes.SetupRoutes(r, authCtrl, assessCtrl, dashCtrl, adminCtrl, testCtrl, noteCtrl, plannerCtrl, targetCtrl, workspaceCtrl, googleCalCtrl)
 
 	// Server
 	port := os.Getenv("PORT")

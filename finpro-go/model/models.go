@@ -135,6 +135,7 @@ type Schedule struct {
 	FocusDimension  string     `gorm:"column:focus_dimension;type:varchar(100);default:'General'" json:"focus_dimension"`
 	Status          string     `gorm:"column:status;type:varchar(50);default:'planned'" json:"status"`
 	TargetID        *string    `gorm:"column:target_id;type:char(36)" json:"target_id"`
+	GoogleEventID   *string    `gorm:"column:google_event_id;type:varchar(255)" json:"google_event_id"`
 	CreatedAt       time.Time  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt       time.Time  `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 
