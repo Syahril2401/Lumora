@@ -12,17 +12,36 @@ class OnboardingController extends Controller
 {
     public function __construct(protected GoApiService $api) {}
 
+    // ─── Helper: Check if Survey Done ─────────────────────────────────────────
+
+    private function checkSurveyDone(): bool
+    {
+        if (!Session::has('survey_completed')) {
+            $completed = $this->api->hasSurveyResult();
+            Session::put('survey_completed', $completed);
+        }
+        return Session::get('survey_completed');
+    }
+
     // ─── Step 1: Sanctuary ────────────────────────────────────────────────────
 
-    public function sanctuary(): Response
+    public function sanctuary()
     {
+        if ($this->checkSurveyDone()) {
+            return redirect()->route('dashboard');
+        }
+
         return Inertia::render('Onboarding/Sanctuary');
     }
 
     // ─── Step 2: Questionnaire ────────────────────────────────────────────────
 
-    public function questionnaire(): Response
+    public function questionnaire()
     {
+        if ($this->checkSurveyDone()) {
+            return redirect()->route('dashboard');
+        }
+
         // Fetch real questions from Go API (for question_ids)
         // If API fails, frontend has hardcoded questions as fallback
         try {

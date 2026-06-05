@@ -6,10 +6,10 @@
   >
     <!-- Welcome Section (from Figma) -->
     <div class="mb-8 flex flex-col justify-center">
-        <h1 class="text-[32px] font-black text-slate-900 mb-2 tracking-tight">{{ greeting }}, {{ userName }}. Ready for a deep focus session?</h1>
-        <p class="text-slate-500 font-medium text-sm flex items-center gap-2">
+        <h1 class="text-[32px] font-black text-navy-900 dark:text-text-primary mb-2 tracking-tight">{{ greeting }}, {{ userName }}. Ready for a deep focus session?</h1>
+        <p class="text-navy-500 dark:text-text-muted font-medium text-sm flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-            Your cognitive readiness is at <strong class="text-slate-700">94%</strong> today. Optimal for intensive study.
+            Your cognitive readiness is at <strong class="text-navy-700 dark:text-text-primary">94%</strong> today. Optimal for intensive study.
         </p>
     </div>
 
@@ -19,13 +19,13 @@
         <div class="col-span-12 xl:col-span-7 flex flex-col gap-6">
             
             <!-- Daily Overview: Bento Style -->
-            <div class="bg-indigo-600 rounded-[24px] p-6 text-white shadow-xl shadow-indigo-200 relative overflow-hidden group h-auto">
+            <div class="bg-navy-900 rounded-[24px] p-6 text-white shadow-xl shadow-brand-500/10 relative overflow-hidden group h-auto">
                 <div class="flex items-center justify-between mb-6 relative z-10">
                     <div>
-                        <h3 class="text-lg font-black tracking-wide">Daily Overview</h3>
-                        <p class="text-indigo-200 text-xs font-bold mt-1">{{ new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }) }}</p>
+                        <h3 class="text-lg font-black tracking-wide text-white">Daily Overview</h3>
+                        <p class="text-navy-200 text-xs font-bold mt-1">{{ new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }) }}</p>
                     </div>
-                    <Link :href="route('planner')" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-2 backdrop-blur-md">
+                    <Link :href="route('planner')" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-2 backdrop-blur-md text-white">
                         Full Schedule
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </Link>
@@ -33,25 +33,25 @@
 
                 <!-- Timeline Items -->
                 <div class="space-y-4 relative z-10">
-                    <div v-if="!data.focus_sessions || data.focus_sessions.length === 0" class="text-indigo-200 text-sm font-medium italic mt-4">
+                    <div v-if="!data.focus_sessions || data.focus_sessions.length === 0" class="text-navy-200 text-sm font-medium italic mt-4">
                         No sessions planned for today.
                     </div>
                     <!-- Dynamic Items -->
                     <div v-for="(session, index) in data.focus_sessions" :key="index" class="flex items-start gap-4">
                         <div class="flex flex-col items-center pt-1 w-12 shrink-0">
-                            <span class="text-xs font-black" :class="session.status === 'completed' ? 'text-indigo-200' : 'text-white'">
+                            <span class="text-xs font-black" :class="session.status === 'completed' ? 'text-navy-300' : 'text-white'">
                                 {{ session.time.substring(0, 5) }}
                             </span>
                         </div>
                         <div class="flex-1 border-l-4 rounded-xl p-4 transition-all backdrop-blur-sm"
-                             :class="session.status === 'completed' ? 'bg-white/5 border-indigo-400/50 hover:bg-white/10' : 'bg-white/10 border-indigo-300 hover:bg-white/20'">
+                             :class="session.status === 'completed' ? 'bg-white/5 border-brand-400/50 hover:bg-white/10' : 'bg-white/10 border-brand-400 hover:bg-white/20'">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
-                                    <h4 class="text-sm font-black" :class="session.status === 'completed' ? 'text-indigo-100 line-through opacity-70' : ''">{{ session.title }}</h4>
-                                    <p class="text-xs font-medium" :class="session.status === 'completed' ? 'text-indigo-200/70' : 'text-indigo-200'">{{ session.duration }}</p>
+                                    <h4 class="text-sm font-black" :class="session.status === 'completed' ? 'text-navy-200 line-through opacity-70' : 'text-white'">{{ session.title }}</h4>
+                                    <p class="text-xs font-medium" :class="session.status === 'completed' ? 'text-navy-300/70' : 'text-navy-200'">{{ session.duration }}</p>
                                 </div>
                                 <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
-                                      :class="session.status === 'completed' ? 'bg-indigo-500/50 text-indigo-100' : 'bg-indigo-500 text-white'">
+                                      :class="session.status === 'completed' ? 'bg-brand-500/50 text-brand-100' : 'bg-brand-500 text-white'">
                                     {{ session.status }}
                                 </span>
                             </div>
@@ -60,26 +60,26 @@
                 </div>
 
                 <!-- Decorative Background -->
-                <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
+                <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-brand-500/20 rounded-full blur-3xl group-hover:bg-brand-500/30 transition-colors duration-700 pointer-events-none"></div>
             </div>
 
             <!-- Recent Notes Grid -->
             <div>
                 <div class="flex items-center justify-between mb-4 px-1">
-                    <h3 class="text-base font-black text-slate-800">Recent Notes</h3>
-                    <Link :href="route('notes')" class="text-xs font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest transition-colors">View All</Link>
+                    <h3 class="text-base font-black text-navy-900 dark:text-text-primary">Recent Notes</h3>
+                    <Link :href="route('notes')" class="text-xs font-black text-brand-500 hover:text-brand-400 uppercase tracking-widest transition-colors">View All</Link>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <template v-if="recentNotes.length > 0">
-                        <Link v-for="note in recentNotes" :key="note.id" :href="route('notes')" class="bg-white border border-slate-100 p-5 rounded-[20px] shadow-sm hover:shadow-md hover:border-indigo-100 transition-all cursor-pointer group">
-                            <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 mb-4 group-hover:scale-110 transition-transform">
+                        <Link v-for="note in recentNotes" :key="note.id" :href="route('notes')" class="bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border p-5 rounded-[20px] shadow-sm hover:shadow-md hover:border-brand-200 dark:hover:border-brand-500/30 transition-all cursor-pointer group">
+                            <div class="w-10 h-10 bg-brand-50 dark:bg-brand-500/10 text-brand-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             </div>
-                            <h4 class="text-sm font-black text-slate-900 mb-1">{{ note.title || 'Untitled Note' }}</h4>
-                            <p class="text-xs text-slate-500 font-medium line-clamp-2">{{ note.content_text || 'Empty note...' }}</p>
+                            <h4 class="text-sm font-black text-navy-900 dark:text-text-primary mb-1">{{ note.title || 'Untitled Note' }}</h4>
+                            <p class="text-xs text-navy-500 dark:text-text-muted font-medium line-clamp-2">{{ note.content_text || 'Empty note...' }}</p>
                         </Link>
                     </template>
-                    <div v-else class="col-span-2 text-center py-6 text-slate-400 text-sm font-bold">
+                    <div v-else class="col-span-2 text-center py-6 text-navy-400 dark:text-text-faint text-sm font-bold bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border border-dashed rounded-[20px]">
                         No recent notes found.
                     </div>
                 </div>
@@ -90,19 +90,19 @@
         <div class="col-span-12 xl:col-span-5 flex flex-col gap-6">
             
             <!-- This Week's Targets -->
-            <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm">
-                <h3 class="text-lg font-black text-slate-900 mb-6">This Week's Targets</h3>
-                <div v-if="weeklyTargets.length === 0" class="text-slate-500 font-medium text-sm py-4">
+            <div class="bg-white dark:bg-dark-panel p-6 rounded-[24px] border border-[#D9E2EC] dark:border-dark-border shadow-sm">
+                <h3 class="text-lg font-black text-navy-900 dark:text-text-primary mb-6">This Week's Targets</h3>
+                <div v-if="weeklyTargets.length === 0" class="text-navy-500 dark:text-text-muted font-medium text-sm py-4">
                     No active targets for this week.
                 </div>
                 <div v-else class="space-y-5">
                     <div v-for="target in weeklyTargets" :key="target.id">
                         <div class="flex justify-between items-end mb-2">
-                            <span class="text-xs font-bold text-slate-900 truncate pr-2">{{ target.title }}</span>
-                            <span class="text-[10px] font-black" :class="target.progress >= 100 ? 'text-emerald-500' : 'text-[#3D3ACE]'">{{ target.progress || 0 }}%</span>
+                            <span class="text-xs font-bold text-navy-900 dark:text-text-primary truncate pr-2">{{ target.title }}</span>
+                            <span class="text-[10px] font-black" :class="target.progress >= 100 ? 'text-emerald-500' : 'text-brand-500'">{{ target.progress || 0 }}%</span>
                         </div>
-                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                            <div class="h-full rounded-full transition-all duration-500" :class="target.progress >= 100 ? 'bg-emerald-500' : 'bg-[#3D3ACE]'" :style="{ width: `${target.progress || 0}%` }"></div>
+                        <div class="w-full bg-[#E8EDF2] dark:bg-dark-border rounded-full h-2 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500" :class="target.progress >= 100 ? 'bg-emerald-500' : 'bg-brand-500'" :style="{ width: `${target.progress || 0}%` }"></div>
                         </div>
                     </div>
                 </div>
@@ -110,36 +110,36 @@
 
             <!-- Quick Actions -->
             <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-2">Quick Actions</p>
+                <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-3 px-2">Quick Actions</p>
                 <div class="space-y-3">
-                    <Link :href="route('notes')" class="w-full bg-white border border-slate-100 hover:border-indigo-200 rounded-[16px] p-4 flex items-center justify-between group transition-all shadow-sm">
+                    <Link :href="route('notes')" class="w-full bg-white dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border hover:border-brand-200 dark:hover:border-brand-500/30 rounded-[16px] p-4 flex items-center justify-between group transition-all shadow-sm">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <div class="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                             </div>
-                            <span class="text-sm font-bold text-slate-700 group-hover:text-slate-900">New Note</span>
+                            <span class="text-sm font-bold text-navy-700 dark:text-text-primary group-hover:text-brand-500 dark:group-hover:text-brand-400">New Note</span>
                         </div>
-                        <svg class="w-4 h-4 text-slate-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <svg class="w-4 h-4 text-navy-300 dark:text-text-faint group-hover:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </Link>
-                    <Link :href="route('planner')" class="w-full bg-white border border-slate-100 hover:border-indigo-200 rounded-[16px] p-4 flex items-center justify-between group transition-all shadow-sm">
+                    <Link :href="route('planner')" class="w-full bg-white dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border hover:border-brand-200 dark:hover:border-brand-500/30 rounded-[16px] p-4 flex items-center justify-between group transition-all shadow-sm">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             </div>
-                            <span class="text-sm font-bold text-slate-700 group-hover:text-slate-900">Plan Session</span>
+                            <span class="text-sm font-bold text-navy-700 dark:text-text-primary group-hover:text-brand-500 dark:group-hover:text-brand-400">Plan Session</span>
                         </div>
-                        <svg class="w-4 h-4 text-slate-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <svg class="w-4 h-4 text-navy-300 dark:text-text-faint group-hover:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </Link>
                 </div>
             </div>
 
             <!-- Quote Card -->
-            <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 p-6 rounded-[24px] mt-2 relative overflow-hidden group shadow-lg shadow-indigo-900/20">
+            <div class="bg-gradient-to-br from-brand-600 to-brand-800 p-6 rounded-[24px] mt-2 relative overflow-hidden group shadow-lg shadow-brand-900/20">
                 <svg class="absolute top-3 left-4 w-8 h-8 text-white/20" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
                 <p class="text-sm font-bold text-white italic leading-relaxed relative z-10 pt-4">
                     {{ currentQuote.text }}
                 </p>
-                <p class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mt-4 relative z-10">— {{ currentQuote.author }}</p>
+                <p class="text-[10px] font-black text-brand-200 uppercase tracking-widest mt-4 relative z-10">— {{ currentQuote.author }}</p>
             </div>
 
         </div>
@@ -147,13 +147,13 @@
 
     <!-- Toast Notification -->
     <Transition name="fade">
-        <div v-if="showToast" class="fixed bottom-8 right-8 z-[150] bg-white border border-indigo-500/20 shadow-xl shadow-indigo-100 p-4 rounded-xl flex items-center gap-4">
-            <div class="w-10 h-10 bg-indigo-50 text-indigo-600 flex items-center justify-center rounded-xl text-xl">
+        <div v-if="showToast" class="fixed bottom-8 right-8 z-[150] bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border shadow-xl p-4 rounded-xl flex items-center gap-4">
+            <div class="w-10 h-10 bg-brand-50 dark:bg-brand-500/10 text-brand-500 flex items-center justify-center rounded-xl text-xl">
                 🔔
             </div>
             <div>
-                <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Incoming Ping</p>
-                <p class="text-sm font-bold text-slate-900">{{ toastMessage }}</p>
+                <p class="text-[10px] font-black text-brand-500 uppercase tracking-widest">Incoming Ping</p>
+                <p class="text-sm font-bold text-navy-900 dark:text-text-primary">{{ toastMessage }}</p>
             </div>
         </div>
     </Transition>

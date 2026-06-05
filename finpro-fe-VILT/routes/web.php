@@ -45,6 +45,32 @@ Route::middleware('go.auth')->group(function () {
         Route::get('/dashboard/progress', [DashboardController::class, 'progress'])->name('progress');
         Route::get('/dashboard/settings', [DashboardController::class, 'settings'])->name('settings');
         
+        // Profile Update
+        Route::patch('/dashboard/profile', function (Illuminate\Http\Request $request) {
+            $request->validate(['name' => 'required|string|max:100']);
+            
+            $goToken = \Illuminate\Support\Facades\Session::get('go_token');
+            if (!$goToken) {
+                return back()->withErrors(['name' => 'Unauthenticated']);
+            }
+            
+            try {
+                $payload = explode('.', $goToken)[1];
+                $decoded = json_decode(base64_decode(strtr($payload, '-_', '+/')), true);
+                $userId = $decoded['user_id'] ?? null;
+                
+                if ($userId) {
+                    \Illuminate\Support\Facades\DB::table('srl_platform.users')
+                        ->where('user_id', $userId)
+                        ->update(['name' => $request->name]);
+                }
+            } catch (\Exception $e) {
+                // Ignore
+            }
+            
+            return back()->with('status', 'Profile updated');
+        })->name('dashboard.profile.update');
+        
         // Recommendation Detail
         Route::get('/recommendations/{id}', [DashboardController::class, 'recommendationDetail'])->name('recommendations.detail');
 

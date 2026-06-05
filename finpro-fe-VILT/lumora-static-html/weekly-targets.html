@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Weekly Targets – Lumora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['DM Sans','sans-serif']}}}}</script>
+<style>::selection{background:#c7d2fe;color:#1E1B4B}::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:999px}.scrollbar-hide::-webkit-scrollbar{display:none}.scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none}</style>
+</head>
+<body class="h-screen bg-[#FDFDFF] font-sans text-slate-900 flex overflow-hidden">
+<!-- Sidebar -->
+<aside class="bg-[#0B1120] border-[#1E293B] flex flex-col z-40 relative shadow-xl w-64 border-r">
+  <div class="p-6 pb-6 flex items-center gap-3"><div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-900/50"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg></div><div><span class="text-lg font-black text-white tracking-tight block">Lumora</span><span class="text-[10px] font-black text-indigo-300 uppercase tracking-widest bg-indigo-900/50 px-2 py-0.5 rounded-md">Intelligent Sanctuary</span></div></div>
+  <nav class="flex-1 px-4 py-2 space-y-1.5 overflow-y-auto scrollbar-hide">
+    <a href="dashboard.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-white/5 hover:text-slate-200"><svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>Dashboard</a>
+    <a href="planner.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-white/5 hover:text-slate-200"><svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Planner</a>
+    <a href="weekly-targets.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold bg-indigo-600 text-white shadow-lg shadow-indigo-900/20"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Weekly Targets</a>
+    <a href="notes.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-white/5 hover:text-slate-200"><svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>Notes</a>
+    <a href="progress.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-white/5 hover:text-slate-200"><svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Progress</a>
+    <a href="settings.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-white/5 hover:text-slate-200"><svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>Settings</a>
+  </nav>
+  <div class="px-4 pb-6 mt-auto space-y-4"><a href="login.html" class="flex items-center gap-3 text-sm font-bold text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all py-2.5 px-3 rounded-xl w-full text-left"><svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Logout</a><div class="border-t border-[#1E293B] pt-4"><div class="p-2 rounded-xl flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5"><div class="w-full h-full rounded-full bg-slate-600 flex items-center justify-center text-white text-xs font-bold">PS</div></div><div class="flex-1 min-w-0"><p class="text-xs font-black text-white truncate">Pamungkas</p><p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wider truncate">Deep Focus Mode</p></div></div></div></div>
+</aside>
+<!-- Main -->
+<main class="flex-1 flex flex-col relative">
+  <header class="h-20 px-10 flex items-center justify-between bg-[#F7F9FB] z-30 shrink-0 border-b border-slate-200"><div class="flex-1"><button class="p-2 -ml-2 rounded-xl text-slate-500 hover:bg-slate-200/60 hover:text-slate-800 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg></button></div><div class="flex items-center gap-6"><button class="text-slate-500 hover:text-slate-800 transition-colors relative"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg><div class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[8px] font-black rounded-full flex items-center justify-center">3</div></button><button class="text-slate-500 hover:text-slate-800 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></button><div class="h-6 w-px bg-slate-300"></div><div class="flex items-center gap-3"><span class="text-xs font-black text-slate-900">Pamungkas</span><div class="w-8 h-8 rounded-full bg-slate-300 flex items-center justify-center text-white text-xs font-bold">PS</div></div></div></header>
+
+  <div class="flex-1 overflow-y-auto bg-[#FDFDFF] p-8 scrollbar-hide">
+    <!-- Header -->
+    <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div><h1 class="text-3xl font-black text-[#1E1B4B] mb-2">Weekly Targets</h1><p class="text-slate-500 font-medium">Set measurable goals and track completion.</p></div>
+      <button onclick="openModal()" class="bg-[#3D3ACE] hover:bg-[#322fb0] text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-indigo-200 transition-all active:scale-95 whitespace-nowrap flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>Add Weekly Target</button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Targets</p><p class="text-3xl font-black text-[#1E1B4B]">4</p></div>
+      <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Completed</p><p class="text-3xl font-black text-emerald-500">1</p></div>
+      <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Completion Rate</p><p class="text-3xl font-black text-[#3D3ACE]">63%</p></div>
+      <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Primary Focus</p><p class="text-lg font-black text-[#1E1B4B] truncate">Cognitive Strategy</p></div>
+    </div>
+
+    <!-- Target Cards -->
+    <div id="targetsList" class="space-y-6"></div>
+  </div>
+</main>
+
+<!-- Target Modal -->
+<div id="targetModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-[32px] p-8 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+    <h2 id="modalTitle" class="text-xl font-black text-[#1E1B4B] mb-6">Add Weekly Target</h2>
+    <form onsubmit="saveTarget(event)" class="space-y-5">
+      <div><label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Title *</label><input id="tTitle" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-sm font-bold text-[#1E1B4B] focus:border-[#3D3ACE] outline-none transition-all" placeholder="e.g. Complete Chapter 5"></div>
+      <div><label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Description</label><textarea id="tDesc" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-sm font-bold text-[#1E1B4B] focus:border-[#3D3ACE] outline-none resize-none transition-all"></textarea></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Focus Dimension</label><select id="tDim" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-sm font-bold text-[#1E1B4B] focus:border-[#3D3ACE] outline-none"><option>General</option><option>Planning</option><option>Time Management</option><option>Cognitive Strategy</option><option>Reflection</option></select></div>
+        <div><label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Priority</label><select id="tPri" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-sm font-bold text-[#1E1B4B] focus:border-[#3D3ACE] outline-none"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>
+      </div>
+      <div><label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Due Date</label><input id="tDue" type="date" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-sm font-bold text-[#1E1B4B] focus:border-[#3D3ACE] outline-none transition-all"></div>
+      <div class="flex gap-3 pt-4"><button type="button" onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-2xl font-bold hover:bg-slate-200">Cancel</button><button type="submit" class="flex-1 bg-[#3D3ACE] text-white py-3 rounded-2xl font-bold hover:bg-[#322fb0] shadow-lg shadow-indigo-200">Create</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed bottom-6 right-6 z-50 bg-white border border-slate-200 shadow-2xl rounded-2xl p-4 flex items-center gap-3"><div class="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-50 text-emerald-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div><span id="toastMsg" class="text-sm font-bold text-[#1E1B4B]">Target created!</span></div>
+
+<script>
+const targets = [
+  { id:1, title:'Complete Chapter 5', description:'Read and summarize all key concepts', focus_dimension:'Cognitive Strategy', priority:'high', status:'in_progress', progress:80, due_date:'2024-06-10', subtasks:[{id:1,title:'Read section 5.1-5.3',is_completed:true},{id:2,title:'Take notes on key terms',is_completed:true},{id:3,title:'Complete practice problems',is_completed:false}] },
+  { id:2, title:'Review 3 Notes', description:'Review and update recent study notes', focus_dimension:'Reflection', priority:'medium', status:'completed', progress:100, due_date:'2024-06-08', subtasks:[{id:4,title:'Market Structures',is_completed:true},{id:5,title:'Elasticity Concepts',is_completed:true},{id:6,title:'Game Theory Basics',is_completed:true}] },
+  { id:3, title:'Practice Problems Set', description:'Complete 20 practice problems', focus_dimension:'Cognitive Strategy', priority:'medium', status:'in_progress', progress:45, due_date:'2024-06-12', subtasks:[{id:7,title:'Problems 1-10',is_completed:true},{id:8,title:'Problems 11-20',is_completed:false}] },
+  { id:4, title:'Weekly Reflection', description:'Write a reflection on this week\'s learning', focus_dimension:'Reflection', priority:'low', status:'not_started', progress:0, due_date:'2024-06-09', subtasks:[] },
+];
+
+let editingId = null;
+
+function priorityClass(p) { return {high:'bg-rose-50 text-rose-500',medium:'bg-amber-50 text-amber-500',low:'bg-slate-50 text-slate-400'}[p]||'bg-slate-50 text-slate-400'; }
+function statusBadge(s) { return {completed:'bg-emerald-50 text-emerald-500',in_progress:'bg-blue-50 text-blue-500',not_started:'bg-slate-50 text-slate-400',paused:'bg-amber-50 text-amber-500'}[s]||'bg-slate-50 text-slate-400'; }
+
+function render() {
+  const c = document.getElementById('targetsList');
+  if (!targets.length) { c.innerHTML = '<div class="bg-slate-50 border-2 border-dashed border-slate-200 p-12 rounded-[40px] text-center"><div class="flex justify-center mb-4 text-[#3D3ACE]"><svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><p class="text-slate-500 font-bold mb-2">No targets set yet.</p><p class="text-slate-400 text-sm">Create your first weekly target to start tracking your learning progress.</p></div>'; return; }
+  let html = '';
+  targets.forEach(t => {
+    html += `<div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm hover:shadow-lg transition-all"><div class="flex items-start justify-between mb-4"><div class="flex-1"><div class="flex items-center gap-2 mb-2 flex-wrap"><span class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${priorityClass(t.priority)}">${t.priority}</span><span class="text-[10px] font-black bg-indigo-50 text-[#3D3ACE] uppercase tracking-widest px-2 py-1 rounded-md">${t.focus_dimension}</span><span class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${statusBadge(t.status)}">${t.status?.replace('_',' ')}</span></div><h4 class="text-lg font-black text-[#1E1B4B]">${t.title}</h4>${t.description?`<p class="text-sm font-medium text-slate-500 mt-1">${t.description}</p>`:''}${t.due_date?`<p class="text-xs font-bold text-slate-400 mt-1">Due: ${t.due_date}</p>`:''}</div><div class="flex items-center gap-2 ml-4"><button onclick="openModal(${t.id})" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 hover:bg-indigo-50 hover:text-[#3D3ACE] flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button onclick="deleteTarget(${t.id})" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 hover:bg-rose-50 hover:text-rose-500 flex items-center justify-center transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></div>
+    <div class="mb-4"><div class="flex items-center justify-between mb-1"><span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress</span><span class="text-sm font-black text-[#1E1B4B]">${t.progress||0}%</span></div><div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full rounded-full transition-all duration-500 ${t.progress>=100?'bg-emerald-500':'bg-[#3D3ACE]'}" style="width:${t.progress||0}%"></div></div></div>
+    <div class="space-y-2">`;
+    t.subtasks.forEach(s => {
+      html += `<div class="flex items-center gap-3 group"><button onclick="toggleSubtask(${t.id},${s.id})" class="w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${s.is_completed?'bg-emerald-500 border-emerald-500':'border-slate-300 hover:border-[#3D3ACE]'}">${s.is_completed?'<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>':''}</button><span class="text-sm font-bold flex-1 ${s.is_completed?'text-slate-400 line-through':'text-[#1E1B4B]'}">${s.title}</span><button onclick="removeSubtask(${t.id},${s.id})" class="opacity-0 group-hover:opacity-100 w-6 h-6 rounded text-slate-400 hover:text-rose-500 flex items-center justify-center transition-all"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>`;
+    });
+    html += `<div class="flex items-center gap-3 pt-2"><input id="newSub_${t.id}" onkeydown="if(event.key==='Enter'){event.preventDefault();addSubtask(${t.id})}" placeholder="Add subtask..." class="flex-1 text-sm font-bold text-[#1E1B4B] bg-transparent border-b border-dashed border-slate-200 py-1 focus:border-[#3D3ACE] outline-none transition-colors placeholder:text-slate-300"></div></div></div>`;
+  });
+  c.innerHTML = html;
+}
+
+function openModal(id=null) {
+  editingId = id;
+  document.getElementById('targetModal').classList.remove('hidden');
+  document.getElementById('modalTitle').textContent = id ? 'Edit Target' : 'Add Weekly Target';
+  if (id) {
+    const t = targets.find(x=>x.id===id);
+    if(t){document.getElementById('tTitle').value=t.title;document.getElementById('tDesc').value=t.description||'';document.getElementById('tDim').value=t.focus_dimension;document.getElementById('tPri').value=t.priority;document.getElementById('tDue').value=t.due_date||'';}
+  } else {
+    document.getElementById('tTitle').value='';document.getElementById('tDesc').value='';document.getElementById('tDim').value='General';document.getElementById('tPri').value='medium';document.getElementById('tDue').value='';
+  }
+}
+function closeModal() { document.getElementById('targetModal').classList.add('hidden'); }
+function saveTarget(e) {
+  e.preventDefault();
+  const data = { title:document.getElementById('tTitle').value, description:document.getElementById('tDesc').value, focus_dimension:document.getElementById('tDim').value, priority:document.getElementById('tPri').value, due_date:document.getElementById('tDue').value };
+  if (editingId) { const t=targets.find(x=>x.id===editingId); if(t){Object.assign(t,data);} showToast('Target updated!'); }
+  else { targets.push({id:Date.now(),...data,status:'not_started',progress:0,subtasks:[]}); showToast('Target created!'); }
+  closeModal(); render();
+}
+function deleteTarget(id) { if(!confirm('Delete this target and all its subtasks?')) return; targets.splice(targets.findIndex(t=>t.id===id),1); showToast('Target deleted.'); render(); }
+function toggleSubtask(tid, sid) { const t=targets.find(x=>x.id===tid); if(!t) return; const s=t.subtasks.find(x=>x.id===sid); if(s){s.is_completed=!s.is_completed; const total=t.subtasks.length; const done=t.subtasks.filter(x=>x.is_completed).length; t.progress=total?Math.round(done/total*100):0; if(t.progress===100) t.status='completed'; else if(t.progress>0) t.status='in_progress'; else t.status='not_started';} render(); }
+function addSubtask(tid) { const input=document.getElementById(`newSub_${tid}`); const title=input.value.trim(); if(!title) return; const t=targets.find(x=>x.id===tid); if(!t) return; t.subtasks.push({id:Date.now(),title,is_completed:false}); input.value=''; render(); }
+function removeSubtask(tid, sid) { const t=targets.find(x=>x.id===tid); if(!t) return; t.subtasks=t.subtasks.filter(s=>s.id!==sid); render(); }
+function showToast(msg) { const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),3000); }
+
+render();
+</script>
+</body>
+</html>

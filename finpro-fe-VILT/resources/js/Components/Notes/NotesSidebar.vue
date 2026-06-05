@@ -1,22 +1,22 @@
 <template>
-  <aside class="w-96 lg:w-[400px] shrink-0 bg-slate-50 border-r border-slate-100 flex flex-col h-full z-30">
-    <div class="p-6 pb-4 border-b border-slate-100 bg-white">
+  <aside class="w-96 lg:w-[400px] shrink-0 bg-[#FAFAF9] dark:bg-dark-panel border-r border-[#D9E2EC] dark:border-dark-border flex flex-col h-full z-30 rounded-[32px]">
+    <div class="p-6 pb-4 border-b border-[#D9E2EC] dark:border-dark-border bg-transparent">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-black text-[#1E1B4B]">My Notes</h2>
-        <button @click="$emit('create')" class="bg-[#3D3ACE] text-white w-8 h-8 rounded-xl flex items-center justify-center hover:bg-[#322fb0] hover:shadow-lg transition-all" title="New Note">
+        <h2 class="text-lg font-black text-navy-900 dark:text-text-primary">My Notes</h2>
+        <button @click="$emit('create')" class="bg-brand-500 text-white w-8 h-8 rounded-xl flex items-center justify-center hover:bg-brand-600 hover:shadow-lg shadow-brand-500/20 transition-all" title="New Note">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
         </button>
       </div>
       
       <!-- Search -->
       <div class="relative mb-3">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400 dark:text-text-faint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         <input 
           type="text" 
           placeholder="Search notes..." 
           :value="searchQuery"
           @input="$emit('update:searchQuery', $event.target.value)"
-          class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-sm font-bold text-[#1E1B4B] focus:bg-white focus:border-[#3D3ACE] outline-none transition-colors"
+          class="w-full bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-xl pl-9 pr-3 py-2 text-sm font-bold text-navy-900 dark:text-text-primary focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500/50 outline-none transition-colors"
         >
       </div>
 
@@ -26,19 +26,19 @@
     <div class="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-hide">
       
       <div v-if="isLoading" class="space-y-3">
-        <div v-for="i in 3" :key="i" class="h-24 bg-slate-200/50 rounded-2xl animate-pulse"></div>
+        <div v-for="i in 3" :key="i" class="h-24 bg-[#E8EDF2] dark:bg-dark-border/50 rounded-2xl animate-pulse"></div>
       </div>
 
       <div v-else-if="filteredNotes.length === 0" class="text-center py-10">
-        <p class="text-slate-400 text-xs font-bold mb-3">No notes found.</p>
-        <button @click="$emit('create')" class="text-[#3D3ACE] text-xs font-black uppercase tracking-widest border-b border-[#3D3ACE]">Create Note</button>
+        <p class="text-navy-400 dark:text-text-muted text-xs font-bold mb-3">No notes found.</p>
+        <button @click="$emit('create')" class="text-brand-500 text-xs font-black uppercase tracking-widest border-b border-brand-500">Create Note</button>
       </div>
 
       <template v-else>
         <!-- Pinned Notes -->
         <div v-if="pinnedNotes.length > 0">
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 pl-2">Pinned</p>
-          <div class="space-y-3">
+          <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-3 pl-2">Pinned</p>
+          <div class="space-y-4">
             <NoteCard 
               v-for="note in pinnedNotes" 
               :key="note.id" 
@@ -52,8 +52,8 @@
 
         <!-- Recent Notes -->
         <div v-if="unpinnedNotes.length > 0">
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 pl-2 mt-6">Recent</p>
-          <div class="space-y-3">
+          <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-3 pl-2 mt-6">Recent</p>
+          <div class="space-y-4">
             <NoteCard 
               v-for="note in unpinnedNotes" 
               :key="note.id" 

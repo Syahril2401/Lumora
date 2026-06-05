@@ -29,12 +29,36 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $goToken = \Illuminate\Support\Facades\Session::get('go_token');
+        $user = null;
+
+        if ($goToken) {
+            try {
+                $payload = explode('.', $goToken)[1];
+                $decoded = json_decode(base64_decode(strtr($payload, '-_', '+/')), true);
+                if (isset($decoded['user_id'])) {
+                    $userRecord = \Illuminate\Support\Facades\DB::table('srl_platform.users')
+                        ->where('user_id', $decoded['user_id'])
+                        ->first();
+                    if ($userRecord) {
+                        $user = [
+                            'id' => $userRecord->user_id,
+                            'name' => $userRecord->name,
+                            'email' => $userRecord->email,
+                        ];
+                    }
+                }
+            } catch (\Exception $e) {
+                // ignore
+            }
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
             ],
-            'go_token' => \Illuminate\Support\Facades\Session::get('go_token'),
+            'go_token' => $goToken,
         ];
     }
 }

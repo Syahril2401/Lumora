@@ -7,10 +7,10 @@
     <!-- Header -->
     <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div>
-        <h1 class="text-3xl font-black text-[#1E1B4B] mb-2">Weekly Targets</h1>
-        <p class="text-slate-500 font-medium">Set measurable goals and track completion.</p>
+        <h1 class="text-3xl font-black text-navy-900 dark:text-text-primary mb-2">Weekly Targets</h1>
+        <p class="text-navy-500 dark:text-text-muted font-medium">Set measurable goals and track completion.</p>
       </div>
-      <button @click="openTargetModal()" class="bg-[#3D3ACE] hover:bg-[#322fb0] text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-indigo-200 transition-all active:scale-95 whitespace-nowrap flex items-center gap-2">
+      <button @click="openTargetModal()" class="bg-gradient-to-r from-brand-500 to-brand-400 hover:from-brand-400 hover:to-brand-500 text-white px-6 py-3 rounded-2xl font-bold shadow-glow transition-all active:scale-95 whitespace-nowrap flex items-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
         Add Weekly Target
       </button>
@@ -18,65 +18,65 @@
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-      <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Targets</p>
-        <p class="text-3xl font-black text-[#1E1B4B]">{{ summary.total_targets || 0 }}</p>
+      <div class="bg-white dark:bg-dark-panel p-6 rounded-[28px] border border-[#D9E2EC] dark:border-dark-border shadow-sm">
+        <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Total Targets</p>
+        <p class="text-3xl font-black text-navy-900 dark:text-text-primary">{{ summary.total_targets || 0 }}</p>
       </div>
-      <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Completed</p>
+      <div class="bg-white dark:bg-dark-panel p-6 rounded-[28px] border border-[#D9E2EC] dark:border-dark-border shadow-sm">
+        <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Completed</p>
         <p class="text-3xl font-black text-emerald-500">{{ summary.completed_targets || 0 }}</p>
       </div>
-      <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Completion Rate</p>
-        <p class="text-3xl font-black text-[#3D3ACE]">{{ Math.round(summary.completion_rate || 0) }}%</p>
+      <div class="bg-white dark:bg-dark-panel p-6 rounded-[28px] border border-[#D9E2EC] dark:border-dark-border shadow-sm">
+        <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Completion Rate</p>
+        <p class="text-3xl font-black text-brand-500">{{ Math.round(summary.completion_rate || 0) }}%</p>
       </div>
-      <div class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm">
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Primary Focus</p>
-        <p class="text-lg font-black text-[#1E1B4B] truncate">{{ summary.primary_focus || 'No focus yet' }}</p>
+      <div class="bg-white dark:bg-dark-panel p-6 rounded-[28px] border border-[#D9E2EC] dark:border-dark-border shadow-sm">
+        <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Primary Focus</p>
+        <p class="text-lg font-black text-navy-900 dark:text-text-primary truncate">{{ summary.primary_focus || 'No focus yet' }}</p>
       </div>
     </div>
 
     <!-- Loading -->
     <div v-if="isLoading" class="space-y-4">
-      <div v-for="i in 3" :key="i" class="h-32 bg-slate-100 rounded-[28px] animate-pulse"></div>
+      <div v-for="i in 3" :key="i" class="h-32 bg-[#E8EDF2] dark:bg-dark-border rounded-[28px] animate-pulse"></div>
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="targets.length === 0" class="bg-slate-50 border-2 border-dashed border-slate-200 p-12 rounded-[40px] text-center">
-      <div class="flex justify-center mb-4 text-[#3D3ACE]">
+    <div v-else-if="targets.length === 0" class="bg-[#FAFAF9] dark:bg-dark-surface border-2 border-dashed border-[#D9E2EC] dark:border-dark-border p-12 rounded-[40px] text-center">
+      <div class="flex justify-center mb-4 text-brand-500">
         <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
       </div>
-      <p class="text-slate-500 font-bold mb-2">No targets set yet.</p>
-      <p class="text-slate-400 text-sm">Create your first weekly target to start tracking your learning progress.</p>
-      <button @click="openTargetModal()" class="mt-4 text-[#3D3ACE] font-bold hover:underline">+ Create Target</button>
+      <p class="text-navy-500 dark:text-text-muted font-bold mb-2">No targets set yet.</p>
+      <p class="text-navy-400 dark:text-text-faint text-sm">Create your first weekly target to start tracking your learning progress.</p>
+      <button @click="openTargetModal()" class="mt-4 text-brand-500 font-bold hover:underline">+ Create Target</button>
     </div>
 
     <!-- Target Cards -->
     <div v-else class="space-y-6">
-      <div v-for="target in targets" :key="target.id" class="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm hover:shadow-lg transition-all">
+      <div v-for="target in targets" :key="target.id" class="bg-white dark:bg-dark-panel p-6 rounded-[28px] border border-[#D9E2EC] dark:border-dark-border shadow-sm hover:border-brand-200 dark:hover:border-brand-500/30 transition-all">
         <!-- Target Header -->
         <div class="flex items-start justify-between mb-4">
           <div class="flex-1">
             <div class="flex items-center gap-2 mb-2 flex-wrap">
               <span class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md" :class="priorityClass(target.priority)">{{ target.priority }}</span>
-              <span class="text-[10px] font-black bg-indigo-50 text-[#3D3ACE] uppercase tracking-widest px-2 py-1 rounded-md">{{ target.focus_dimension }}</span>
+              <span class="text-[10px] font-black bg-brand-50 dark:bg-brand-500/10 text-brand-500 uppercase tracking-widest px-2 py-1 rounded-md">{{ target.focus_dimension }}</span>
               <span class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md" :class="statusBadge(target.status)">{{ target.status?.replace('_', ' ') }}</span>
             </div>
-            <h4 class="text-lg font-black text-[#1E1B4B]">{{ target.title }}</h4>
-            <p v-if="target.description" class="text-sm font-medium text-slate-500 mt-1">{{ target.description }}</p>
-            <p v-if="target.due_date" class="text-xs font-bold text-slate-400 mt-1">Due: {{ target.due_date }}</p>
+            <h4 class="text-lg font-black text-navy-900 dark:text-text-primary">{{ target.title }}</h4>
+            <p v-if="target.description" class="text-sm font-medium text-navy-500 dark:text-text-muted mt-1">{{ target.description }}</p>
+            <p v-if="target.due_date" class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">Due: {{ target.due_date }}</p>
           </div>
           <div class="flex items-center gap-2 ml-4">
-            <button @click="openTargetModal(target)" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 hover:bg-indigo-50 hover:text-[#3D3ACE] flex items-center justify-center transition-colors">
+            <button @click="openTargetModal(target)" class="w-9 h-9 rounded-xl bg-[#FAFAF9] dark:bg-dark-surface text-navy-400 dark:text-text-faint hover:bg-brand-50 dark:hover:bg-brand-500/10 hover:text-brand-500 flex items-center justify-center transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             </button>
-            <a :href="`/dashboard/planner?target_id=${target.id}`" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 hover:bg-blue-50 hover:text-blue-500 flex items-center justify-center transition-colors" title="Schedule Session">
+            <a :href="`/dashboard/planner?target_id=${target.id}`" class="w-9 h-9 rounded-xl bg-[#FAFAF9] dark:bg-dark-surface text-navy-400 dark:text-text-faint hover:bg-sky-50 dark:hover:bg-sky-500/10 hover:text-sky-500 flex items-center justify-center transition-colors" title="Schedule Session">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
             </a>
-            <a :href="`/dashboard/notes?target_id=${target.id}`" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 hover:bg-purple-50 hover:text-purple-500 flex items-center justify-center transition-colors" title="Add Reflection">
+            <a :href="`/dashboard/notes?target_id=${target.id}`" class="w-9 h-9 rounded-xl bg-[#FAFAF9] dark:bg-dark-surface text-navy-400 dark:text-text-faint hover:bg-purple-50 dark:hover:bg-purple-500/10 hover:text-purple-500 flex items-center justify-center transition-colors" title="Add Reflection">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
             </a>
-            <button @click="deleteTarget(target.id)" class="w-9 h-9 rounded-xl bg-slate-50 text-slate-400 hover:bg-rose-50 hover:text-rose-500 flex items-center justify-center transition-colors">
+            <button @click="deleteTarget(target.id)" class="w-9 h-9 rounded-xl bg-[#FAFAF9] dark:bg-dark-surface text-navy-400 dark:text-text-faint hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500 flex items-center justify-center transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
@@ -85,11 +85,11 @@
         <!-- Progress Bar -->
         <div class="mb-4">
           <div class="flex items-center justify-between mb-1">
-            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress</span>
-            <span class="text-sm font-black text-[#1E1B4B]">{{ target.progress || 0 }}%</span>
+            <span class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest">Progress</span>
+            <span class="text-sm font-black text-navy-900 dark:text-text-primary">{{ target.progress || 0 }}%</span>
           </div>
-          <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-            <div class="h-full rounded-full transition-all duration-500" :class="target.progress >= 100 ? 'bg-emerald-500' : 'bg-[#3D3ACE]'" :style="{ width: `${target.progress || 0}%` }"></div>
+          <div class="w-full h-2 bg-[#E8EDF2] dark:bg-dark-border rounded-full overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500" :class="target.progress >= 100 ? 'bg-emerald-500' : 'bg-brand-500'" :style="{ width: `${target.progress || 0}%` }"></div>
           </div>
         </div>
 
@@ -97,19 +97,19 @@
         <div class="space-y-2">
           <div v-for="sub in target.subtasks" :key="sub.id" class="flex items-center gap-3 group">
             <button @click="toggleSubtask(target.id, sub.id)" class="w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all"
-              :class="sub.is_completed ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 hover:border-[#3D3ACE]'">
+              :class="sub.is_completed ? 'bg-emerald-500 border-emerald-500' : 'border-[#D9E2EC] dark:border-dark-border hover:border-brand-500'">
               <svg v-if="sub.is_completed" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
             </button>
-            <span class="text-sm font-bold flex-1" :class="sub.is_completed ? 'text-slate-400 line-through' : 'text-[#1E1B4B]'">{{ sub.title }}</span>
-            <button @click="deleteSubtask(target.id, sub.id)" class="opacity-0 group-hover:opacity-100 w-6 h-6 rounded text-slate-400 hover:text-rose-500 flex items-center justify-center transition-all">
+            <span class="text-sm font-bold flex-1" :class="sub.is_completed ? 'text-navy-400 dark:text-text-faint line-through' : 'text-navy-900 dark:text-text-primary'">{{ sub.title }}</span>
+            <button @click="deleteSubtask(target.id, sub.id)" class="opacity-0 group-hover:opacity-100 w-6 h-6 rounded text-navy-400 dark:text-text-faint hover:text-rose-500 flex items-center justify-center transition-all">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
 
           <!-- Add Subtask -->
           <div class="flex items-center gap-3 pt-2">
-            <input v-model="newSubtask[target.id]" @keydown.enter="addSubtask(target.id)" placeholder="Add subtask..." class="flex-1 text-sm font-bold text-[#1E1B4B] bg-transparent border-b border-dashed border-slate-200 py-1 focus:border-[#3D3ACE] outline-none transition-colors placeholder:text-slate-300">
-            <button v-if="newSubtask[target.id]" @click="addSubtask(target.id)" class="text-[#3D3ACE] font-black text-xs hover:underline">Add</button>
+            <input v-model="newSubtask[target.id]" @keydown.enter="addSubtask(target.id)" placeholder="Add subtask..." class="flex-1 text-sm font-bold text-navy-900 dark:text-text-primary bg-transparent border-b border-dashed border-[#D9E2EC] dark:border-dark-border py-1 focus:border-brand-500 outline-none transition-colors placeholder:text-navy-300 dark:placeholder:text-text-faint">
+            <button v-if="newSubtask[target.id]" @click="addSubtask(target.id)" class="text-brand-500 font-black text-xs hover:underline">Add</button>
           </div>
         </div>
       </div>
@@ -117,28 +117,28 @@
 
     <!-- Target Modal -->
     <Teleport to="body">
-      <div v-if="showTargetModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showTargetModal = false">
-        <div class="bg-white rounded-[32px] p-8 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
-          <h2 class="text-xl font-black text-[#1E1B4B] mb-6">{{ editingTarget ? 'Edit Target' : 'Add Weekly Target' }}</h2>
+      <div v-if="showTargetModal" class="fixed inset-0 bg-[#0B1120]/60 dark:bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showTargetModal = false">
+        <div class="bg-white dark:bg-dark-panel rounded-[32px] p-8 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto animate-slide-up border border-[#D9E2EC] dark:border-dark-border">
+          <h2 class="text-xl font-black text-navy-900 dark:text-text-primary mb-6">{{ editingTarget ? 'Edit Target' : 'Add Weekly Target' }}</h2>
           <form @submit.prevent="saveTarget" class="space-y-5">
             <div>
-              <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Title *</label>
-              <input v-model="targetForm.title" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-sm font-bold text-[#1E1B4B] focus:border-[#3D3ACE] outline-none transition-all" placeholder="e.g. Complete Chapter 5">
+              <label class="block text-[11px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Title *</label>
+              <input v-model="targetForm.title" required class="w-full bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-2xl py-3 px-5 text-sm font-bold text-navy-900 dark:text-text-primary focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all" placeholder="e.g. Complete Chapter 5">
             </div>
             <div>
-              <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Description</label>
-              <textarea v-model="targetForm.description" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-sm font-bold text-[#1E1B4B] focus:border-[#3D3ACE] outline-none resize-none transition-all"></textarea>
+              <label class="block text-[11px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Description</label>
+              <textarea v-model="targetForm.description" rows="2" class="w-full bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-2xl py-3 px-5 text-sm font-bold text-navy-900 dark:text-text-primary focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none resize-none transition-all"></textarea>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Focus Dimension</label>
-                <select v-model="targetForm.focus_dimension" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-sm font-bold text-[#1E1B4B] focus:border-[#3D3ACE] outline-none">
+                <label class="block text-[11px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Focus Dimension</label>
+                <select v-model="targetForm.focus_dimension" class="w-full bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-2xl py-3 px-5 text-sm font-bold text-navy-900 dark:text-text-primary focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500 outline-none appearance-none">
                   <option v-for="d in dimensions" :key="d" :value="d">{{ d }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Priority</label>
-                <select v-model="targetForm.priority" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-sm font-bold text-[#1E1B4B] focus:border-[#3D3ACE] outline-none">
+                <label class="block text-[11px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Priority</label>
+                <select v-model="targetForm.priority" class="w-full bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-2xl py-3 px-5 text-sm font-bold text-navy-900 dark:text-text-primary focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500 outline-none appearance-none">
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
                   <option value="high">High</option>
@@ -146,21 +146,22 @@
               </div>
             </div>
             <div>
-              <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Due Date</label>
-              <input v-model="targetForm.due_date" type="date" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-sm font-bold text-[#1E1B4B] focus:border-[#3D3ACE] outline-none transition-all">
+              <label class="block text-[11px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Due Date</label>
+              <input v-model="targetForm.due_date" type="date" class="w-full bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-2xl py-3 px-5 text-sm font-bold text-navy-900 dark:text-text-primary focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500 outline-none transition-all [color-scheme:light] dark:[color-scheme:dark]">
             </div>
             <!-- Initial Subtasks (create mode only) -->
             <div v-if="!editingTarget">
-              <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Initial Subtasks</label>
+              <label class="block text-[11px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Initial Subtasks</label>
               <div v-for="(st, i) in targetForm.subtasks" :key="i" class="flex items-center gap-2 mb-2">
-                <input v-model="st.title" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl py-2 px-4 text-sm font-bold text-[#1E1B4B] focus:border-[#3D3ACE] outline-none" :placeholder="`Subtask ${i + 1}`">
-                <button type="button" @click="targetForm.subtasks.splice(i, 1)" class="text-slate-400 hover:text-rose-500">&times;</button>
+                <input v-model="st.title" class="flex-1 bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-xl py-2 px-4 text-sm font-bold text-navy-900 dark:text-text-primary focus:border-brand-500 outline-none" :placeholder="`Subtask ${i + 1}`">
+                <button type="button" @click="targetForm.subtasks.splice(i, 1)" class="text-navy-400 dark:text-text-faint hover:text-rose-500 font-bold">&times;</button>
               </div>
-              <button type="button" @click="targetForm.subtasks.push({ title: '' })" class="text-sm text-[#3D3ACE] font-bold hover:underline">+ Add subtask</button>
+              <button type="button" @click="targetForm.subtasks.push({ title: '' })" class="text-sm text-brand-500 font-bold hover:underline">+ Add subtask</button>
             </div>
             <div class="flex gap-3 pt-4">
-              <button type="button" @click="showTargetModal = false" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-2xl font-bold hover:bg-slate-200">Cancel</button>
-              <button type="submit" :disabled="isSaving" class="flex-1 bg-[#3D3ACE] text-white py-3 rounded-2xl font-bold hover:bg-[#322fb0] shadow-lg shadow-indigo-200 disabled:opacity-50">
+              <button type="button" @click="showTargetModal = false" class="flex-1 bg-[#E8EDF2] dark:bg-dark-surface text-navy-600 dark:text-text-primary py-3 rounded-2xl font-bold hover:bg-[#D9E2EC] dark:hover:bg-dark-border transition-colors">Cancel</button>
+              <button type="submit" :disabled="isSaving" class="flex-1 btn-primary text-white py-3 rounded-2xl font-bold transition-all disabled:opacity-50 flex items-center justify-center">
+                <svg v-if="isSaving" class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 {{ isSaving ? 'Saving...' : (editingTarget ? 'Update' : 'Create') }}
               </button>
             </div>
@@ -171,12 +172,12 @@
 
     <!-- Toast -->
     <Teleport to="body">
-      <div v-if="toast" class="fixed bottom-6 right-6 z-50 bg-white border border-slate-200 shadow-2xl rounded-2xl p-4 flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="toast.type === 'error' ? 'bg-rose-50 text-rose-500' : 'bg-emerald-50 text-emerald-500'">
+      <div v-if="toast" class="fixed bottom-6 right-6 z-50 bg-navy-900 dark:bg-dark-panel border border-navy-800 dark:border-dark-border shadow-2xl rounded-2xl p-4 flex items-center gap-3 animate-slide-up">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="toast.type === 'error' ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'">
           <svg v-if="toast.type === 'error'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
         </div>
-        <span class="text-sm font-bold text-[#1E1B4B]">{{ toast.message }}</span>
+        <span class="text-sm font-bold text-white">{{ toast.message }}</span>
       </div>
     </Teleport>
 

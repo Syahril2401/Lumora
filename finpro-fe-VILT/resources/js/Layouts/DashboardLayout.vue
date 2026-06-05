@@ -1,31 +1,42 @@
 <template>
-  <div class="h-screen bg-[#FDFDFF] font-sans text-slate-900 flex overflow-hidden">
+  <div class="h-screen bg-[#FDFDFF] dark:bg-dark-bg font-sans text-slate-900 dark:text-text-primary flex overflow-hidden">
     
-    <!-- Left Sidebar (Dark Theme based on Figma) -->
-    <aside class="bg-[#0B1120] border-[#1E293B] flex flex-col z-40 relative shadow-xl transition-all duration-300"
-           :class="isSidebarOpen ? 'w-64 border-r' : 'w-0 overflow-hidden border-transparent opacity-0'">
-      <div class="p-6 pb-6 flex items-center gap-3">
-        <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-900/50">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+    <!-- Mobile Sidebar Overlay -->
+    <div v-if="isSidebarOpen" class="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" @click="isSidebarOpen = false"></div>
+
+    <!-- Left Sidebar -->
+    <aside class="fixed lg:static inset-y-0 left-0 bg-[#F8FAFC] dark:bg-dark-panel border-[#D9E2EC] dark:border-dark-border flex flex-col z-50 shadow-2xl lg:shadow-xl transition-all duration-300 transform"
+           :class="isSidebarOpen ? 'translate-x-0 w-72 border-r' : '-translate-x-full w-72 lg:-translate-x-0 lg:w-0 lg:border-transparent lg:opacity-0 lg:overflow-hidden'">
+      
+      <div class="p-6 pb-6 flex items-center transition-all" :class="isSidebarOpen ? 'justify-between' : 'justify-center flex-col gap-4'">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="bg-white/80 dark:bg-white/10 backdrop-blur-md p-1.5 rounded-xl shadow-sm border border-[#D9E2EC] dark:border-white/20 inline-flex shrink-0 transition-colors">
+            <img src="/image/lumora_icon.svg" alt="Lumora logo" class="w-8 h-8 object-contain drop-shadow-md" />
+          </div>
+          <div v-if="isSidebarOpen" class="animate-fade-in whitespace-nowrap">
+              <span class="text-lg font-bold text-navy-900 dark:text-white tracking-tight block">Lumora</span>
+              <span class="text-[10px] font-mono text-brand-600 dark:text-brand-300 uppercase tracking-widest bg-brand-100 dark:bg-brand-900/50 px-2 py-0.5 rounded">Intelligent Sanctuary</span>
+          </div>
         </div>
-        <div>
-            <span class="text-lg font-black text-white tracking-tight block">Lumora</span>
-            <span class="text-[10px] font-black text-indigo-300 uppercase tracking-widest bg-indigo-900/50 px-2 py-0.5 rounded-md">Intelligent Sanctuary</span>
-        </div>
+        
+        <!-- Sidebar Toggle Icon -->
+        <button @click="isSidebarOpen = !isSidebarOpen" class="p-2 -mr-2 rounded-xl text-navy-400 dark:text-text-muted hover:bg-[#D9E2EC] dark:hover:bg-dark-surface hover:text-navy-900 dark:hover:text-white transition-colors shrink-0" :class="!isSidebarOpen && 'mr-0'">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+        </button>
       </div>
 
       <nav class="flex-1 px-4 py-2 space-y-1.5 overflow-y-auto scrollbar-hide">
         <Link v-for="item in navItems" :key="item.label"
           :href="item.href"
-          class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold transition-all group"
+          class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-semibold transition-all group"
           :class="$page.url === item.path || $page.url.startsWith(item.path + '/') && item.path !== '/dashboard'
-            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20'
-            : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'">
-          <svg class="w-5 h-5 transition-transform group-hover:scale-110" :class="$page.url === item.path || $page.url.startsWith(item.path + '/') && item.path !== '/dashboard' ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            ? 'bg-brand-500 text-white shadow-lg shadow-brand-900/20'
+            : 'text-navy-500 dark:text-navy-400 hover:bg-navy-50 dark:hover:bg-white/5 hover:text-navy-900 dark:hover:text-white'">
+          <svg class="w-5 h-5 shrink-0 transition-transform group-hover:scale-110" :class="$page.url === item.path || $page.url.startsWith(item.path + '/') && item.path !== '/dashboard' ? 'text-white' : 'text-navy-400 group-hover:text-navy-900 dark:group-hover:text-white'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" :d="item.iconPath" />
           </svg>
-          {{ item.label }}
-          <div v-if="item.badge" class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black">
+          <span v-if="isSidebarOpen" class="truncate whitespace-nowrap">{{ item.label }}</span>
+          <div v-if="item.badge && isSidebarOpen" class="ml-auto bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black shrink-0">
               {{ item.badge }}
           </div>
         </Link>
@@ -35,23 +46,25 @@
       <div class="px-4 pb-6 mt-auto space-y-4">
         <!-- Extra Links -->
         <div class="flex flex-col gap-1 mb-2">
-            <button @click="showLogoutModal = true" class="flex items-center gap-3 text-sm font-bold text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all py-2.5 px-3 rounded-xl w-full text-left">
-                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                Logout
+            <button @click="showLogoutModal = true" class="flex items-center gap-3 text-sm font-semibold text-navy-500 dark:text-navy-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-white/5 transition-all py-2.5 px-3 rounded-xl w-full" :class="isSidebarOpen ? 'justify-start' : 'justify-center'">
+                <svg class="w-5 h-5 shrink-0 text-navy-500 dark:text-navy-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                <span v-if="isSidebarOpen" class="whitespace-nowrap">Logout</span>
             </button>
         </div>
 
-        <div class="border-t border-[#1E293B] pt-4">
-            <div class="p-2 rounded-xl flex items-center gap-3 group cursor-pointer hover:bg-white/5 border border-transparent hover:border-white/10 transition-all">
-                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5 shadow-lg relative">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200&h=200" alt="Profile" class="w-full h-full rounded-full object-cover border-2 border-[#0B1120]">
-                    <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0B1120] rounded-full"></div>
+        <div class="border-t border-[#D9E2EC] dark:border-dark-border pt-4">
+            <Link :href="route('settings')" class="p-2 rounded-xl flex items-center gap-3 group cursor-pointer hover:bg-navy-50 dark:hover:bg-white/5 border border-transparent hover:border-[#D9E2EC] dark:hover:border-white/10 transition-all" :class="!isSidebarOpen && 'justify-center'">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-brand-500 to-navy-600 p-[1.5px] shadow-lg relative shrink-0">
+                    <img v-if="userAvatar" :src="userAvatar" alt="Profile" class="w-full h-full rounded-full object-cover border-2 border-white dark:border-[#0B1120]">
+                    <div v-else class="w-full h-full rounded-full border-2 border-white dark:border-[#0B1120] bg-white dark:bg-dark-surface flex items-center justify-center text-brand-500">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    </div>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-xs font-black text-white truncate">{{ user.name }}</p>
-                    <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wider truncate">Deep Focus Mode</p>
+                <div class="min-w-0" v-if="isSidebarOpen">
+                    <p class="text-[13px] font-black text-navy-900 dark:text-text-primary truncate leading-tight group-hover:text-brand-500 transition-colors">{{ user.name }}</p>
+                    <p class="text-[10px] font-bold text-navy-400 dark:text-text-muted truncate mt-0.5">Free Plan</p>
                 </div>
-            </div>
+            </Link>
         </div>
       </div>
     </aside>
@@ -60,10 +73,10 @@
     <main class="flex-1 flex flex-col relative">
         
         <!-- Top Bar -->
-        <header class="h-20 px-10 flex items-center justify-between bg-[#F7F9FB] z-30 shrink-0 border-b border-slate-200">
+        <header class="h-20 px-10 flex items-center justify-between bg-white dark:bg-[#0A0A0A] z-30 shrink-0 border-b border-[#D9E2EC] dark:border-dark-border">
             <!-- Left Actions (Sidebar Toggle) -->
-            <div class="flex-1">
-                <button @click="isSidebarOpen = !isSidebarOpen" class="p-2 -ml-2 rounded-xl text-slate-500 hover:bg-slate-200/60 hover:text-slate-800 transition-colors">
+            <div class="flex-1 flex items-center gap-4">
+                <button v-if="!isSidebarOpen" @click="isSidebarOpen = true" class="p-2 -ml-2 rounded-xl text-navy-400 dark:text-text-muted hover:bg-[#F8FAFC] dark:hover:bg-dark-surface hover:text-navy-900 dark:hover:text-text-primary transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
                 </button>
             </div>
@@ -71,10 +84,10 @@
             <!-- Right Actions -->
             <div class="flex items-center gap-6">
                 <!-- Notifications -->
-                <div class="relative">
-                  <button @click="toggleNotifications" class="text-slate-500 hover:text-slate-800 transition-colors relative">
+                <div class="relative flex items-center">
+                  <button @click="toggleNotifications" class="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-text-muted dark:hover:text-text-primary transition-colors relative rounded-full hover:bg-slate-50 dark:hover:bg-white/5">
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                      <div v-if="unreadCount > 0" class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[8px] font-black rounded-full flex items-center justify-center">{{ unreadCount > 9 ? '9+' : unreadCount }}</div>
+                      <div v-if="unreadCount > 0" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[8px] font-black rounded-full flex items-center justify-center">{{ unreadCount > 9 ? '9+' : unreadCount }}</div>
                   </button>
 
                   <!-- Notification Dropdown -->
@@ -102,26 +115,23 @@
                     </div>
                   </Transition>
                 </div>
-                
-                <!-- Dark Mode Toggle -->
-                <button class="text-slate-500 hover:text-slate-800 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                </button>
-
-                <div class="h-6 w-px bg-slate-300"></div>
+                <div class="h-6 w-px bg-[#D9E2EC] dark:bg-dark-border"></div>
 
                 <!-- User Profile -->
-                <div class="flex items-center gap-3 cursor-pointer group">
-                    <span class="text-xs font-black text-slate-900 group-hover:text-indigo-600 transition-colors">{{ user.name }}</span>
-                    <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-transparent group-hover:border-indigo-100 transition-all">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100" alt="Profile" class="w-full h-full object-cover">
+                <Link :href="route('settings')" class="flex items-center gap-3 cursor-pointer group">
+                    <span class="text-xs font-black text-navy-900 dark:text-text-primary group-hover:text-brand-500 transition-colors">{{ user.name }}</span>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-brand-500 to-navy-600 p-[1.5px] shadow-sm relative shrink-0 transition-transform group-hover:scale-105">
+                        <img v-if="userAvatar" :src="userAvatar" alt="Profile" class="w-full h-full rounded-full object-cover border-2 border-white dark:border-[#0B1120]">
+                        <div v-else class="w-full h-full rounded-full border-2 border-white dark:border-[#0B1120] bg-white dark:bg-dark-surface flex items-center justify-center text-brand-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        </div>
                     </div>
-                </div>
+                </Link>
             </div>
         </header>
 
         <!-- Page Content -->
-        <div class="flex-1 overflow-y-auto bg-[#FDFDFF] p-8 scrollbar-hide">
+        <div class="flex-1 overflow-y-auto bg-[#FDFDFF] dark:bg-dark-bg p-8 scrollbar-hide">
             <slot />
         </div>
     </main>
@@ -131,16 +141,16 @@
         <div class="absolute bottom-6 right-6 z-50">
             <!-- Chat Window -->
             <Transition name="slide-up">
-                <div v-if="isChatOpen" class="mb-4 w-96 bg-white rounded-[24px] shadow-2xl border border-slate-100 overflow-hidden flex flex-col origin-bottom-right">
+                <div v-if="isChatOpen" class="mb-4 w-96 bg-white dark:bg-dark-panel rounded-[24px] shadow-2xl border border-[#D9E2EC] dark:border-dark-border overflow-hidden flex flex-col origin-bottom-right">
                     <!-- Chat Header -->
-                    <div class="p-5 bg-gradient-to-r from-[#1E1B4B] to-[#3D3ACE] text-white flex items-center justify-between">
+                    <div class="p-5 bg-gradient-to-r from-navy-800 to-navy-900 text-white flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/20">
-                                <svg class="w-5 h-5 text-indigo-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                <svg class="w-5 h-5 text-brand-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                             </div>
                             <div>
                                 <h3 class="font-black text-sm tracking-tight">Lumora Buddy</h3>
-                                <p class="text-[10px] text-indigo-200 font-medium">Cognitive Assistant</p>
+                                <p class="text-[10px] text-navy-300 font-mono">Cognitive Assistant</p>
                             </div>
                         </div>
                         <button @click="isChatOpen = false" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
@@ -149,43 +159,43 @@
                     </div>
 
                     <!-- Context Banner -->
-                    <div v-if="props.showBuddy" class="bg-indigo-50/50 p-3 border-b border-indigo-100 flex items-start gap-3">
+                    <div v-if="props.showBuddy" class="bg-brand-500/10 p-3 border-b border-[#D9E2EC] dark:border-dark-border flex items-start gap-3">
                         <div class="mt-0.5">
-                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
                         <div>
-                            <p class="text-xs font-bold text-slate-800">{{ buddyContextTitle }}</p>
-                            <p class="text-[10px] text-slate-500 mt-0.5">{{ buddyContextMessage }}</p>
+                            <p class="text-xs font-bold text-navy-900 dark:text-text-primary">{{ buddyContextTitle }}</p>
+                            <p class="text-[10px] text-navy-500 dark:text-text-muted mt-0.5">{{ buddyContextMessage }}</p>
                         </div>
                     </div>
 
                     <!-- Chat Messages -->
-                    <div ref="chatContainer" class="h-80 overflow-y-auto p-5 space-y-4 bg-slate-50/50 flex flex-col">
+                    <div ref="chatContainer" class="h-80 overflow-y-auto p-5 space-y-4 bg-[#FAFAF9] dark:bg-dark-surface flex flex-col">
                         <div v-if="chatMessages.length === 0" class="flex-1 flex flex-col items-center justify-center text-center px-4">
-                            <div class="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mb-4 text-indigo-400">
+                            <div class="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-4 text-brand-500">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                             </div>
-                            <p class="text-sm font-bold text-slate-700">How can I assist your deep work today?</p>
-                            <p class="text-[10px] text-slate-400 mt-2">Ask about your tasks, focus techniques, or get schedule insights.</p>
+                            <p class="text-sm font-bold text-navy-900 dark:text-text-primary">How can I assist your deep work today?</p>
+                            <p class="text-[10px] text-navy-500 dark:text-text-muted mt-2">Ask about your tasks, focus techniques, or get schedule insights.</p>
                         </div>
 
                         <div v-for="(msg, index) in chatMessages" :key="index" class="max-w-[85%] text-xs font-medium p-3 shadow-sm"
-                            :class="msg.role === 'user' ? 'bg-[#3D3ACE] text-white self-end rounded-2xl rounded-tr-sm' : 'bg-white border border-slate-100 text-[#1E1B4B] self-start rounded-2xl rounded-tl-sm'">
+                            :class="msg.role === 'user' ? 'bg-brand-500 text-white self-end rounded-2xl rounded-tr-sm' : 'bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border text-navy-900 dark:text-text-primary self-start rounded-2xl rounded-tl-sm'">
                             {{ msg.content }}
                         </div>
 
                         <!-- Loading State -->
-                        <div v-if="isSending" class="w-[90%] p-4 rounded-2xl rounded-tl-sm bg-white border border-slate-100 shadow-sm text-xs font-medium text-slate-400 self-start flex items-center gap-2">
-                            <svg class="w-4 h-4 animate-spin text-[#3D3ACE]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <div v-if="isSending" class="w-[90%] p-4 rounded-2xl rounded-tl-sm bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border shadow-sm text-xs font-medium text-navy-400 dark:text-text-muted self-start flex items-center gap-2">
+                            <svg class="w-4 h-4 animate-spin text-brand-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             Thinking...
                         </div>
                     </div>
 
                     <!-- Chat Input -->
-                    <form @submit.prevent="sendMessage" class="p-4 bg-white border-t border-slate-50 flex gap-2">
+                    <form @submit.prevent="sendMessage" class="p-4 bg-white dark:bg-dark-panel border-t border-[#D9E2EC] dark:border-dark-border flex gap-2">
                         <input v-model="chatInput" type="text" placeholder="Ask your buddy anything..." 
-                            class="flex-1 bg-slate-50 border border-slate-100 rounded-xl py-3 px-4 text-xs font-bold text-[#1E1B4B] outline-none focus:bg-white focus:border-[#3D3ACE]/20 transition-all shadow-sm">
-                        <button type="submit" :disabled="!chatInput.trim() || isSending" class="w-11 h-11 bg-[#3D3ACE] text-white rounded-xl flex shrink-0 items-center justify-center shadow-md shadow-indigo-100 hover:bg-[#312E81] disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                            class="flex-1 bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-xl py-3 px-4 text-xs font-bold text-navy-900 dark:text-text-primary outline-none focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500/50 transition-all shadow-sm">
+                        <button type="submit" :disabled="!chatInput.trim() || isSending" class="w-11 h-11 bg-brand-500 text-white rounded-xl flex shrink-0 items-center justify-center shadow-md shadow-brand-500/20 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                             <svg v-if="!isSending" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7m0 0l-7 7m7-7H3" /></svg>
                             <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         </button>
@@ -195,52 +205,43 @@
 
             <!-- Toggle Button -->
             <button @click="isChatOpen = !isChatOpen" 
-                class="w-16 h-16 bg-[#1E1B4B] hover:bg-[#3D3ACE] text-white rounded-[24px] flex items-center justify-center shadow-2xl shadow-indigo-200 hover:scale-105 active:scale-95 transition-all group relative">
+                class="w-16 h-16 bg-brand-600 hover:bg-brand-500 text-white rounded-[24px] flex items-center justify-center shadow-2xl shadow-brand-900/30 hover:scale-105 active:scale-95 transition-all group relative">
                 <svg v-if="!isChatOpen" class="w-7 h-7 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
                 <svg v-else class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 <div v-if="!isChatOpen" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full animate-bounce"></div>
             </button>
         </div>
 
-        <!-- Logout Modal -->
-        <Teleport to="body">
-          <Transition name="fade">
-            <div v-if="showLogoutModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-              <div class="absolute inset-0 bg-[#0B1120]/80 backdrop-blur-md" @click="showLogoutModal = false"></div>
+    </div>
+    <!-- Logout Modal -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="showLogoutModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div class="absolute inset-0 bg-[#0B1120]/80 dark:bg-black/80 backdrop-blur-md" @click="showLogoutModal = false"></div>
+          
+          <div class="bg-white dark:bg-dark-panel rounded-[2rem] w-full max-w-sm relative z-10 shadow-2xl overflow-hidden border border-[#D9E2EC] dark:border-dark-border animate-slide-up">
+            <div class="p-8 text-center">
+              <div class="w-16 h-16 bg-rose-50 dark:bg-rose-500/10 rounded-full flex items-center justify-center text-rose-500 mx-auto mb-6">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+              </div>
+              <h3 class="text-xl font-black text-navy-900 dark:text-text-primary mb-2">Ending your session?</h3>
+              <p class="text-navy-500 dark:text-text-muted text-sm font-medium mb-8">
+                Your active tasks will be saved securely for your next focus session.
+              </p>
               
-              <div class="bg-gradient-to-b from-[#1E1B4B] to-[#0B1120] rounded-[2rem] w-full max-w-md relative z-10 shadow-2xl shadow-indigo-900/50 overflow-hidden border border-indigo-500/20 animate-slide-up">
-                
-                <!-- Decorative Top Blob -->
-                <div class="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/30 blur-[50px] rounded-full pointer-events-none"></div>
-                <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-rose-500/20 blur-[50px] rounded-full pointer-events-none"></div>
-
-                <div class="p-10 text-center relative z-20">
-                  <div class="relative w-20 h-20 mx-auto mb-8 group">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-rose-500 to-orange-500 rounded-2xl rotate-3 group-hover:rotate-12 transition-transform duration-300"></div>
-                    <div class="absolute inset-0 bg-white rounded-2xl flex items-center justify-center -rotate-3 group-hover:-rotate-12 transition-transform duration-300">
-                        <svg class="w-10 h-10 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                    </div>
-                  </div>
-                  
-                  <h3 class="text-2xl font-black text-white mb-3 tracking-tight">Ending your session?</h3>
-                  <p class="text-sm font-medium text-indigo-200/80 leading-relaxed">
-                    Your intelligent sanctuary will pause your active tasks and be ready for your next deep focus session.
-                  </p>
-                </div>
-
-                <div class="p-6 bg-white/5 backdrop-blur-sm border-t border-white/10 flex gap-4 relative z-20">
-                  <button @click="showLogoutModal = false" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10">
-                    Stay Focused
-                  </button>
-                  <Link :href="route('logout')" method="post" as="button" class="flex-1 py-3.5 px-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white rounded-xl text-sm font-black shadow-lg shadow-rose-900/50 hover:shadow-rose-900/80 hover:-translate-y-0.5 transition-all">
-                    Sign Out
-                  </Link>
-                </div>
+              <div class="flex gap-3">
+                <button @click="showLogoutModal = false" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-navy-700 dark:text-text-primary bg-[#E8EDF2] dark:bg-dark-surface hover:bg-[#D9E2EC] dark:hover:bg-dark-border transition-colors">
+                  Cancel
+                </button>
+                <Link :href="route('logout')" method="post" as="button" class="flex-1 py-3 px-4 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-sm font-black shadow-lg shadow-rose-200 dark:shadow-none transition-colors">
+                  Sign Out
+                </Link>
               </div>
             </div>
-          </Transition>
-        </Teleport>
-    </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -260,6 +261,10 @@ const isSidebarOpen = ref(true)
 
 // Logout Modal
 const showLogoutModal = ref(false)
+
+// User Avatar state
+const savedAvatar = localStorage.getItem('lumora_avatar')
+const userAvatar = ref(savedAvatar === 'none' ? null : (savedAvatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200&h=200'))
 
 // Notification state
 const showNotifPanel = ref(false)

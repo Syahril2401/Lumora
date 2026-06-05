@@ -9,27 +9,27 @@
       <!-- Page Header & Main Controls -->
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6 shrink-0">
         <div>
-          <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">Study Planner</h1>
-          <p class="text-slate-500 font-medium text-sm">Manage your intellectual flow for the week.</p>
+          <h1 class="text-3xl font-black text-navy-900 dark:text-text-primary tracking-tight mb-2">Study Planner</h1>
+          <p class="text-navy-500 dark:text-text-muted font-medium text-sm">Manage your intellectual flow for the week.</p>
         </div>
         
         <div class="flex items-center gap-4">
           <!-- View Toggles -->
-          <div class="flex p-1 bg-slate-100/80 rounded-xl border border-slate-200/50 w-fit">
-            <button @click="viewMode = 'daily'" class="px-5 py-2 text-sm font-bold rounded-lg transition-all" :class="viewMode === 'daily' ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50' : 'text-slate-500 hover:text-slate-900'">Daily</button>
-            <button @click="viewMode = 'weekly'" class="px-5 py-2 text-sm font-bold rounded-lg transition-all" :class="viewMode === 'weekly' ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50' : 'text-slate-500 hover:text-slate-900'">Weekly</button>
-            <button @click="viewMode = 'monthly'" class="px-5 py-2 text-sm font-bold rounded-lg transition-all" :class="viewMode === 'monthly' ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50' : 'text-slate-500 hover:text-slate-900'">Monthly</button>
+          <div class="flex p-1 bg-[#E8EDF2] dark:bg-dark-border rounded-xl border border-[#D9E2EC] dark:border-dark-border w-fit">
+            <button @click="viewMode = 'daily'" class="px-5 py-2 text-sm font-bold rounded-lg transition-all" :class="viewMode === 'daily' ? 'bg-white dark:bg-dark-surface text-navy-900 dark:text-text-primary shadow-sm border border-[#D9E2EC] dark:border-dark-border' : 'text-navy-500 dark:text-text-muted hover:text-navy-900 dark:hover:text-text-primary'">Daily</button>
+            <button @click="viewMode = 'weekly'" class="px-5 py-2 text-sm font-bold rounded-lg transition-all" :class="viewMode === 'weekly' ? 'bg-white dark:bg-dark-surface text-navy-900 dark:text-text-primary shadow-sm border border-[#D9E2EC] dark:border-dark-border' : 'text-navy-500 dark:text-text-muted hover:text-navy-900 dark:hover:text-text-primary'">Weekly</button>
+            <button @click="viewMode = 'monthly'" class="px-5 py-2 text-sm font-bold rounded-lg transition-all" :class="viewMode === 'monthly' ? 'bg-white dark:bg-dark-surface text-navy-900 dark:text-text-primary shadow-sm border border-[#D9E2EC] dark:border-dark-border' : 'text-navy-500 dark:text-text-muted hover:text-navy-900 dark:hover:text-text-primary'">Monthly</button>
           </div>
           
-          <button v-if="!googleConnected" @click="connectGoogleCalendar" class="bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-all flex items-center gap-2">
+          <button v-if="!googleConnected" @click="connectGoogleCalendar" class="bg-white dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border hover:border-brand-200 dark:hover:border-brand-500/30 text-navy-700 dark:text-text-primary px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-all flex items-center gap-2">
             <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg" class="w-4 h-4">
             Connect
           </button>
-          <div v-else class="bg-emerald-50 text-emerald-700 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 border border-emerald-200">
+          <div v-else class="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 border border-emerald-200 dark:border-emerald-500/30">
             <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg" class="w-4 h-4">
             Connected
           </div>
-          <button @click="openModal()" class="bg-[#3D3ACE] hover:bg-[#312E81] text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md shadow-indigo-200 transition-all flex items-center gap-2">
+          <button @click="openModal()" class="bg-gradient-to-r from-brand-500 to-brand-400 hover:from-brand-400 hover:to-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-glow transition-all flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
             New Event
           </button>
@@ -38,44 +38,44 @@
 
       <!-- Week/Month Navigation -->
       <div class="flex items-center gap-4 mb-6 shrink-0">
-        <button @click="navigatePrev" class="w-9 h-9 flex items-center justify-center bg-white border border-slate-200 hover:border-slate-300 rounded-xl shadow-sm transition-all">
-          <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        <button @click="navigatePrev" class="w-9 h-9 flex items-center justify-center bg-white dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border hover:border-brand-200 dark:hover:border-brand-500/30 rounded-xl shadow-sm transition-all">
+          <svg class="w-4 h-4 text-navy-600 dark:text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         </button>
-        <button @click="goToToday" class="px-4 py-2 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-sm font-bold text-slate-700 shadow-sm transition-all">Today</button>
-        <button @click="navigateNext" class="w-9 h-9 flex items-center justify-center bg-white border border-slate-200 hover:border-slate-300 rounded-xl shadow-sm transition-all">
-          <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <button @click="goToToday" class="px-4 py-2 bg-white dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border hover:border-brand-200 dark:hover:border-brand-500/30 rounded-xl text-sm font-bold text-navy-700 dark:text-text-primary shadow-sm transition-all">Today</button>
+        <button @click="navigateNext" class="w-9 h-9 flex items-center justify-center bg-white dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border hover:border-brand-200 dark:hover:border-brand-500/30 rounded-xl shadow-sm transition-all">
+          <svg class="w-4 h-4 text-navy-600 dark:text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </button>
-        <h2 class="text-lg font-black text-slate-800">{{ currentPeriodLabel }}</h2>
+        <h2 class="text-lg font-black text-navy-800 dark:text-text-primary">{{ currentPeriodLabel }}</h2>
       </div>
 
       <!-- Loading Overlay -->
-      <div v-if="isLoading" class="flex-1 bg-white border border-slate-200 rounded-[24px] shadow-sm flex items-center justify-center">
-          <svg class="w-8 h-8 animate-spin text-[#3D3ACE]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+      <div v-if="isLoading" class="flex-1 bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border rounded-[24px] shadow-sm flex items-center justify-center">
+          <svg class="w-8 h-8 animate-spin text-brand-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
       </div>
 
       <!-- ===== DAILY VIEW ===== -->
-      <div v-else-if="viewMode === 'daily'" class="flex-1 bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-0 relative">
-        <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50">
-           <div v-if="getSessionsForDate(dailyDateStr).length === 0" class="text-center p-12 bg-white rounded-2xl border border-dashed border-slate-300">
-              <p class="text-slate-500 font-bold">No events planned for this day.</p>
+      <div v-else-if="viewMode === 'daily'" class="flex-1 bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-0 relative">
+        <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-[#FAFAF9] dark:bg-dark-bg">
+           <div v-if="getSessionsForDate(dailyDateStr).length === 0" class="text-center p-12 bg-white dark:bg-dark-surface rounded-2xl border border-dashed border-[#D9E2EC] dark:border-dark-border">
+              <p class="text-navy-500 dark:text-text-muted font-bold">No events planned for this day.</p>
            </div>
            <div v-for="session in getSessionsForDate(dailyDateStr)" :key="session.id" 
-                class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-4 hover:shadow-md cursor-pointer transition-all"
+                class="bg-white dark:bg-dark-surface p-5 rounded-2xl border border-[#D9E2EC] dark:border-dark-border shadow-sm flex items-start gap-4 hover:border-brand-200 dark:hover:border-brand-500/30 cursor-pointer transition-all"
                 @click="openModal(session)">
               <div class="flex-shrink-0 w-16 text-center mt-1">
-                 <p class="text-sm font-black text-[#3D3ACE]">{{ session.start_time.substring(0,5) }}</p>
-                 <p class="text-[10px] font-bold text-slate-400 mt-1">{{ session.end_time.substring(0,5) }}</p>
+                 <p class="text-sm font-black text-brand-500">{{ session.start_time.substring(0,5) }}</p>
+                 <p class="text-[10px] font-bold text-navy-400 dark:text-text-faint mt-1">{{ session.end_time.substring(0,5) }}</p>
               </div>
-              <div class="w-1 bg-indigo-100 self-stretch rounded-full flex-shrink-0"></div>
+              <div class="w-1 bg-brand-100 dark:bg-brand-900/30 self-stretch rounded-full flex-shrink-0"></div>
               <div class="flex-1 min-w-0">
-                 <h4 class="text-lg font-black text-slate-800">{{ session.title }}</h4>
-                 <p v-if="session.description" class="text-sm font-medium text-slate-500 mt-1">{{ session.description }}</p>
+                 <h4 class="text-lg font-black text-navy-800 dark:text-text-primary">{{ session.title }}</h4>
+                 <p v-if="session.description" class="text-sm font-medium text-navy-500 dark:text-text-muted mt-1">{{ session.description }}</p>
                  <div class="flex items-center gap-2 mt-3">
-                    <span class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md bg-indigo-50 text-[#3D3ACE]">{{ session.focus_dimension }}</span>
-                    <span class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md" :class="session.status === 'completed' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'">{{ session.status }}</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md bg-brand-50 dark:bg-brand-500/10 text-brand-500">{{ session.focus_dimension }}</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md" :class="session.status === 'completed' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400'">{{ session.status }}</span>
                  </div>
               </div>
-              <div v-if="session.status === 'completed'" class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center self-center flex-shrink-0">
+              <div v-if="session.status === 'completed'" class="w-8 h-8 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center self-center flex-shrink-0">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
               </div>
            </div>
@@ -83,51 +83,51 @@
       </div>
 
       <!-- ===== WEEKLY VIEW ===== -->
-      <div v-else-if="viewMode === 'weekly'" class="flex-1 bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-0 relative">
+      <div v-else-if="viewMode === 'weekly'" class="flex-1 bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-0 relative">
         <!-- Calendar Header (Days) -->
-        <div class="flex border-b border-slate-200 bg-slate-50 shrink-0">
-          <div class="w-16 shrink-0 border-r border-slate-200"></div>
+        <div class="flex border-b border-[#D9E2EC] dark:border-dark-border bg-[#FAFAF9] dark:bg-dark-surface shrink-0">
+          <div class="w-16 shrink-0 border-r border-[#D9E2EC] dark:border-dark-border"></div>
           <div v-for="day in weekDays" :key="day.dateStr" 
                @click="openModalWithDate(day.dateStr, null)"
-               class="flex-1 text-center py-3 border-r border-slate-200 last:border-0 relative cursor-pointer transition-all hover:bg-indigo-50/30 group">
-            <p class="text-[10px] font-black uppercase tracking-widest mb-1 transition-colors" :class="day.isToday ? 'text-[#3D3ACE]' : 'text-slate-400 group-hover:text-[#3D3ACE]'">{{ day.name }}</p>
-            <div class="w-8 h-8 mx-auto flex items-center justify-center rounded-full transition-transform group-hover:scale-110" :class="day.isToday ? 'bg-[#3D3ACE] text-white shadow-md' : 'text-slate-900 group-hover:bg-[#3D3ACE]/10'">
+               class="flex-1 text-center py-3 border-r border-[#D9E2EC] dark:border-dark-border last:border-0 relative cursor-pointer transition-all hover:bg-brand-50/30 dark:hover:bg-brand-500/5 group">
+            <p class="text-[10px] font-black uppercase tracking-widest mb-1 transition-colors" :class="day.isToday ? 'text-brand-500' : 'text-navy-400 dark:text-text-faint group-hover:text-brand-500'">{{ day.name }}</p>
+            <div class="w-8 h-8 mx-auto flex items-center justify-center rounded-full transition-transform group-hover:scale-110" :class="day.isToday ? 'bg-brand-500 text-white shadow-md' : 'text-navy-900 dark:text-text-primary group-hover:bg-brand-500/10'">
                 <p class="text-lg font-black">{{ day.date }}</p>
             </div>
-            <div v-if="day.isToday" class="absolute bottom-0 left-0 right-0 h-1 bg-[#3D3ACE] pointer-events-none"></div>
+            <div v-if="day.isToday" class="absolute bottom-0 left-0 right-0 h-1 bg-brand-500 pointer-events-none"></div>
           </div>
         </div>
 
         <!-- Calendar Body -->
-        <div class="flex-1 overflow-y-auto relative bg-[#FDFDFF] scrollbar-hide" ref="calendarBody">
+        <div class="flex-1 overflow-y-auto relative bg-[#FDFDFF] dark:bg-[#0A0A0A] scrollbar-hide" ref="calendarBody">
            <div class="flex relative min-w-[700px]">
-             <div class="w-16 shrink-0 bg-white border-r border-slate-200 z-10 sticky left-0">
-               <div v-for="hour in 24" :key="hour" class="h-16 border-b border-slate-100 flex items-start justify-center pt-2">
-                 <span class="text-[10px] font-bold text-slate-400 -mt-2.5 bg-white px-1">
+             <div class="w-16 shrink-0 bg-[#FAFAF9] dark:bg-dark-surface border-r border-[#D9E2EC] dark:border-dark-border z-10 sticky left-0">
+               <div v-for="hour in 24" :key="hour" class="h-16 border-b border-[#D9E2EC] dark:border-dark-border flex items-start justify-center pt-2">
+                 <span class="text-[10px] font-bold text-navy-400 dark:text-text-faint -mt-2.5 bg-[#FAFAF9] dark:bg-dark-surface px-1">
                    {{ hour - 1 === 0 ? '12 AM' : (hour - 1 < 12 ? (hour - 1) + ' AM' : (hour - 1 === 12 ? '12 PM' : (hour - 1 - 12) + ' PM')) }}
                  </span>
                </div>
              </div>
              <div class="flex-1 grid grid-cols-7 relative">
                 <div class="absolute inset-0 pointer-events-none">
-                  <div v-for="hour in 24" :key="hour" class="h-16 border-b border-slate-100"></div>
+                  <div v-for="hour in 24" :key="hour" class="h-16 border-b border-[#D9E2EC] dark:border-dark-border"></div>
                 </div>
                 <div v-for="day in weekDays" :key="day.dateStr" 
-                    class="border-r border-slate-100 relative min-h-[1536px]">
+                    class="border-r border-[#D9E2EC] dark:border-dark-border relative min-h-[1536px]">
                    
                    <!-- Hourly hover slots -->
                    <div class="absolute inset-0 flex flex-col z-0">
                      <div v-for="hour in 24" :key="hour" 
-                          class="h-16 transition-colors hover:bg-indigo-500/10 cursor-pointer"
+                          class="h-16 transition-colors hover:bg-brand-500/10 cursor-pointer"
                           @click="openModalWithHour(day.dateStr, hour - 1)"></div>
                    </div>
 
-                   <div v-if="day.isToday" class="absolute left-0 right-0 border-t-2 border-red-500 z-20 pointer-events-none" :style="{ top: currentTimeTop }">
-                       <div class="w-2 h-2 rounded-full bg-red-500 absolute -left-1 -top-1.5"></div>
+                   <div v-if="day.isToday" class="absolute left-0 right-0 border-t-2 border-brand-500 z-20 pointer-events-none" :style="{ top: currentTimeTop }">
+                       <div class="w-2 h-2 rounded-full bg-brand-500 absolute -left-1 -top-1.5 shadow-[0_0_8px_rgba(249,115,22,0.5)]"></div>
                    </div>
                    <div v-for="session in getSessionsForDate(day.dateStr)" :key="session.id" 
                       @click.stop="openModal(session)"
-                      class="absolute left-1 right-1 rounded-[12px] p-3 cursor-pointer shadow-sm hover:shadow-md transition-all overflow-hidden group flex flex-col border border-white/20 z-10"
+                      class="absolute left-1 right-1 rounded-[12px] p-3 cursor-pointer shadow-sm hover:shadow-md transition-all overflow-hidden group flex flex-col border border-white/20 dark:border-white/5 z-10"
                       :style="getSessionStyle(session)"
                       :class="getSessionColor(session)">
                       <div class="flex justify-between items-start mb-1">
@@ -145,29 +145,29 @@
       </div>
 
       <!-- ===== MONTHLY VIEW ===== -->
-      <div v-else class="flex-1 bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-0">
+      <div v-else class="flex-1 bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-0">
         <!-- Month Header -->
-        <div class="grid grid-cols-7 border-b border-slate-200 bg-slate-50 shrink-0">
-          <div v-for="d in ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']" :key="d" class="text-center py-3 text-[10px] font-black uppercase tracking-widest text-slate-400 border-r border-slate-200 last:border-0">{{ d }}</div>
+        <div class="grid grid-cols-7 border-b border-[#D9E2EC] dark:border-dark-border bg-[#FAFAF9] dark:bg-dark-surface shrink-0">
+          <div v-for="d in ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']" :key="d" class="text-center py-3 text-[10px] font-black uppercase tracking-widest text-navy-400 dark:text-text-faint border-r border-[#D9E2EC] dark:border-dark-border last:border-0">{{ d }}</div>
         </div>
         <!-- Month Grid -->
-        <div class="flex-1 overflow-y-auto scrollbar-hide">
+        <div class="flex-1 overflow-y-auto scrollbar-hide bg-[#FDFDFF] dark:bg-[#0A0A0A]">
           <div class="grid grid-cols-7 auto-rows-fr min-h-full">
             <div v-for="(cell, i) in monthCells" :key="i"
-                class="border-r border-b border-slate-100 p-2 min-h-[120px] cursor-pointer transition-all hover:bg-indigo-50/60 hover:shadow-inner group"
-                :class="{ 'bg-slate-50/40': !cell.currentMonth }"
+                class="border-r border-b border-[#D9E2EC] dark:border-dark-border p-2 min-h-[120px] cursor-pointer transition-all hover:bg-brand-50/30 dark:hover:bg-brand-500/5 hover:shadow-inner group"
+                :class="{ 'bg-[#FAFAF9]/40 dark:bg-dark-surface/40': !cell.currentMonth }"
                 @click="cell.currentMonth && openModalWithDate(cell.dateStr, null)">
               <div class="flex items-center justify-between mb-1">
-                <span class="text-sm font-bold transition-transform group-hover:scale-110" :class="cell.isToday ? 'w-7 h-7 flex items-center justify-center rounded-full bg-[#3D3ACE] text-white shadow-md' : (cell.currentMonth ? 'text-slate-800 group-hover:text-[#3D3ACE]' : 'text-slate-300')">{{ cell.day }}</span>
+                <span class="text-sm font-bold transition-transform group-hover:scale-110" :class="cell.isToday ? 'w-7 h-7 flex items-center justify-center rounded-full bg-brand-500 text-white shadow-md' : (cell.currentMonth ? 'text-navy-800 dark:text-text-primary group-hover:text-brand-500' : 'text-navy-300 dark:text-text-faint')">{{ cell.day }}</span>
               </div>
               <div class="space-y-1">
                 <div v-for="session in getSessionsForDate(cell.dateStr).slice(0, 3)" :key="session.id"
                     @click.stop="openModal(session)"
-                    class="text-[10px] font-bold px-2 py-1 rounded-lg truncate cursor-pointer transition-all hover:opacity-80"
-                    :class="session.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700'">
+                    class="text-[10px] font-bold px-2 py-1 rounded-lg truncate cursor-pointer transition-all hover:opacity-80 border border-transparent"
+                    :class="session.status === 'completed' ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-500/20' : 'bg-brand-50 dark:bg-brand-500/20 text-brand-700 dark:text-brand-400 border-brand-200/50 dark:border-brand-500/20'">
                   {{ session.start_time.substring(0,5) }} {{ session.title }}
                 </div>
-                <div v-if="getSessionsForDate(cell.dateStr).length > 3" class="text-[10px] font-bold text-slate-400 px-2">
+                <div v-if="getSessionsForDate(cell.dateStr).length > 3" class="text-[10px] font-bold text-navy-400 dark:text-text-faint px-2">
                   +{{ getSessionsForDate(cell.dateStr).length - 3 }} more
                 </div>
               </div>
@@ -179,46 +179,46 @@
 
     <!-- Add/Edit Modal -->
     <Teleport to="body">
-      <div v-if="showModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showModal = false">
-        <div class="bg-white rounded-[24px] p-8 w-full max-w-lg shadow-2xl border border-slate-100">
+      <div v-if="showModal" class="fixed inset-0 bg-[#0B1120]/60 dark:bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showModal = false">
+        <div class="bg-white dark:bg-dark-panel rounded-[24px] p-8 w-full max-w-lg shadow-2xl border border-[#D9E2EC] dark:border-dark-border animate-slide-up">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-black text-slate-900 tracking-tight">{{ editingSession ? 'Edit Event' : 'New Event' }}</h2>
+            <h2 class="text-xl font-black text-navy-900 dark:text-text-primary tracking-tight">{{ editingSession ? 'Edit Event' : 'New Event' }}</h2>
             <div class="flex gap-2">
-                <button v-if="editingSession" type="button" @click="confirmDelete(editingSession.id)" class="w-8 h-8 flex items-center justify-center rounded-full bg-rose-50 text-rose-500 hover:bg-rose-100 transition-colors">
+                <button v-if="editingSession" type="button" @click="confirmDelete(editingSession.id)" class="w-8 h-8 flex items-center justify-center rounded-full bg-rose-50 dark:bg-rose-500/10 text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 </button>
-                <button @click="showModal = false" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+                <button @click="showModal = false" class="w-8 h-8 flex items-center justify-center rounded-full bg-[#FAFAF9] dark:bg-dark-surface text-navy-400 dark:text-text-faint hover:bg-[#E8EDF2] dark:hover:bg-dark-border hover:text-navy-600 dark:hover:text-text-primary transition-colors">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
           </div>
           <form @submit.prevent="saveSession" class="space-y-5">
             <div>
-              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Title *</label>
-              <input v-model="form.title" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 text-sm font-bold text-slate-900 focus:bg-white focus:border-[#3D3ACE] focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all shadow-sm" placeholder="e.g. Market Equilibrium Analysis">
+              <label class="block text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Title *</label>
+              <input v-model="form.title" required class="w-full bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-xl py-2.5 px-4 text-sm font-bold text-navy-900 dark:text-text-primary focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all shadow-sm" placeholder="e.g. Market Equilibrium Analysis">
             </div>
             <div>
-              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Description</label>
-              <textarea v-model="form.description" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 text-sm font-bold text-slate-900 focus:bg-white focus:border-[#3D3ACE] focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all shadow-sm resize-none" placeholder="Summary of supply and demand curves..."></textarea>
+              <label class="block text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Description</label>
+              <textarea v-model="form.description" rows="2" class="w-full bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-xl py-2.5 px-4 text-sm font-bold text-navy-900 dark:text-text-primary focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all shadow-sm resize-none" placeholder="Summary of supply and demand curves..."></textarea>
             </div>
             <div class="grid grid-cols-3 gap-4">
               <div>
-                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Date *</label>
-                <input v-model="form.date" type="date" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm font-bold text-slate-900 focus:bg-white focus:border-[#3D3ACE] shadow-sm outline-none transition-all">
+                <label class="block text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Date *</label>
+                <input v-model="form.date" type="date" required class="w-full bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-xl py-2.5 px-3 text-sm font-bold text-navy-900 dark:text-text-primary focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500 shadow-sm outline-none transition-all [color-scheme:light] dark:[color-scheme:dark]">
               </div>
               <div>
-                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Start *</label>
-                <input v-model="form.start_time" type="time" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm font-bold text-slate-900 focus:bg-white focus:border-[#3D3ACE] shadow-sm outline-none transition-all">
+                <label class="block text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Start *</label>
+                <input v-model="form.start_time" type="time" required class="w-full bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-xl py-2.5 px-3 text-sm font-bold text-navy-900 dark:text-text-primary focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500 shadow-sm outline-none transition-all [color-scheme:light] dark:[color-scheme:dark]">
               </div>
               <div>
-                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">End *</label>
-                <input v-model="form.end_time" type="time" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm font-bold text-slate-900 focus:bg-white focus:border-[#3D3ACE] shadow-sm outline-none transition-all">
+                <label class="block text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">End *</label>
+                <input v-model="form.end_time" type="time" required class="w-full bg-[#FAFAF9] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border rounded-xl py-2.5 px-3 text-sm font-bold text-navy-900 dark:text-text-primary focus:bg-white dark:focus:bg-dark-panel focus:border-brand-500 shadow-sm outline-none transition-all [color-scheme:light] dark:[color-scheme:dark]">
               </div>
             </div>
 
-            <div class="flex gap-3 pt-4 border-t border-slate-100">
-              <button v-if="editingSession && editingSession.status !== 'completed'" type="button" @click="completeSession(editingSession.id)" class="flex-1 bg-emerald-50 text-emerald-600 py-2.5 rounded-xl font-bold hover:bg-emerald-100 transition-colors shadow-sm">Mark Complete</button>
-              <button type="submit" :disabled="isSaving" class="flex-1 bg-[#3D3ACE] text-white py-2.5 rounded-xl font-bold hover:bg-[#312E81] shadow-md shadow-indigo-200 transition-all disabled:opacity-50 flex items-center justify-center gap-2" :class="{ 'col-span-2': !editingSession }">
+            <div class="flex gap-3 pt-4 border-t border-[#D9E2EC] dark:border-dark-border">
+              <button v-if="editingSession && editingSession.status !== 'completed'" type="button" @click="completeSession(editingSession.id)" class="flex-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 py-2.5 rounded-xl font-bold hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors shadow-sm">Mark Complete</button>
+              <button type="submit" :disabled="isSaving" class="flex-1 btn-primary text-white py-2.5 rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2" :class="{ 'col-span-2': !editingSession }">
                 <svg v-if="isSaving" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 {{ isSaving ? 'Saving...' : (editingSession ? 'Save Changes' : 'Create Event') }}
               </button>
@@ -230,7 +230,7 @@
 
     <!-- Error Toast -->
     <Teleport to="body">
-      <div v-if="toast" class="fixed bottom-6 right-6 z-[150] bg-slate-900 text-white border border-slate-800 shadow-2xl rounded-xl p-4 flex items-center gap-3 animate-slide-up">
+      <div v-if="toast" class="fixed bottom-6 right-6 z-[150] bg-navy-900 dark:bg-dark-panel text-white border border-navy-800 dark:border-dark-border shadow-2xl rounded-xl p-4 flex items-center gap-3 animate-slide-up">
         <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="toast.type === 'error' ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'">
           <svg v-if="toast.type === 'error'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
@@ -243,30 +243,30 @@
     <Teleport to="body">
       <Transition name="fade">
         <div v-if="showDeleteModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div class="absolute inset-0 bg-[#0B1120]/80 backdrop-blur-md" @click="showDeleteModal = false"></div>
+          <div class="absolute inset-0 bg-[#0B1120]/80 dark:bg-black/80 backdrop-blur-md" @click="showDeleteModal = false"></div>
           
-          <div class="bg-gradient-to-b from-[#1E1B4B] to-[#0B1120] rounded-[2rem] w-full max-w-md relative z-10 shadow-2xl shadow-indigo-900/50 overflow-hidden border border-indigo-500/20 animate-slide-up">
+          <div class="bg-gradient-to-b from-navy-900 to-black dark:from-dark-panel dark:to-black rounded-[2rem] w-full max-w-md relative z-10 shadow-2xl overflow-hidden border border-brand-500/20 animate-slide-up">
             
             <!-- Decorative Blobs -->
-            <div class="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/30 blur-[50px] rounded-full pointer-events-none"></div>
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-brand-500/30 blur-[50px] rounded-full pointer-events-none"></div>
             <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-rose-500/20 blur-[50px] rounded-full pointer-events-none"></div>
 
             <div class="p-10 text-center relative z-20">
               <div class="relative w-20 h-20 mx-auto mb-8 group">
                 <div class="absolute inset-0 bg-gradient-to-tr from-rose-500 to-orange-500 rounded-2xl rotate-3 group-hover:rotate-12 transition-transform duration-300"></div>
-                <div class="absolute inset-0 bg-white rounded-2xl flex items-center justify-center -rotate-3 group-hover:-rotate-12 transition-transform duration-300">
+                <div class="absolute inset-0 bg-white dark:bg-dark-surface rounded-2xl flex items-center justify-center -rotate-3 group-hover:-rotate-12 transition-transform duration-300">
                     <svg class="w-10 h-10 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 </div>
               </div>
               
               <h3 class="text-2xl font-black text-white mb-3 tracking-tight">Delete Event?</h3>
-              <p class="text-sm font-medium text-indigo-200/80 leading-relaxed">
+              <p class="text-sm font-medium text-navy-200/80 leading-relaxed">
                 This event will be permanently removed from your planner and Google Calendar.
               </p>
             </div>
 
             <div class="p-6 bg-white/5 backdrop-blur-sm border-t border-white/10 flex gap-4 relative z-20">
-              <button @click="showDeleteModal = false" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10">
+              <button @click="showDeleteModal = false" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-navy-300 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10">
                 Cancel
               </button>
               <button @click="deleteSession" class="flex-1 py-3.5 px-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white rounded-xl text-sm font-black shadow-lg shadow-rose-900/50 hover:shadow-rose-900/80 hover:-translate-y-0.5 transition-all">
@@ -485,9 +485,9 @@ function getSessionStyle(session) {
 }
 
 function getSessionColor(session) {
-    if (session.status === 'completed') return 'bg-emerald-100 text-emerald-900 opacity-70'
-    if (session.source === 'google') return 'bg-[#E8F0FE] text-[#1967D2] border border-[#1967D2]/20'
-    return 'bg-[#EEF2FF] text-[#3D3ACE]'
+    if (session.status === 'completed') return 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-900 dark:text-emerald-400 opacity-70 border border-emerald-200 dark:border-emerald-500/30'
+    if (session.source === 'google') return 'bg-[#E8F0FE] dark:bg-[#1967D2]/20 text-[#1967D2] dark:text-[#8AB4F8] border border-[#1967D2]/20 dark:border-[#8AB4F8]/20'
+    return 'bg-brand-50 dark:bg-brand-500/20 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-500/30'
 }
 
 function openModal(session = null) {
