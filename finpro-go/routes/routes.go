@@ -52,6 +52,7 @@ func SetupRoutes(
 			assessment.POST("/submit", assessCtrl.Submit)
 			assessment.GET("/status", assessCtrl.GetStatus)
 			assessment.POST("/chat", assessCtrl.Chat)
+			assessment.GET("/chat/history", assessCtrl.GetChatHistory)
 		}
 
 		// Dashboard Routes

@@ -12,6 +12,7 @@ type UserRepository interface {
 	FindByID(id string) (*model.User, error)
 	FindAll() ([]model.User, error)
 	SaveAILog(log *model.AILog) error
+	GetAILogByUserID(userID string) (*model.AILog, error)
 }
 
 type userRepository struct {
@@ -45,5 +46,14 @@ func (r *userRepository) FindAll() ([]model.User, error) {
 }
 
 func (r *userRepository) SaveAILog(log *model.AILog) error {
-	return r.db.Create(log).Error
+	return r.db.Save(log).Error
+}
+
+func (r *userRepository) GetAILogByUserID(userID string) (*model.AILog, error) {
+	var log model.AILog
+	err := r.db.Where("user_id = ?", userID).First(&log).Error
+	if err != nil {
+		return nil, err
+	}
+	return &log, nil
 }

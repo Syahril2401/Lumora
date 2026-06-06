@@ -108,13 +108,11 @@ type Recommendation struct {
 // =========================
 
 type AILog struct {
-	AILogID     string         `gorm:"column:ai_log_id;type:char(36);primaryKey"`
-	UserID      string         `gorm:"column:user_id;type:char(36);not null;index:idx_ai_user_created,priority:1"`
-	PromptInput string         `gorm:"column:prompt_input;type:text;not null"`
-	AIOutput    datatypes.JSON `gorm:"column:ai_output;type:json"`
-	Model       *string        `gorm:"column:model;type:varchar(100)"`
-	TokenCount  *int           `gorm:"column:token_count"`
-	CreatedAt   time.Time      `gorm:"column:created_at;autoCreateTime;index:idx_ai_user_created,priority:2"`
+	AILogID   string         `gorm:"column:ai_log_id;type:char(36);primaryKey"`
+	UserID    string         `gorm:"column:user_id;type:char(36);not null;uniqueIndex"`
+	History   datatypes.JSON `gorm:"column:history;type:json"`
+	CreatedAt time.Time      `gorm:"column:created_at;autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"column:updated_at;autoUpdateTime"`
 
 	User User `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
 }
@@ -162,7 +160,7 @@ type Target struct {
 	UpdatedAt      time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 
 	User     User      `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE" json:"-"`
-	Subtasks []Subtask `gorm:"foreignKey:TargetID;references:TargetID;constraint:OnDelete:CASCADE" json:"subtasks"`
+	Subtasks []Subtask `gorm:"foreignKey:TargetID;references:TargetID" json:"subtasks"`
 }
 
 // =========================

@@ -23,6 +23,20 @@ func main() {
 
 	// HOTFIX: Drop and recreate schedules table to ensure correct schema for Go models
 	config.DB.Exec("DROP TABLE IF EXISTS schedules")
+	
+	// Ensure ai_logs table exists (don't drop — it has persistent chat data)
+	config.DB.Exec(`CREATE TABLE IF NOT EXISTS ai_logs (
+		ai_log_id CHAR(36) PRIMARY KEY,
+		user_id CHAR(36) NOT NULL UNIQUE,
+		history JSON,
+		created_at DATETIME(3),
+		updated_at DATETIME(3),
+		FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+	)`)
+	
+	// Fix broken FK: GORM previously created a reversed FK on targets → subtasks
+	config.DB.Exec("ALTER TABLE targets DROP FOREIGN KEY fk_subtasks_target")
+	
 	hotfixErr := config.DB.Exec(`
 		CREATE TABLE schedules (
 		  schedule_id CHAR(36) PRIMARY KEY,

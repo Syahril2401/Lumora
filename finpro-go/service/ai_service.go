@@ -1,18 +1,20 @@
 package service
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
-
-	"github.com/google/generative-ai-go/genai"
-	"google.golang.org/api/option"
+	"time"
 )
 
 type AIService interface {
 	AnalyzeLearningStyle(ctx context.Context, prompt string) (string, error)
-	Chat(ctx context.Context, userMessage string, learningProfile string) (string, error)
+	Chat(ctx context.Context, userMessage string, learningProfile string, userContextJSON string) (string, error)
 }
 
 type aiService struct {
@@ -21,13 +23,13 @@ type aiService struct {
 }
 
 func NewAIService() AIService {
-	apiKey := os.Getenv("GEMINI_API_KEY")
-	modelName := "gemini-flash-latest" // High token quota, fast, general knowledge
+	apiKey := os.Getenv("OPENROUTER_API_KEY")
+	modelName := "owl-alpha"
 
 	if apiKey == "" {
-		log.Printf("[AI] WARNING: GEMINI_API_KEY is not set. Using mock responses to prevent blocking the user flow.")
+		log.Printf("[AI] WARNING: OPENROUTER_API_KEY is not set. Using mock responses.")
 	} else {
-		log.Printf("[AI] Using Google Gemini API via SDK")
+		log.Printf("[AI] Using OpenRouter API")
 		log.Printf("[AI] Using model: %s", modelName)
 	}
 
@@ -37,55 +39,66 @@ func NewAIService() AIService {
 	}
 }
 
-func (s *aiService) callGemini(ctx context.Context, systemContext, userPrompt string) (string, error) {
+func (s *aiService) callOpenRouter(ctx context.Context, systemContext, userPrompt string) (string, error) {
 	if s.apiKey == "" {
-		// Mock response so the flow doesn't break during testing
-		return "This is a mock response from Gemini Flash. Please add GEMINI_API_KEY to your .env to enable real AI explanations.", nil
+		return "This is a mock response from OpenRouter. Please add OPENROUTER_API_KEY to your .env.", nil
 	}
 
-	client, err := genai.NewClient(ctx, option.WithAPIKey(s.apiKey))
+	url := "https://openrouter.ai/api/v1/chat/completions"
+
+	requestBody, err := json.Marshal(map[string]interface{}{
+		"model": s.model,
+		"messages": []map[string]string{
+			{"role": "system", "content": systemContext},
+			{"role": "user", "content": userPrompt},
+		},
+	})
 	if err != nil {
-		return "", fmt.Errorf("failed to create gemini client: %w", err)
-	}
-	defer client.Close()
-
-	model := client.GenerativeModel(s.model)
-	
-	// Set System Instruction
-	model.SystemInstruction = &genai.Content{
-		Parts: []genai.Part{genai.Text(systemContext)},
+		return "", fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	resp, err := model.GenerateContent(ctx, genai.Text(userPrompt))
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
-		// Fallback to gemini-pro-latest if the flash model fails
-		log.Printf("[AI] Model %s failed: %v. Falling back to gemini-pro-latest", s.model, err)
-		fallbackModel := client.GenerativeModel("gemini-pro-latest")
-		
-		// Note: gemini-pro-latest might not support SystemInstruction via the same field, 
-		// so we prepend it to the user prompt just to be safe in the fallback.
-		promptWithContext := fmt.Sprintf("System Context:\n%s\n\nUser Message:\n%s", systemContext, userPrompt)
-		
-		fallbackResp, fallbackErr := fallbackModel.GenerateContent(ctx, genai.Text(promptWithContext))
-		if fallbackErr != nil {
-			return "", fmt.Errorf("gemini fallback also failed: %w", fallbackErr)
-		}
-		
-		if len(fallbackResp.Candidates) > 0 && len(fallbackResp.Candidates[0].Content.Parts) > 0 {
-			if txt, ok := fallbackResp.Candidates[0].Content.Parts[0].(genai.Text); ok {
-				return string(txt), nil
-			}
-		}
-		return "", fmt.Errorf("gemini fallback returned empty response")
+		return "", fmt.Errorf("failed to create request: %w", err)
 	}
 
-	if len(resp.Candidates) > 0 && len(resp.Candidates[0].Content.Parts) > 0 {
-		if txt, ok := resp.Candidates[0].Content.Parts[0].(genai.Text); ok {
-			return string(txt), nil
-		}
+	req.Header.Set("Authorization", "Bearer "+s.apiKey)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("HTTP-Referer", "http://localhost:8008")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to execute request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read response: %w", err)
 	}
 
-	return "", fmt.Errorf("empty response from gemini")
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("openrouter API error: status %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+
+	if err := json.Unmarshal(body, &result); err != nil {
+		return "", fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	if len(result.Choices) > 0 {
+		return result.Choices[0].Message.Content, nil
+	}
+
+	return "", fmt.Errorf("empty response from openrouter")
 }
 
 func (s *aiService) AnalyzeLearningStyle(ctx context.Context, prompt string) (string, error) {
@@ -93,12 +106,48 @@ func (s *aiService) AnalyzeLearningStyle(ctx context.Context, prompt string) (st
 	return "{}", nil
 }
 
-func (s *aiService) Chat(ctx context.Context, userMessage string, learningProfile string) (string, error) {
+func (s *aiService) Chat(ctx context.Context, userMessage string, learningProfile string, userContextJSON string) (string, error) {
+	currentDateTime := time.Now().Format("2006-01-02 15:04:05 MST")
+	
 	systemContext := fmt.Sprintf(`
-You are Lumora AI, an explainer module powered by Google Gemini.
+You are Lumora AI, an explainer module powered by OpenRouter.
 You are a helpful Study Buddy with vast general knowledge.
 You can help the user with any academic topics or explain their study profile.
-Be concise, warm, and encouraging.
+Be concise, warm, and encouraging. Use markdown formatting for structured responses.
+
+The current date and time is: %s. Use this reference when the user asks to schedule something for "today", "tonight", or "tomorrow".
+
+CRITICAL FUNCTION CALLING RULES:
+You can create, edit, and delete Notes, Planner sessions, and Weekly Targets for the user.
+When you need to perform an action, you MUST include a JSON object as the VERY LAST LINE of your response.
+The JSON must be RAW JSON on a single line — do NOT wrap it in markdown code fences or backticks.
+The "action" key MUST be the first key in the JSON object.
+
+For creating a note:
+{"action": "create_note", "title": "Note Title", "content": "Note content here"}
+For editing a note:
+{"action": "edit_note", "id": "NOTE_ID", "title": "New Title", "content": "New content"}
+For deleting a note:
+{"action": "delete_note", "id": "NOTE_ID"}
+
+For scheduling a planner session:
+{"action": "create_planner", "title": "Session Name", "description": "Brief description", "date": "YYYY-MM-DD", "start_time": "HH:MM", "end_time": "HH:MM"}
+For editing a planner session:
+{"action": "edit_planner", "id": "PLANNER_ID", "title": "New Title", "date": "YYYY-MM-DD", "start_time": "HH:MM", "end_time": "HH:MM"}
+For deleting a planner session:
+{"action": "delete_planner", "id": "PLANNER_ID"}
+
+For creating a weekly target/goal:
+{"action": "create_target", "title": "Target Name", "description": "Brief description", "subtasks": ["Specific subtask 1"]}
+For editing a weekly target:
+{"action": "edit_target", "id": "TARGET_ID", "title": "New Title", "description": "New description"}
+For deleting a weekly target:
+{"action": "delete_target", "id": "TARGET_ID"}
+
+To edit or delete, you MUST use the exact IDs provided in the User Context below.
+
+User Context (Current Notes, Planner, Targets with their IDs):
+%s
 
 The student's rule-based profile outcome is:
 %s
@@ -106,9 +155,10 @@ The student's rule-based profile outcome is:
 Guidelines:
 - If the user asks about general knowledge, answer them accurately and concisely.
 - Explain the student's strengths and weaknesses based on the JSON if they ask about it.
-- Stay focused on learning strategies and academic goals.
+- NEVER wrap the action JSON in markdown code blocks. Output it as plain text on the last line.
+- The JSON must be valid and parseable. Do not add trailing commas or comments.
 - Respond in the language the student uses.
-`, learningProfile)
+`, currentDateTime, userContextJSON, learningProfile)
 
-	return s.callGemini(ctx, systemContext, userMessage)
+	return s.callOpenRouter(ctx, systemContext, userMessage)
 }

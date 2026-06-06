@@ -122,16 +122,25 @@ func (ctrl *GoogleCalendarController) GetEvents(c *gin.Context) {
 			Description: e.Description,
 			Source:      "google",
 		}
-		if e.Start != nil && e.Start.DateTime != "" {
-			t, _ := time.Parse(time.RFC3339, e.Start.DateTime)
-			t = t.In(loc)
-			se.Date = t.Format("2006-01-02")
-			se.StartTime = t.Format("15:04")
+		if e.Start != nil {
+			if e.Start.DateTime != "" {
+				t, _ := time.Parse(time.RFC3339, e.Start.DateTime)
+				t = t.In(loc)
+				se.Date = t.Format("2006-01-02")
+				se.StartTime = t.Format("15:04")
+			} else if e.Start.Date != "" {
+				se.Date = e.Start.Date
+				se.StartTime = "00:00"
+			}
 		}
-		if e.End != nil && e.End.DateTime != "" {
-			t, _ := time.Parse(time.RFC3339, e.End.DateTime)
-			t = t.In(loc)
-			se.EndTime = t.Format("15:04")
+		if e.End != nil {
+			if e.End.DateTime != "" {
+				t, _ := time.Parse(time.RFC3339, e.End.DateTime)
+				t = t.In(loc)
+				se.EndTime = t.Format("15:04")
+			} else if e.End.Date != "" {
+				se.EndTime = "23:59"
+			}
 		}
 		result = append(result, se)
 	}

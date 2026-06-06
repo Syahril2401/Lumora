@@ -70,22 +70,25 @@ func (s *dashboardService) GetDashboardData(userID string) (map[string]interface
 	}
 
 	// 4. Fetch AI Messages (Logs)
-	aiLogs, _ := s.dashboardRepo.GetRecentAILogs(userID, 5)
+	aiLogs, _ := s.dashboardRepo.GetRecentAILogs(userID, 1)
 	aiMessages := []map[string]interface{}{}
-	for _, log := range aiLogs {
-		var aiData map[string]interface{}
-		content := "Your consistency in planning is improving. Keep up the good work!"
-		if err := json.Unmarshal([]byte(string(log.AIOutput)), &aiData); err == nil {
-			if strategy, ok := aiData["ai_strategy"].(map[string]interface{}); ok {
-				if desc, ok := strategy["desc"].(string); ok {
-					content = desc
+	if len(aiLogs) > 0 {
+		var history []map[string]interface{}
+		if err := json.Unmarshal([]byte(string(aiLogs[0].History)), &history); err == nil {
+			for i := len(history) - 1; i >= 0; i-- {
+				if role, ok := history[i]["role"].(string); ok && role == "model" {
+					if content, ok := history[i]["content"].(string); ok {
+						aiMessages = append(aiMessages, map[string]interface{}{
+							"timestamp": aiLogs[0].UpdatedAt.Format("15:04"),
+							"content":   content,
+						})
+					}
+				}
+				if len(aiMessages) >= 5 {
+					break
 				}
 			}
 		}
-		aiMessages = append(aiMessages, map[string]interface{}{
-			"timestamp": log.CreatedAt.Format("15:04"),
-			"content":   content,
-		})
 	}
 
 	totalTargets, completedTargets, _ := s.dashboardRepo.GetTargetStats(userID)
