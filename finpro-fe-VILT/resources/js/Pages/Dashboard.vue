@@ -25,7 +25,7 @@
                         <h3 class="text-lg font-black tracking-wide text-white">Daily Overview</h3>
                         <p class="text-navy-200 text-xs font-bold mt-1">{{ new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }) }}</p>
                     </div>
-                    <Link :href="route('planner')" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-2 backdrop-blur-md text-white">
+                    <Link :href="route('planner', { view: 'daily' })" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-2 backdrop-blur-md text-white">
                         Full Schedule
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </Link>
@@ -262,6 +262,22 @@ onMounted(async () => {
   try {
     data.value = await dashboardApi.getMetrics()
     recentSessions.value = data.value.recent_sessions || []
+    
+    const localDate = new Date()
+    const todayStr = localDate.getFullYear() + '-' + String(localDate.getMonth() + 1).padStart(2, '0') + '-' + String(localDate.getDate()).padStart(2, '0')
+
+    // Format today's sessions from planner
+    const todaySessions = recentSessions.value.filter(s => {
+        const d = s.date ? s.date.split('T')[0].split(' ')[0] : ''
+        return d === todayStr
+    }).map(s => ({
+        title: s.title,
+        time: s.start_time || '00:00',
+        duration: `${s.duration_minutes || 60}m`,
+        status: s.status || 'planned'
+    }))
+    
+    data.value.focus_sessions = todaySessions
     
     // Fetch Recent Notes
     try {

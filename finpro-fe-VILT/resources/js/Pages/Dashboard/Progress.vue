@@ -32,19 +32,19 @@
         <div class="bg-white dark:bg-dark-panel p-6 rounded-[28px] border border-[#D9E2EC] dark:border-dark-border shadow-sm">
           <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Consistency</p>
           <p class="text-3xl font-black text-brand-500">{{ Math.round(progress.consistency || 0) }}%</p>
-          <p class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">active days / week</p>
+          <p class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">Active Days / Week</p>
         </div>
         <!-- Target Completion -->
         <div class="bg-white dark:bg-dark-panel p-6 rounded-[28px] border border-[#D9E2EC] dark:border-dark-border shadow-sm">
           <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Target Completion</p>
           <p class="text-3xl font-black text-emerald-500">{{ Math.round(progress.target_completion || 0) }}%</p>
-          <p class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">subtasks done</p>
+          <p class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">Subtasks Done</p>
         </div>
         <!-- Reflections -->
         <div class="bg-white dark:bg-dark-panel p-6 rounded-[28px] border border-[#D9E2EC] dark:border-dark-border shadow-sm">
           <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Reflections</p>
           <p class="text-3xl font-black text-purple-500">{{ progress.reflections_count || 0 }}</p>
-          <p class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">this month</p>
+          <p class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">This Month</p>
         </div>
       </div>
 

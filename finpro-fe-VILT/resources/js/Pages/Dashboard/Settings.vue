@@ -117,35 +117,23 @@
         <div v-if="showDisconnectModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div class="absolute inset-0 bg-[#0B1120]/80 dark:bg-black/80 backdrop-blur-md" @click="showDisconnectModal = false"></div>
           
-          <div class="bg-gradient-to-b from-navy-900 to-[#0B1120] rounded-[2rem] w-full max-w-md relative z-10 shadow-2xl shadow-brand-500/20 overflow-hidden border border-brand-500/20 animate-slide-up">
+          <div class="bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border rounded-[32px] p-8 w-full max-w-md relative z-10 shadow-2xl animate-scale-up text-center">
             
-            <!-- Decorative Blobs -->
-            <div class="absolute -top-24 -right-24 w-48 h-48 bg-brand-500/30 blur-[50px] rounded-full pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-rose-500/20 blur-[50px] rounded-full pointer-events-none"></div>
-
-            <div class="p-10 text-center relative z-20">
-              <div class="relative w-20 h-20 mx-auto mb-8 group">
-                <div class="absolute inset-0 bg-gradient-to-tr from-rose-500 to-orange-500 rounded-2xl rotate-3 group-hover:rotate-12 transition-transform duration-300"></div>
-                <div class="absolute inset-0 bg-white dark:bg-dark-panel rounded-2xl flex items-center justify-center -rotate-3 group-hover:-rotate-12 transition-transform duration-300">
-                    <svg class="w-10 h-10 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 12l4 4m0-4l-4 4" />
-                    </svg>
-                </div>
-              </div>
-              
-              <h3 class="text-2xl font-black text-white mb-3 tracking-tight">Disconnect Calendar?</h3>
-              <p class="text-sm font-medium text-navy-200/80 leading-relaxed">
-                Your events will no longer sync with Google Calendar.
-              </p>
+            <div class="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-rose-100 dark:border-rose-500/20">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg" alt="Google Calendar" class="w-10 h-10">
             </div>
+            
+            <h3 class="text-2xl font-black text-navy-900 dark:text-text-primary mb-3">Disconnect Calendar?</h3>
+            <p class="text-navy-500 dark:text-text-muted text-sm font-medium mb-8 leading-relaxed">
+              Your future study sessions will no longer automatically sync to your Google Calendar.
+            </p>
 
-            <div class="p-6 bg-white/5 backdrop-blur-sm border-t border-white/10 flex gap-4 relative z-20">
-              <button @click="showDisconnectModal = false" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-navy-300 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10">
+            <div class="flex items-center gap-4">
+              <button @click="showDisconnectModal = false" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-navy-500 dark:text-text-muted hover:text-navy-900 dark:hover:text-text-primary hover:bg-[#E8EDF2] dark:hover:bg-white/5 transition-all border border-transparent">
                 Cancel
               </button>
-              <button @click="confirmDisconnect" class="flex-1 py-3.5 px-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white rounded-xl text-sm font-black shadow-lg shadow-rose-500/20 hover:shadow-rose-500/40 hover:-translate-y-0.5 transition-all">
-                Disconnect
+              <button @click="confirmDisconnect" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 transition-all shadow-md shadow-rose-500/20 hover:shadow-rose-500/30">
+                Yes, Disconnect
               </button>
             </div>
           </div>
@@ -252,7 +240,31 @@ function setTheme(theme) {
 function handleAvatarUpload(event) {
   const file = event.target.files[0]
   if (file) {
-    profileForm.value.avatar = URL.createObjectURL(file)
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const targetSize = 256;
+        canvas.width = targetSize;
+        canvas.height = targetSize;
+        const ctx = canvas.getContext('2d');
+
+        // Draw white background
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, targetSize, targetSize);
+
+        // Center crop calculation
+        const size = Math.min(img.width, img.height);
+        const startX = (img.width - size) / 2;
+        const startY = (img.height - size) / 2;
+
+        ctx.drawImage(img, startX, startY, size, size, 0, 0, targetSize, targetSize);
+        profileForm.value.avatar = canvas.toDataURL('image/jpeg', 0.85);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 }
 
@@ -263,6 +275,7 @@ function saveProfile() {
   
   // Save avatar to local storage first
   localStorage.setItem('lumora_avatar', profileForm.value.avatar ? profileForm.value.avatar : 'none')
+  window.dispatchEvent(new Event('avatar-updated'))
   
   // Update name in backend via Inertia
   router.patch(route('dashboard.profile.update'), {

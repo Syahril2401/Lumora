@@ -10,7 +10,7 @@
     <nav class="fixed top-0 inset-x-0 z-50 glass bg-white/85 dark:bg-[#111827]/85 border-b border-[#D9E2EC] dark:border-white/5 h-16 flex items-center justify-between px-8 transition-colors duration-300">
       <Link :href="route('landing')" class="flex items-center gap-3">
         <img src="/image/lumora_icon.svg" alt="Lumora logo" class="w-8 h-8 object-contain" />
-        <span class="text-xl font-bold tracking-tight"><span class="text-brand-500">Lum</span><span class="text-navy-500 dark:text-navy-300">ora</span></span>
+        <span class="text-xl font-bold tracking-tight text-brand-500">Lumora</span>
       </Link>
       <button class="text-sm font-bold text-navy-500 dark:text-text-muted hover:text-navy-900 dark:hover:text-text-primary transition-colors">Save & Exit</button>
     </nav>
@@ -339,7 +339,7 @@ onMounted(() => {
     
     // Theme sync
     const themeSaved = localStorage.getItem('theme')
-    if (themeSaved === 'dark' || (!themeSaved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    if (themeSaved === 'dark') {
         document.documentElement.classList.add('dark')
     } else {
         document.documentElement.classList.remove('dark')

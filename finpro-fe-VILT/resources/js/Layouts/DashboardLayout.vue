@@ -14,7 +14,7 @@
             <img src="/image/lumora_icon.svg" alt="Lumora logo" class="w-8 h-8 object-contain drop-shadow-md" />
           </div>
           <div v-if="isSidebarOpen" class="animate-fade-in whitespace-nowrap">
-              <span class="text-lg font-bold text-navy-900 dark:text-white tracking-tight block">Lumora</span>
+              <span class="text-lg font-bold text-brand-500 tracking-tight block">Lumora</span>
               <span class="text-[10px] font-mono text-brand-600 dark:text-brand-300 uppercase tracking-widest bg-brand-100 dark:bg-brand-900/50 px-2 py-0.5 rounded">Intelligent Sanctuary</span>
           </div>
         </div>
@@ -74,49 +74,21 @@
         
         <!-- Top Bar -->
         <header class="h-20 px-10 flex items-center justify-between bg-white dark:bg-[#0A0A0A] z-30 shrink-0 border-b border-[#D9E2EC] dark:border-dark-border">
-            <!-- Left Actions (Sidebar Toggle) -->
-            <div class="flex-1 flex items-center gap-4">
+            <!-- Left Actions & Search -->
+            <div class="flex-1 flex items-center gap-6">
                 <button v-if="!isSidebarOpen" @click="isSidebarOpen = true" class="p-2 -ml-2 rounded-xl text-navy-400 dark:text-text-muted hover:bg-[#F8FAFC] dark:hover:bg-dark-surface hover:text-navy-900 dark:hover:text-text-primary transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                </button>
+
+                <!-- Search Bar Trigger -->
+                <button @click="showSearchModal = true" class="hidden sm:flex items-center gap-3 bg-[#F8FAFC] dark:bg-dark-surface hover:bg-[#E8EDF2] dark:hover:bg-white/5 transition-colors border border-transparent dark:border-dark-border text-navy-400 dark:text-text-muted px-4 py-2.5 rounded-full w-[280px] lg:w-[400px] text-sm font-medium group">
+                    <svg class="w-4 h-4 group-hover:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <span class="flex-1 text-left">Search sessions, notes, or targets...</span>
                 </button>
             </div>
 
             <!-- Right Actions -->
             <div class="flex items-center gap-6">
-                <!-- Notifications -->
-                <div class="relative flex items-center">
-                  <button @click="toggleNotifications" class="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-text-muted dark:hover:text-text-primary transition-colors relative rounded-full hover:bg-slate-50 dark:hover:bg-white/5">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                      <div v-if="unreadCount > 0" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[8px] font-black rounded-full flex items-center justify-center">{{ unreadCount > 9 ? '9+' : unreadCount }}</div>
-                  </button>
-
-                  <!-- Notification Dropdown -->
-                  <Transition name="fade">
-                    <div v-if="showNotifPanel" class="absolute right-0 top-12 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden">
-                      <div class="p-4 border-b border-slate-100 flex items-center justify-between">
-                        <h3 class="text-sm font-black text-slate-900">Notifications</h3>
-                        <button v-if="unreadCount > 0" @click="markAllRead" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 transition-colors">Mark all read</button>
-                      </div>
-                      <div class="max-h-72 overflow-y-auto scrollbar-hide">
-                        <div v-if="notifications.length === 0" class="p-6 text-center text-xs font-bold text-slate-400">No notifications yet</div>
-                        <div v-for="notif in notifications" :key="notif.id" 
-                            @click="markRead(notif)"
-                            class="px-4 py-3 border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors flex gap-3"
-                            :class="{ 'bg-indigo-50/50': !notif.is_read }">
-                          <div class="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center text-xs" :class="notif.is_read ? 'bg-slate-100 text-slate-400' : 'bg-indigo-100 text-indigo-600'">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                          </div>
-                          <div class="min-w-0">
-                            <p class="text-xs font-bold text-slate-800 truncate">{{ notif.title }}</p>
-                            <p class="text-[10px] text-slate-400 truncate">{{ notif.message }}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </Transition>
-                </div>
-                <div class="h-6 w-px bg-[#D9E2EC] dark:bg-dark-border"></div>
-
                 <!-- User Profile -->
                 <Link :href="route('settings')" class="flex items-center gap-3 cursor-pointer group">
                     <span class="text-xs font-black text-navy-900 dark:text-text-primary group-hover:text-brand-500 transition-colors">{{ user.name }}</span>
@@ -176,12 +148,16 @@
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                             </div>
                             <p class="text-sm font-bold text-navy-900 dark:text-text-primary">How can I assist your deep work today?</p>
-                            <p class="text-[10px] text-navy-500 dark:text-text-muted mt-2">Ask about your tasks, focus techniques, or get schedule insights.</p>
+                            <p class="text-[10px] text-navy-500 dark:text-text-muted mt-2 mb-4">Ask about your tasks, focus techniques, or get schedule insights.</p>
+                            <button @click="loadHistory" class="px-4 py-2 bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 rounded-xl text-xs font-bold hover:bg-brand-100 dark:hover:bg-brand-500/20 transition-colors flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                Load Previous Chat Log
+                            </button>
                         </div>
 
                         <div v-for="(msg, index) in chatMessages" :key="index" class="max-w-[85%] text-xs font-medium p-3 shadow-sm"
-                            :class="msg.role === 'user' ? 'bg-brand-500 text-white self-end rounded-2xl rounded-tr-sm' : 'bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border text-navy-900 dark:text-text-primary self-start rounded-2xl rounded-tl-sm'">
-                            {{ msg.content }}
+                            :class="msg.role === 'user' ? 'bg-brand-500 text-white self-end rounded-2xl rounded-tr-sm' : 'bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border text-navy-900 dark:text-text-primary self-start rounded-2xl rounded-tl-sm chat-markdown'"
+                            v-html="parseMarkdown(msg.content)">
                         </div>
 
                         <!-- Loading State -->
@@ -208,35 +184,140 @@
                 class="w-16 h-16 bg-brand-600 hover:bg-brand-500 text-white rounded-[24px] flex items-center justify-center shadow-2xl shadow-brand-900/30 hover:scale-105 active:scale-95 transition-all group relative">
                 <svg v-if="!isChatOpen" class="w-7 h-7 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
                 <svg v-else class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                <div v-if="!isChatOpen" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full animate-bounce"></div>
+                <div v-if="!isChatOpen && unreadChat" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full animate-bounce"></div>
             </button>
         </div>
 
     </div>
-    <!-- Logout Modal -->
+    <!-- Search Modal -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="showSearchModal" class="fixed inset-0 z-[100] flex items-start justify-center pt-24 px-4 sm:px-0">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-[#0B1120]/50 dark:bg-black/80 backdrop-blur-sm" @click="showSearchModal = false"></div>
+          
+          <!-- Modal Content -->
+          <div class="bg-white dark:bg-dark-panel rounded-2xl w-full max-w-2xl relative z-10 shadow-2xl overflow-hidden border border-[#D9E2EC] dark:border-dark-border animate-slide-down">
+            
+            <!-- Search Input Header -->
+            <div class="flex items-center gap-4 px-6 py-5 border-b border-[#D9E2EC] dark:border-dark-border">
+                <svg v-if="!isSearching" class="w-5 h-5 text-navy-400 dark:text-text-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <svg v-else class="w-5 h-5 text-brand-500 shrink-0 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <input ref="searchInput" v-model="searchQuery" type="text" placeholder="Search notes, sessions, or targets..." autofocus
+                    class="flex-1 bg-transparent border-none text-navy-900 dark:text-text-primary text-lg font-medium outline-none placeholder-navy-300 dark:placeholder-text-faint focus:ring-0">
+                <button @click="showSearchModal = false" class="px-2 py-1 rounded-md bg-[#F3F4F6] dark:bg-dark-surface border border-[#D9E2EC] dark:border-dark-border text-[10px] font-bold text-navy-400 dark:text-text-muted tracking-widest shrink-0 hover:bg-[#E8EDF2] dark:hover:bg-white/10 transition-colors cursor-pointer">
+                    ESC
+                </button>
+            </div>
+
+            <div class="p-6 max-h-[60vh] overflow-y-auto">
+                <div v-if="searchQuery.trim() === ''">
+                    <p class="text-[10px] font-bold text-navy-400 dark:text-text-muted tracking-widest uppercase mb-4">Quick Actions</p>
+                    <div class="grid grid-cols-3 gap-4">
+                        <Link :href="route('notes')" @click="showSearchModal = false" class="flex flex-col items-center justify-center p-5 rounded-xl bg-[#F8FAFC] dark:bg-dark-surface hover:bg-[#E8EDF2] dark:hover:bg-white/5 border border-transparent hover:border-[#D9E2EC] dark:hover:border-dark-border transition-all hover:-translate-y-0.5 group">
+                            <div class="w-12 h-12 rounded-full bg-brand-50 dark:bg-brand-500/10 flex items-center justify-center text-brand-500 mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            </div>
+                            <span class="text-xs font-black text-navy-900 dark:text-text-primary">New Note</span>
+                        </Link>
+                        
+                        <Link :href="route('planner')" @click="showSearchModal = false" class="flex flex-col items-center justify-center p-5 rounded-xl bg-[#F8FAFC] dark:bg-dark-surface hover:bg-[#E8EDF2] dark:hover:bg-white/5 border border-transparent hover:border-[#D9E2EC] dark:hover:border-dark-border transition-all hover:-translate-y-0.5 group">
+                            <div class="w-12 h-12 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-500 mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <span class="text-xs font-black text-navy-900 dark:text-text-primary">New Plan</span>
+                        </Link>
+
+                        <button @click="showSearchModal = false; isChatOpen = true" class="flex flex-col items-center justify-center p-5 rounded-xl bg-[#F8FAFC] dark:bg-dark-surface hover:bg-[#E8EDF2] dark:hover:bg-white/5 border border-transparent hover:border-[#D9E2EC] dark:hover:border-dark-border transition-all hover:-translate-y-0.5 group">
+                            <div class="w-12 h-12 rounded-full bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center text-purple-500 mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0012 18.75c-1.03 0-1.9-.4-2.593-1.012l-.547-.547z"/></svg>
+                            </div>
+                            <span class="text-xs font-black text-navy-900 dark:text-text-primary">Ask AI</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search Results -->
+                <div v-else>
+                    <div v-if="searchResults.sessions?.length > 0" class="mb-6">
+                        <p class="text-[10px] font-bold text-navy-400 dark:text-text-muted tracking-widest uppercase mb-3">Planner Sessions</p>
+                        <div class="space-y-2">
+                            <Link v-for="item in searchResults.sessions" :key="item.id" :href="route('planner')" @click="showSearchModal = false"
+                                class="flex items-center gap-4 p-3 rounded-xl hover:bg-[#F8FAFC] dark:hover:bg-dark-surface transition-colors cursor-pointer border border-transparent hover:border-[#D9E2EC] dark:hover:border-dark-border group">
+                                <div class="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-500 shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-navy-900 dark:text-text-primary group-hover:text-brand-500 transition-colors">{{ item.title }}</h4>
+                                    <p class="text-xs text-navy-500 dark:text-text-muted truncate mt-0.5">{{ item.description || item.date }}</p>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div v-if="searchResults.targets?.length > 0" class="mb-6">
+                        <p class="text-[10px] font-bold text-navy-400 dark:text-text-muted tracking-widest uppercase mb-3">Weekly Targets</p>
+                        <div class="space-y-2">
+                            <Link v-for="item in searchResults.targets" :key="item.id" :href="route('targets')" @click="showSearchModal = false"
+                                class="flex items-center gap-4 p-3 rounded-xl hover:bg-[#F8FAFC] dark:hover:bg-dark-surface transition-colors cursor-pointer border border-transparent hover:border-[#D9E2EC] dark:hover:border-dark-border group">
+                                <div class="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-navy-900 dark:text-text-primary group-hover:text-brand-500 transition-colors">{{ item.title }}</h4>
+                                    <p class="text-xs text-navy-500 dark:text-text-muted truncate mt-0.5">{{ item.description || item.focus_dimension }}</p>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div v-if="searchResults.notes?.length > 0" class="mb-6">
+                        <p class="text-[10px] font-bold text-navy-400 dark:text-text-muted tracking-widest uppercase mb-3">Notes</p>
+                        <div class="space-y-2">
+                            <Link v-for="item in searchResults.notes" :key="item.id" :href="route('notes')" @click="showSearchModal = false"
+                                class="flex items-center gap-4 p-3 rounded-xl hover:bg-[#F8FAFC] dark:hover:bg-dark-surface transition-colors cursor-pointer border border-transparent hover:border-[#D9E2EC] dark:hover:border-dark-border group">
+                                <div class="w-10 h-10 rounded-lg bg-brand-50 dark:bg-brand-500/10 flex items-center justify-center text-brand-500 shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-navy-900 dark:text-text-primary group-hover:text-brand-500 transition-colors">{{ item.title }}</h4>
+                                    <p class="text-xs text-navy-500 dark:text-text-muted truncate mt-0.5">{{ item.content_text || 'Empty note' }}</p>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div v-if="!isSearching && !searchResults.sessions?.length && !searchResults.targets?.length && !searchResults.notes?.length" class="text-center py-10">
+                        <p class="text-navy-400 dark:text-text-muted text-sm font-bold">No results found for "{{ searchQuery }}"</p>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- Logout Confirmation Modal -->
     <Teleport to="body">
       <Transition name="fade">
         <div v-if="showLogoutModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div class="absolute inset-0 bg-[#0B1120]/80 dark:bg-black/80 backdrop-blur-md" @click="showLogoutModal = false"></div>
+          <div class="absolute inset-0 bg-[#0B1120]/60 dark:bg-black/60 backdrop-blur-sm" @click="showLogoutModal = false"></div>
           
-          <div class="bg-white dark:bg-dark-panel rounded-[2rem] w-full max-w-sm relative z-10 shadow-2xl overflow-hidden border border-[#D9E2EC] dark:border-dark-border animate-slide-up">
-            <div class="p-8 text-center">
-              <div class="w-16 h-16 bg-rose-50 dark:bg-rose-500/10 rounded-full flex items-center justify-center text-rose-500 mx-auto mb-6">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-              </div>
-              <h3 class="text-xl font-black text-navy-900 dark:text-text-primary mb-2">Ending your session?</h3>
-              <p class="text-navy-500 dark:text-text-muted text-sm font-medium mb-8">
-                Your active tasks will be saved securely for your next focus session.
-              </p>
-              
-              <div class="flex gap-3">
-                <button @click="showLogoutModal = false" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-navy-700 dark:text-text-primary bg-[#E8EDF2] dark:bg-dark-surface hover:bg-[#D9E2EC] dark:hover:bg-dark-border transition-colors">
-                  Cancel
-                </button>
-                <Link :href="route('logout')" method="post" as="button" class="flex-1 py-3 px-4 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-sm font-black shadow-lg shadow-rose-200 dark:shadow-none transition-colors">
-                  Sign Out
-                </Link>
-              </div>
+          <div class="bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border rounded-[32px] p-8 w-full max-w-md relative z-10 shadow-2xl animate-scale-up text-center">
+            <div class="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-rose-100 dark:border-rose-500/20">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            </div>
+            
+            <h3 class="text-2xl font-black text-navy-900 dark:text-text-primary mb-3">Log Out</h3>
+            <p class="text-navy-500 dark:text-text-muted text-sm font-medium mb-8 leading-relaxed">Are you sure you want to log out? You'll need to sign in again to access your workspace.</p>
+            
+            <div class="flex items-center gap-4">
+              <button @click="showLogoutModal = false" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-navy-500 dark:text-text-muted hover:text-navy-900 dark:hover:text-text-primary hover:bg-[#E8EDF2] dark:hover:bg-white/5 transition-all border border-transparent">
+                Cancel
+              </button>
+              <Link :href="route('logout')" method="post" as="button" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 transition-all shadow-md shadow-rose-500/20 hover:shadow-rose-500/30">
+                Yes, Log Out
+              </Link>
             </div>
           </div>
         </div>
@@ -247,17 +328,67 @@
 
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3'
-import { computed, ref, nextTick, onMounted, onUnmounted } from 'vue'
-import { assessmentApi, dashboardApi, setWorkspaceToken } from '@/services/workspaceApi'
+import { computed, ref, nextTick, onMounted, onUnmounted, watch } from 'vue'
+import { assessmentApi, dashboardApi, plannerApi, targetsApi, setWorkspaceToken } from '@/services/workspaceApi'
+import { notesApi } from '@/services/notesApi'
+import { isChatOpen, chatMessages, isSending, unreadChat, sendChatMessage, fetchChatHistory } from '@/store/chatStore'
 
-const isChatOpen = ref(false)
 const chatInput = ref('')
-const isSending = ref(false)
-const chatMessages = ref([])
 const chatContainer = ref(null)
 
 // Sidebar state
 const isSidebarOpen = ref(true)
+
+const parseMarkdown = (text) => {
+    if (!text) return '';
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-brand-500">$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em class="italic opacity-90">$1</em>')
+        .replace(/### (.*?)(\n|$)/g, '<h3 class="font-black text-[13px] mt-2 mb-1">$1</h3>\n')
+        .replace(/## (.*?)(\n|$)/g, '<h2 class="font-black text-[14px] mt-2 mb-1">$1</h2>\n')
+        .replace(/# (.*?)(\n|$)/g, '<h1 class="font-black text-[15px] mt-2 mb-1">$1</h1>\n')
+        .replace(/- (.*?)(\n|$)/g, '<li class="ml-3 list-disc">$1</li>\n')
+        .replace(/\n/g, '<br>');
+}
+
+// Search Modal state
+const showSearchModal = ref(false)
+const searchInput = ref(null)
+const searchQuery = ref('')
+const isSearching = ref(false)
+const searchResults = ref({ sessions: [], targets: [], notes: [] })
+let searchTimeout = null
+
+watch(searchQuery, (newVal) => {
+    if (searchTimeout) clearTimeout(searchTimeout)
+    if (!newVal || newVal.trim() === '') {
+        searchResults.value = { sessions: [], targets: [], notes: [] }
+        isSearching.value = false
+        return
+    }
+    
+    isSearching.value = true
+    searchTimeout = setTimeout(async () => {
+        try {
+            const results = await targetsApi.searchWorkspace(newVal.trim())
+            searchResults.value = results || { sessions: [], targets: [], notes: [] }
+        } catch (err) {
+            console.error("Search failed:", err)
+        } finally {
+            isSearching.value = false
+        }
+    }, 300)
+})
+
+watch(showSearchModal, (newVal) => {
+    if (newVal) {
+        searchQuery.value = ''
+        searchResults.value = { sessions: [], targets: [], notes: [] }
+        nextTick(() => {
+            searchInput.value?.focus()
+        })
+    }
+})
 
 // Logout Modal
 const showLogoutModal = ref(false)
@@ -265,11 +396,6 @@ const showLogoutModal = ref(false)
 // User Avatar state
 const savedAvatar = localStorage.getItem('lumora_avatar')
 const userAvatar = ref(savedAvatar === 'none' ? null : (savedAvatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200&h=200'))
-
-// Notification state
-const showNotifPanel = ref(false)
-const notifications = ref([])
-const unreadCount = computed(() => notifications.value.filter(n => !n.is_read).length)
 
 const props = defineProps({
     showBuddy: { type: Boolean, default: true },
@@ -287,43 +413,45 @@ if (page.props.go_token) {
 
 // Fetch notifications on mount
 onMounted(async () => {
-    try {
-        const res = await dashboardApi.getNotifications()
-        notifications.value = res?.data || []
-    } catch (e) {
-        console.log('Notifications not available:', e.message)
+    if (isChatOpen.value) {
+        await scrollToBottom()
     }
-    document.addEventListener('click', handleOutsideClick)
+
+    // Keyboard shortcut handler
+    const handleKeydown = (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault()
+            showSearchModal.value = true
+        }
+        if (e.key === 'Escape' && showSearchModal.value) {
+            showSearchModal.value = false
+        }
+    }
+    
+    window.addEventListener('keydown', handleKeydown)
+    
+    // Listen for avatar updates
+    const handleAvatarUpdate = () => {
+        const newAvatar = localStorage.getItem('lumora_avatar')
+        userAvatar.value = newAvatar === 'none' ? null : (newAvatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200&h=200')
+    }
+    window.addEventListener('avatar-updated', handleAvatarUpdate)
+    
+    // Store cleanup handler directly on the window object so we can remove it later
+    window._lumora_keydown_handler = handleKeydown
+    window._lumora_avatar_handler = handleAvatarUpdate
 })
 
 onUnmounted(() => {
-    document.removeEventListener('click', handleOutsideClick)
-})
-
-function handleOutsideClick(e) {
-    if (showNotifPanel.value && !e.target.closest('.relative')) {
-        showNotifPanel.value = false
+    if (window._lumora_keydown_handler) {
+        window.removeEventListener('keydown', window._lumora_keydown_handler)
+        delete window._lumora_keydown_handler
     }
-}
-
-function toggleNotifications() {
-    showNotifPanel.value = !showNotifPanel.value
-}
-
-async function markRead(notif) {
-    if (notif.is_read) return
-    try {
-        await dashboardApi.markNotificationRead(notif.id)
-        notif.is_read = true
-    } catch (e) { /* silent */ }
-}
-
-async function markAllRead() {
-    try {
-        await dashboardApi.markAllNotificationsRead()
-        notifications.value.forEach(n => n.is_read = true)
-    } catch (e) { /* silent */ }
-}
+    if (window._lumora_avatar_handler) {
+        window.removeEventListener('avatar-updated', window._lumora_avatar_handler)
+        delete window._lumora_avatar_handler
+    }
+})
 
 const scrollToBottom = async () => {
     await nextTick()
@@ -332,31 +460,25 @@ const scrollToBottom = async () => {
     }
 }
 
+watch(isChatOpen, async (val) => {
+    if (val) {
+        await scrollToBottom()
+    }
+})
+
 const sendMessage = async () => {
     const text = chatInput.value.trim()
     if (!text || isSending.value) return
-
-    chatMessages.value.push({ role: 'user', content: text })
+    
+    const currentText = text;
     chatInput.value = ''
-    isSending.value = true
+    
+    await sendChatMessage(currentText, page.props.srlProfile, scrollToBottom)
+}
+
+const loadHistory = async () => {
+    await fetchChatHistory()
     await scrollToBottom()
-
-    try {
-        const response = await assessmentApi.chat(text, JSON.stringify(page.props.srlProfile || {}))
-
-        if (response && response.success) {
-            chatMessages.value.push({ role: 'bot', content: response.data.reply })
-        } else {
-            chatMessages.value.push({ role: 'bot', content: 'Oops! Something went wrong.' })
-        }
-    } catch (err) {
-        console.error(err)
-        const errMsg = err.response?.data?.message || err.message || 'Network error. Please try again.'
-        chatMessages.value.push({ role: 'bot', content: 'Error: ' + errMsg })
-    } finally {
-        isSending.value = false
-        await scrollToBottom()
-    }
 }
 
 const navItems = [

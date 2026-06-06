@@ -67,16 +67,16 @@
             <p v-if="target.due_date" class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">Due: {{ target.due_date }}</p>
           </div>
           <div class="flex items-center gap-2 ml-4">
-            <button @click="openTargetModal(target)" class="w-9 h-9 rounded-xl bg-[#FAFAF9] dark:bg-dark-surface text-navy-400 dark:text-text-faint hover:bg-brand-50 dark:hover:bg-brand-500/10 hover:text-brand-500 flex items-center justify-center transition-colors">
+            <button @click="openTargetModal(target)" class="w-9 h-9 rounded-xl bg-[#E8EDF2] dark:bg-white/10 text-navy-500 dark:text-navy-300 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 dark:hover:text-white flex items-center justify-center transition-all shadow-sm border border-[#D9E2EC] dark:border-white/10 hover:border-brand-500 hover:shadow-md" title="Edit Target">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             </button>
-            <a :href="`/dashboard/planner?target_id=${target.id}`" class="w-9 h-9 rounded-xl bg-[#FAFAF9] dark:bg-dark-surface text-navy-400 dark:text-text-faint hover:bg-sky-50 dark:hover:bg-sky-500/10 hover:text-sky-500 flex items-center justify-center transition-colors" title="Schedule Session">
+            <a :href="`/dashboard/planner?target_id=${target.id}`" class="w-9 h-9 rounded-xl bg-[#E8EDF2] dark:bg-white/10 text-navy-500 dark:text-navy-300 hover:bg-sky-500 hover:text-white dark:hover:bg-sky-500 dark:hover:text-white flex items-center justify-center transition-all shadow-sm border border-[#D9E2EC] dark:border-white/10 hover:border-sky-500 hover:shadow-md" title="Schedule Session">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
             </a>
-            <a :href="`/dashboard/notes?target_id=${target.id}`" class="w-9 h-9 rounded-xl bg-[#FAFAF9] dark:bg-dark-surface text-navy-400 dark:text-text-faint hover:bg-purple-50 dark:hover:bg-purple-500/10 hover:text-purple-500 flex items-center justify-center transition-colors" title="Add Reflection">
+            <a :href="`/dashboard/notes?target_id=${target.id}`" class="w-9 h-9 rounded-xl bg-[#E8EDF2] dark:bg-white/10 text-navy-500 dark:text-navy-300 hover:bg-purple-500 hover:text-white dark:hover:bg-purple-500 dark:hover:text-white flex items-center justify-center transition-all shadow-sm border border-[#D9E2EC] dark:border-white/10 hover:border-purple-500 hover:shadow-md" title="Add Reflection">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
             </a>
-            <button @click="deleteTarget(target.id)" class="w-9 h-9 rounded-xl bg-[#FAFAF9] dark:bg-dark-surface text-navy-400 dark:text-text-faint hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500 flex items-center justify-center transition-colors">
+            <button @click="confirmDeleteTarget(target.id)" class="w-9 h-9 rounded-xl bg-[#E8EDF2] dark:bg-white/10 text-navy-500 dark:text-navy-300 hover:bg-rose-500 hover:text-white dark:hover:bg-rose-500 dark:hover:text-white flex items-center justify-center transition-all shadow-sm border border-[#D9E2EC] dark:border-white/10 hover:border-rose-500 hover:shadow-md" title="Delete Target">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
@@ -170,6 +170,33 @@
       </div>
     </Teleport>
 
+    <!-- Delete Target Modal -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="showDeleteModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div class="absolute inset-0 bg-[#0B1120]/60 dark:bg-black/60 backdrop-blur-sm" @click="showDeleteModal = false"></div>
+          
+          <div class="bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border rounded-[32px] p-8 w-full max-w-md relative z-10 shadow-2xl animate-scale-up text-center">
+            <div class="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-rose-100 dark:border-rose-500/20">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            
+            <h3 class="text-2xl font-black text-navy-900 dark:text-text-primary mb-3">Delete Target</h3>
+            <p class="text-navy-500 dark:text-text-muted text-sm font-medium mb-8 leading-relaxed">Are you sure you want to delete this target and all its subtasks? This action cannot be undone.</p>
+            
+            <div class="flex items-center gap-4">
+              <button @click="showDeleteModal = false" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-navy-500 dark:text-text-muted hover:text-navy-900 dark:hover:text-text-primary hover:bg-[#E8EDF2] dark:hover:bg-white/5 transition-all border border-transparent">
+                Cancel
+              </button>
+              <button @click="executeDelete" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 transition-all shadow-md shadow-rose-500/20 hover:shadow-rose-500/30">
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <!-- Toast -->
     <Teleport to="body">
       <div v-if="toast" class="fixed bottom-6 right-6 z-50 bg-navy-900 dark:bg-dark-panel border border-navy-800 dark:border-dark-border shadow-2xl rounded-2xl p-4 flex items-center gap-3 animate-slide-up">
@@ -185,7 +212,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { targetsApi, setWorkspaceToken } from '@/services/workspaceApi'
@@ -194,6 +221,8 @@ const page = usePage()
 const isLoading = ref(true)
 const isSaving = ref(false)
 const showTargetModal = ref(false)
+const showDeleteModal = ref(false)
+const targetToDelete = ref(null)
 const editingTarget = ref(null)
 const targets = ref([])
 const summary = ref({})
@@ -217,6 +246,11 @@ const insightMessage = computed(() => {
 onMounted(async () => {
   setWorkspaceToken(page.props.go_token)
   await fetchTargets()
+  window.addEventListener('target-updated', fetchTargets)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('target-updated', fetchTargets)
 })
 
 async function fetchTargets() {
@@ -262,8 +296,14 @@ async function saveTarget() {
   }
 }
 
-async function deleteTarget(id) {
-  if (!confirm('Delete this target and all its subtasks?')) return
+function confirmDeleteTarget(id) {
+  targetToDelete.value = id
+  showDeleteModal.value = true
+}
+
+async function executeDelete() {
+  if (!targetToDelete.value) return
+  const id = targetToDelete.value
   try {
     await targetsApi.deleteTarget(id)
     targets.value = targets.value.filter(t => t.id !== id)
@@ -271,6 +311,9 @@ async function deleteTarget(id) {
     await fetchTargets()
   } catch (err) {
     showToast('Failed to delete.', 'error')
+  } finally {
+    showDeleteModal.value = false
+    targetToDelete.value = null
   }
 }
 

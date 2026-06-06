@@ -30,6 +30,7 @@ class AuthController extends Controller
         $result = $this->api->login($validated);
 
         if ($result['success'] ?? false) {
+            $request->session()->forget('survey_completed');
             return redirect()->route('dashboard');
         }
 
@@ -77,9 +78,13 @@ class AuthController extends Controller
 
     // ─── Logout ────────────────────────────────────────────────────────────────
 
-    public function logout(): \Illuminate\Http\RedirectResponse
+    public function logout(Request $request): \Illuminate\Http\RedirectResponse
     {
         $this->api->logout();
+        
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
         return redirect()->route('landing');
     }
 }

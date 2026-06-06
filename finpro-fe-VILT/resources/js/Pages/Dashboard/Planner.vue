@@ -127,15 +127,15 @@
                    </div>
                    <div v-for="session in getSessionsForDate(day.dateStr)" :key="session.id" 
                       @click.stop="openModal(session)"
-                      class="absolute left-1 right-1 rounded-[12px] p-3 cursor-pointer shadow-sm hover:shadow-md transition-all overflow-hidden group flex flex-col border border-white/20 dark:border-white/5 z-10"
+                      class="absolute left-1 right-1 rounded-[10px] p-1.5 px-2 cursor-pointer shadow-sm hover:shadow-md transition-all overflow-hidden group flex flex-col border border-white/20 dark:border-white/5 z-10"
                       :style="getSessionStyle(session)"
                       :class="getSessionColor(session)">
-                      <div class="flex justify-between items-start mb-1">
-                         <span class="text-[10px] font-bold opacity-70">{{ session.start_time.substring(0,5) }}</span>
+                      <div class="flex justify-between items-start mb-0.5">
+                         <span class="text-[10px] font-bold opacity-70 leading-none">{{ session.start_time.substring(0,5) }}</span>
                       </div>
-                      <p class="text-xs font-bold leading-tight line-clamp-2 mb-1 group-hover:underline">{{ session.title }}</p>
-                      <div v-if="session.status === 'completed'" class="mt-auto self-end w-4 h-4 bg-white/20 rounded-full flex items-center justify-center">
-                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                      <p class="text-[11px] font-bold leading-tight line-clamp-2 group-hover:underline">{{ session.title }}</p>
+                      <div v-if="session.status === 'completed'" class="absolute bottom-1.5 right-1.5 w-3.5 h-3.5 bg-white/30 rounded-full flex items-center justify-center">
+                          <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                       </div>
                    </div>
                 </div>
@@ -243,34 +243,22 @@
     <Teleport to="body">
       <Transition name="fade">
         <div v-if="showDeleteModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div class="absolute inset-0 bg-[#0B1120]/80 dark:bg-black/80 backdrop-blur-md" @click="showDeleteModal = false"></div>
+          <div class="absolute inset-0 bg-[#0B1120]/60 dark:bg-black/60 backdrop-blur-sm" @click="showDeleteModal = false"></div>
           
-          <div class="bg-gradient-to-b from-navy-900 to-black dark:from-dark-panel dark:to-black rounded-[2rem] w-full max-w-md relative z-10 shadow-2xl overflow-hidden border border-brand-500/20 animate-slide-up">
-            
-            <!-- Decorative Blobs -->
-            <div class="absolute -top-24 -right-24 w-48 h-48 bg-brand-500/30 blur-[50px] rounded-full pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-rose-500/20 blur-[50px] rounded-full pointer-events-none"></div>
-
-            <div class="p-10 text-center relative z-20">
-              <div class="relative w-20 h-20 mx-auto mb-8 group">
-                <div class="absolute inset-0 bg-gradient-to-tr from-rose-500 to-orange-500 rounded-2xl rotate-3 group-hover:rotate-12 transition-transform duration-300"></div>
-                <div class="absolute inset-0 bg-white dark:bg-dark-surface rounded-2xl flex items-center justify-center -rotate-3 group-hover:-rotate-12 transition-transform duration-300">
-                    <svg class="w-10 h-10 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </div>
-              </div>
-              
-              <h3 class="text-2xl font-black text-white mb-3 tracking-tight">Delete Event?</h3>
-              <p class="text-sm font-medium text-navy-200/80 leading-relaxed">
-                This event will be permanently removed from your planner and Google Calendar.
-              </p>
+          <div class="bg-white dark:bg-dark-panel border border-[#D9E2EC] dark:border-dark-border rounded-[32px] p-8 w-full max-w-md relative z-10 shadow-2xl animate-scale-up text-center">
+            <div class="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-rose-100 dark:border-rose-500/20">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </div>
-
-            <div class="p-6 bg-white/5 backdrop-blur-sm border-t border-white/10 flex gap-4 relative z-20">
-              <button @click="showDeleteModal = false" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-navy-300 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10">
+            
+            <h3 class="text-2xl font-black text-navy-900 dark:text-text-primary mb-3">Delete Session</h3>
+            <p class="text-navy-500 dark:text-text-muted text-sm font-medium mb-8 leading-relaxed">Are you sure you want to delete this session? This action cannot be undone.</p>
+            
+            <div class="flex items-center gap-4">
+              <button @click="showDeleteModal = false" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-navy-500 dark:text-text-muted hover:text-navy-900 dark:hover:text-text-primary hover:bg-[#E8EDF2] dark:hover:bg-white/5 transition-all border border-transparent">
                 Cancel
               </button>
-              <button @click="deleteSession" class="flex-1 py-3.5 px-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white rounded-xl text-sm font-black shadow-lg shadow-rose-900/50 hover:shadow-rose-900/80 hover:-translate-y-0.5 transition-all">
-                Delete Event
+              <button @click="deleteSession" class="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 transition-all shadow-md shadow-rose-500/20 hover:shadow-rose-500/30">
+                Yes, Delete
               </button>
             </div>
           </div>
@@ -282,7 +270,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { plannerApi, setWorkspaceToken } from '@/services/workspaceApi'
@@ -422,10 +410,26 @@ function goToToday() {
 }
 
 onMounted(async () => {
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('view')) {
+      viewMode.value = params.get('view')
+  }
+
   setWorkspaceToken(page.props.go_token)
   await fetchSessions()
   nextTick(() => {
       if (calendarBody.value) calendarBody.value.scrollTop = 8 * 64 - 32
+  })
+  window.addEventListener('planner-updated', fetchSessions)
+  window.addEventListener('planner-deleted', (e) => {
+    sessions.value = sessions.value.filter(s => s.id !== e.detail)
+  })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('planner-updated', fetchSessions)
+  window.removeEventListener('planner-deleted', (e) => {
+    sessions.value = sessions.value.filter(s => s.id !== e.detail)
   })
 })
 
@@ -481,7 +485,7 @@ function getSessionStyle(session) {
   const [endH, endM] = (session.end_time || '01:00').split(':').map(Number)
   const top = (startH * 60 + startM) * (64 / 60)
   const height = ((endH * 60 + endM) - (startH * 60 + startM)) * (64 / 60)
-  return { top: `${top}px`, height: `${Math.max(height, 24)}px` }
+  return { top: `${top}px`, height: `${Math.max(height, 38)}px` }
 }
 
 function getSessionColor(session) {

@@ -56,6 +56,12 @@
     @apply text-ink-secondary px-4 py-2 rounded-xl font-medium text-sm 
            hover:bg-surface hover:text-ink transition-all duration-200;
   }
+  .btn-primary {
+    background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
+  }
   .lumora-input {
     @apply w-full bg-surface rounded-xl border border-border px-4 py-3 text-sm text-ink
            placeholder-ink-muted focus:outline-none focus:ring-2 focus:ring-lumora-200 
@@ -77,6 +83,13 @@
 }
 
 /* ── Transitions ──────────────────────────────────────────────────── */
+/* Smooth Theme Transitions */
+*, ::before, ::after {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.25s ease;

@@ -140,6 +140,11 @@ export const targetsApi = {
   async toggleSubtask(targetId, subtaskId) {
     const res = await axios.patch(`${API_URL}/weekly-targets/${targetId}/subtasks/${subtaskId}/toggle`, {}, { headers: headers() });
     return res.data.data;
+  },
+
+  async searchWorkspace(query) {
+    const res = await axios.get(`${API_URL}/search?q=${encodeURIComponent(query)}`, { headers: headers() });
+    return res.data.data;
   }
 };
 
@@ -160,5 +165,11 @@ export const assessmentApi = {
         learning_profile: learningProfile
     }, { headers: headers() });
     return res.data;
+  },
+  
+  async getChatHistory() {
+    const BASE_URL = 'http://localhost:8008/api/assessment';
+    const res = await axios.get(`${BASE_URL}/chat/history`, { headers: headers() });
+    return res.data.data;
   }
 };

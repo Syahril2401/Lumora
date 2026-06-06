@@ -13,7 +13,7 @@
         
         <div class="relative z-10 flex items-center gap-3 mb-12">
             <img src="/image/lumora_icon.svg" alt="Lumora logo" class="w-8 h-8 object-contain" />
-            <span class="text-2xl font-bold tracking-tight"><span class="text-brand-500">Lum</span><span class="text-navy-500 dark:text-navy-300">ora</span></span>
+            <span class="text-2xl font-bold tracking-tight text-brand-500">Lumora</span>
         </div>
 
         <div class="relative z-10 flex flex-col items-center">
@@ -117,7 +117,7 @@ onMounted(() => {
 
     // Theme sync
     const saved = localStorage.getItem('theme')
-    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    if (saved === 'dark') {
         document.documentElement.classList.add('dark')
     } else {
         document.documentElement.classList.remove('dark')
