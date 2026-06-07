@@ -1,35 +1,67 @@
 // API Service for Lumora Mobile
 // Connects to the Go backend at localhost:8008
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
+import Constants from 'expo-constants';
 
-// Change this to your computer's local IP if testing on a physical device
-// e.g., 'http://192.168.1.100:8008'
-const BASE_URL = 'http://10.39.30.165:8008'; // Physical Device via Wi-Fi
-const PHYSICAL_DEVICE_URL = 'http://192.168.0.100:8008'; // Will be configured
-
-// Detect and use correct URL
+// Detect and use correct URL dynamically
 export const getBaseUrl = () => {
-  // For physical devices connected via USB, use your PC's local network IP
-  // For emulators, 10.0.2.2 maps to localhost
-  return BASE_URL;
+  // In development with Expo Go, this gets the current local IP automatically
+  const debuggerHost = Constants.expoConfig?.hostUri;
+  if (debuggerHost) {
+    // debuggerHost is like "192.168.1.56:8081", we just want the IP
+    const ip = debuggerHost.split(':')[0];
+    return `http://${ip}:8008`;
+  }
+
+  // Fallback IP if running outside of Expo Go / production
+  return 'http://192.168.1.56:8008';
+};
+
+export const getAvatarUrl = (path: string): string | null => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+
+  const debuggerHost = Constants.expoConfig?.hostUri;
+  const ip = debuggerHost ? debuggerHost.split(':')[0] : '192.168.1.56';
+
+  // Avatar path from DB is like "/storage/avatars/xxx.jpg"
+  // Go backend now serves this at http://IP:8008/storage/avatars/xxx.jpg
+  if (path.startsWith('/storage/')) {
+    return `http://${ip}:8008${path}`;
+  }
+
+  // Go-uploaded avatars served at /uploads/
+  if (path.startsWith('/uploads/')) {
+    return `http://${ip}:8008${path}`;
+  }
+
+  return `http://${ip}:8008${path}`;
 };
 
 // Token management
 export const getToken = async (): Promise<string | null> => {
   try {
-    return await AsyncStorage.getItem('auth_token');
+    return await SecureStore.getItemAsync('auth_token');
   } catch {
     return null;
   }
 };
 
 export const setToken = async (token: string): Promise<void> => {
-  await AsyncStorage.setItem('auth_token', token);
+  try {
+    await SecureStore.setItemAsync('auth_token', token);
+  } catch (e) {
+    console.error('Error saving token', e);
+  }
 };
 
 export const removeToken = async (): Promise<void> => {
-  await AsyncStorage.removeItem('auth_token');
+  try {
+    await SecureStore.deleteItemAsync('auth_token');
+  } catch (e) {
+    console.error('Error removing token', e);
+  }
 };
 
 // Generic fetch wrapper
@@ -87,6 +119,25 @@ export const authApi = {
     return res;
   },
 
+  getMe: async () => {
+    return await apiRequest('/auth/me', {
+      method: 'GET',
+    });
+  },
+
+  updateProfile: async (formData: FormData) => {
+    const token = await getToken();
+    const baseUrl = getBaseUrl();
+    const res = await fetch(`${baseUrl}/api/auth/profile`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+    return await res.json();
+  },
+
   logout: async () => {
     await removeToken();
   },
@@ -137,6 +188,9 @@ export const plannerApi = {
     apiRequest(`/dashboard/planner/${id}/complete`, { method: 'PATCH' }),
   skipSession: (id: string) =>
     apiRequest(`/dashboard/planner/${id}/skip`, { method: 'PATCH' }),
+  getGoogleEvents: () => apiRequest('/dashboard/calendar/events'),
+  getGoogleStatus: () => apiRequest('/dashboard/calendar/status'),
+  disconnectGoogle: () => apiRequest('/dashboard/calendar/disconnect', { method: 'DELETE' }),
 };
 
 // ─── Targets API ────────────────────────────────────────────
@@ -154,6 +208,15 @@ export const targetsApi = {
     }),
   deleteTarget: (id: string) =>
     apiRequest(`/dashboard/weekly-targets/${id}`, { method: 'DELETE' }),
+  createSubtask: (targetId: string, data: any) =>
+    apiRequest(`/dashboard/weekly-targets/${targetId}/subtasks`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  deleteSubtask: (targetId: string, subtaskId: string) =>
+    apiRequest(`/dashboard/weekly-targets/${targetId}/subtasks/${subtaskId}`, {
+      method: 'DELETE',
+    }),
   toggleSubtask: (targetId: string, subtaskId: string) =>
     apiRequest(`/dashboard/weekly-targets/${targetId}/subtasks/${subtaskId}/toggle`, {
       method: 'PATCH',
@@ -163,6 +226,7 @@ export const targetsApi = {
 // ─── Notes API ──────────────────────────────────────────────
 export const notesApi = {
   getNotes: () => apiRequest('/dashboard/notes'),
+  getTemplates: () => apiRequest('/dashboard/notes/templates'),
   createNote: (data: any) =>
     apiRequest('/dashboard/notes', {
       method: 'POST',

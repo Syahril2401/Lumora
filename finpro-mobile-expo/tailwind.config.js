@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./src/app/**/*.{js,jsx,ts,tsx}",
     "./src/components/**/*.{js,jsx,ts,tsx}",
@@ -35,6 +36,42 @@ module.exports = {
           DEFAULT: '#E5E7EB',
           light: '#F3F4F6',
         },
+        brand: {
+          50: '#FFF7ED',
+          100: '#FFEDD5',
+          200: '#FED7AA',
+          300: '#FDBA74',
+          400: '#FB923C',
+          500: '#F97316',
+          600: '#EA580C',
+          700: '#C2410C',
+          800: '#9A3412',
+          900: '#7C2D12'
+        },
+        navy: {
+          50: '#F0F4F8',
+          100: '#D9E2EC',
+          200: '#BCCCDC',
+          300: '#9FB3C8',
+          400: '#829AB1',
+          500: '#627D98',
+          600: '#486581',
+          700: '#334E68',
+          800: '#243B53',
+          900: '#102A43'
+        },
+        text: {
+          primary: '#F0F4F8',
+          secondary: '#BCCCDC',
+          muted: '#829AB1',
+          faint: '#627D98',
+        },
+        dark: {
+          bg: '#0C1222',
+          panel: '#111827',
+          surface: '#1E293B',
+          border: 'rgba(255,255,255,0.05)',
+        }
       },
       borderRadius: {
         '2xl': '16px',
