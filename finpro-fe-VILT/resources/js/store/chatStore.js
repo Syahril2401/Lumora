@@ -111,11 +111,19 @@ export const sendChatMessage = async (text, srlProfile, scrollToBottomCallback) 
                         }
                         
                         console.log('[Lumora AI] Creating target with subtasks:', subtaskInputs);
+                        // Calculate default due_date (end of current week - Sunday)
+                        const today = new Date();
+                        const dayOfWeek = today.getDay();
+                        const sunday = new Date(today);
+                        sunday.setDate(today.getDate() + (7 - dayOfWeek));
+                        const defaultDueDate = sunday.toISOString().split('T')[0];
+
                         const newTarget = await targetsApi.createTarget({
                             title: actionData.title || 'AI Weekly Target',
-                            description: actionData.description || 'Target defined by Lumora Buddy',
+                            description: actionData.description || '',
                             focus_dimension: 'General',
                             priority: 'medium',
+                            due_date: actionData.due_date || defaultDueDate,
                             subtasks: subtaskInputs
                         });
                         console.log('[Lumora AI] createTarget response:', newTarget);

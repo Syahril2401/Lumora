@@ -48,7 +48,7 @@ func (r *targetRepository) GetByID(ctx context.Context, id, userID string) (*mod
 func (r *targetRepository) GetByWeek(ctx context.Context, userID string, weekStart, weekEnd string) ([]model.Target, error) {
 	var targets []model.Target
 	err := r.db.WithContext(ctx).Preload("Subtasks").
-		Where("user_id = ? AND ((due_date >= ? AND due_date <= ?) OR due_date IS NULL)", userID, weekStart, weekEnd).
+		Where("user_id = ? AND ((due_date >= ? AND due_date <= ?) OR due_date IS NULL OR due_date = '' OR due_date = '0000-00-00')", userID, weekStart, weekEnd).
 		Order("created_at DESC").Find(&targets).Error
 	return targets, err
 }

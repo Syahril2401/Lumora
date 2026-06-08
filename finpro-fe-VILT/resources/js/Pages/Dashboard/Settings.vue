@@ -23,20 +23,11 @@
               <h3 class="text-xl font-black text-navy-900 dark:text-text-primary">{{ profileForm.name }}</h3>
               <p class="text-sm font-medium text-navy-500 dark:text-text-muted mt-1 mb-6">{{ profileForm.role }}</p>
               
-              <div class="w-full pt-6 border-t border-[#D9E2EC] dark:border-dark-border grid grid-cols-2 gap-4">
-                <div class="text-center">
-                  <p class="text-2xl font-black text-navy-900 dark:text-text-primary">124</p>
-                  <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mt-1">Sessions</p>
-                </div>
-                <div class="text-center">
-                  <p class="text-2xl font-black text-navy-900 dark:text-text-primary">92%</p>
-                  <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mt-1">Focus Rate</p>
-                </div>
+              <div class="w-full pt-6 border-t border-[#D9E2EC] dark:border-dark-border flex justify-center">
+                <button @click="showEditProfileModal = true" class="w-12 h-12 rounded-full bg-navy-900 dark:bg-brand-500 text-white flex items-center justify-center hover:bg-brand-500 dark:hover:bg-brand-400 transition-colors shadow-glow" title="Edit Profile">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                </button>
               </div>
-              
-              <button @click="showEditProfileModal = true" class="mt-8 w-12 h-12 rounded-full bg-navy-900 dark:bg-brand-500 text-white flex items-center justify-center hover:bg-brand-500 dark:hover:bg-brand-400 transition-colors shadow-glow">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-              </button>
             </div>
             <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-brand-500/10 dark:bg-brand-500/5 rounded-full blur-3xl z-0"></div>
           </div>

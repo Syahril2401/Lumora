@@ -137,10 +137,10 @@ For editing a planner session:
 For deleting a planner session:
 {"action": "delete_planner", "id": "PLANNER_ID"}
 
-For creating a weekly target/goal:
-{"action": "create_target", "title": "Target Name", "description": "Brief description", "subtasks": ["Specific subtask 1"]}
+For creating a weekly target/goal (due_date is REQUIRED, description is optional):
+{"action": "create_target", "title": "Target Name", "due_date": "YYYY-MM-DD", "subtasks": ["Specific subtask 1"]}
 For editing a weekly target:
-{"action": "edit_target", "id": "TARGET_ID", "title": "New Title", "description": "New description"}
+{"action": "edit_target", "id": "TARGET_ID", "title": "New Title", "due_date": "YYYY-MM-DD"}
 For deleting a weekly target:
 {"action": "delete_target", "id": "TARGET_ID"}
 

@@ -9,7 +9,7 @@
         <h1 class="text-[32px] font-black text-navy-900 dark:text-text-primary mb-2 tracking-tight">{{ greeting }}, {{ userName }}. Ready for a deep focus session?</h1>
         <p class="text-navy-500 dark:text-text-muted font-medium text-sm flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-            Your cognitive readiness is at <strong class="text-navy-700 dark:text-text-primary">94%</strong> today. Optimal for intensive study.
+            Organize your tasks, stay focused, and achieve your targets today.
         </p>
     </div>
 

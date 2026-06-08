@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"finpro/model"
 	"finpro/repository"
 	"finpro/service"
 	"net/http"
@@ -20,7 +21,15 @@ func NewTargetController(svc service.TargetService) *TargetController {
 func (ctrl *TargetController) GetTargets(c *gin.Context) {
 	userID := c.MustGet("userID").(string)
 	weekParam := c.Query("week")
-	targets, err := ctrl.svc.GetByWeek(c.Request.Context(), userID, weekParam)
+	
+	var targets []model.Target
+	var err error
+	if weekParam == "" {
+		targets, err = ctrl.svc.GetAll(c.Request.Context(), userID)
+	} else {
+		targets, err = ctrl.svc.GetByWeek(c.Request.Context(), userID, weekParam)
+	}
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

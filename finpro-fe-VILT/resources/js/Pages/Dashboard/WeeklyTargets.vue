@@ -64,7 +64,7 @@
             </div>
             <h4 class="text-lg font-black text-navy-900 dark:text-text-primary">{{ target.title }}</h4>
             <p v-if="target.description" class="text-sm font-medium text-navy-500 dark:text-text-muted mt-1">{{ target.description }}</p>
-            <p v-if="target.due_date" class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">Due: {{ target.due_date }}</p>
+            <p v-if="target.due_date" class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">Due: {{ formatDate(target.due_date) }}</p>
           </div>
           <div class="flex items-center gap-2 ml-4">
             <button @click="openTargetModal(target)" class="w-9 h-9 rounded-xl bg-[#E8EDF2] dark:bg-white/10 text-navy-500 dark:text-navy-300 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 dark:hover:text-white flex items-center justify-center transition-all shadow-sm border border-[#D9E2EC] dark:border-white/10 hover:border-brand-500 hover:shadow-md" title="Edit Target">
@@ -120,6 +120,10 @@
       <div v-if="showTargetModal" class="fixed inset-0 bg-[#0B1120]/60 dark:bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showTargetModal = false">
         <div class="bg-white dark:bg-dark-panel rounded-[32px] p-8 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto animate-slide-up border border-[#D9E2EC] dark:border-dark-border">
           <h2 class="text-xl font-black text-navy-900 dark:text-text-primary mb-6">{{ editingTarget ? 'Edit Target' : 'Add Weekly Target' }}</h2>
+          <div v-if="formError" class="mb-4 p-3 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-xl text-sm font-bold flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            {{ formError }}
+          </div>
           <form @submit.prevent="saveTarget" class="space-y-5">
             <div>
               <label class="block text-[11px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Title *</label>
@@ -228,6 +232,7 @@ const targets = ref([])
 const summary = ref({})
 const newSubtask = reactive({})
 const toast = ref(null)
+const formError = ref('')
 
 const dimensions = ['General', 'Planning', 'Time Management', 'Cognitive Strategy', 'Reflection']
 
@@ -268,9 +273,10 @@ async function fetchTargets() {
 }
 
 function openTargetModal(target = null) {
+  formError.value = ''
   editingTarget.value = target
   if (target) {
-    targetForm.value = { title: target.title, description: target.description, focus_dimension: target.focus_dimension, priority: target.priority, due_date: target.due_date || '', subtasks: [] }
+    targetForm.value = { title: target.title, description: target.description, focus_dimension: target.focus_dimension, priority: target.priority, due_date: target.due_date ? target.due_date.split('T')[0] : '', subtasks: [] }
   } else {
     targetForm.value = { title: '', description: '', focus_dimension: 'General', priority: 'medium', due_date: '', subtasks: [{ title: '' }] }
   }
@@ -278,6 +284,27 @@ function openTargetModal(target = null) {
 }
 
 async function saveTarget() {
+  formError.value = ''
+  if (!targetForm.value.title?.trim()) {
+    formError.value = 'Target title is required.'
+    return
+  }
+  if (!targetForm.value.due_date) {
+    formError.value = 'Target due date is required.'
+    return
+  }
+  if (!editingTarget.value) {
+    const validSubtasks = targetForm.value.subtasks.filter(st => st.title?.trim())
+    if (validSubtasks.length === 0) {
+      formError.value = 'At least one subtask is required.'
+      return
+    }
+    if (validSubtasks.length < targetForm.value.subtasks.length) {
+      formError.value = 'Please fill all subtasks or remove empty ones.'
+      return
+    }
+  }
+
   isSaving.value = true
   try {
     if (editingTarget.value) {
@@ -328,7 +355,10 @@ async function toggleSubtask(targetId, subtaskId) {
 
 async function addSubtask(targetId) {
   const title = newSubtask[targetId]?.trim()
-  if (!title) return
+  if (!title) {
+    showToast('Subtask title cannot be empty.', 'error')
+    return
+  }
   try {
     await targetsApi.createSubtask(targetId, { title })
     newSubtask[targetId] = ''
@@ -361,5 +391,11 @@ function priorityClass(p) {
 function statusBadge(s) {
   const map = { completed: 'bg-emerald-50 text-emerald-500', in_progress: 'bg-blue-50 text-blue-500', not_started: 'bg-slate-50 text-slate-400', paused: 'bg-amber-50 text-amber-500' }
   return map[s] || 'bg-slate-50 text-slate-400'
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 </script>

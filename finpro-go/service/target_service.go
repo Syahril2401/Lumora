@@ -71,6 +71,10 @@ func (s *targetService) Create(ctx context.Context, userID string, req CreateTar
 	if req.Priority == "" {
 		req.Priority = "medium"
 	}
+	// Normalize empty due_date to nil
+	if req.DueDate != nil && *req.DueDate == "" {
+		req.DueDate = nil
+	}
 	now := time.Now()
 	_, week := now.ISOWeek()
 	year := now.Year()

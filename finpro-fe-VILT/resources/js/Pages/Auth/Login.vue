@@ -6,6 +6,12 @@
     <div class="absolute top-10 right-0 w-[500px] h-[500px] bg-brand-300/10 dark:bg-brand-500/5 rounded-full blur-[140px]"></div>
     <div class="absolute bottom-0 left-[5%] w-[350px] h-[350px] bg-navy-300/8 dark:bg-navy-500/5 rounded-full blur-[100px]"></div>
 
+    <!-- Back Button -->
+    <Link :href="route('landing')" class="absolute top-6 left-6 md:top-10 md:left-10 z-20 flex items-center gap-2 text-navy-500 hover:text-brand-500 dark:text-text-muted dark:hover:text-brand-400 font-bold text-sm transition-colors group">
+      <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Back to Home
+    </Link>
+
     <!-- Main Content -->
     <div class="relative z-10 w-full max-w-[500px] flex flex-col items-center">
       <!-- Logo & Header -->
