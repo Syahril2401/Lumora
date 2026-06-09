@@ -157,6 +157,7 @@ export const assessmentApi = {
       method: 'POST',
       body: JSON.stringify({ message }),
     }),
+  getChatHistory: () => apiRequest('/assessment/chat/history'),
 };
 
 // ─── Dashboard API ──────────────────────────────────────────

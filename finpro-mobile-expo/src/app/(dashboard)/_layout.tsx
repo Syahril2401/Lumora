@@ -1,7 +1,8 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useSegments } from 'expo-router';
 import { Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useColorScheme } from 'nativewind';
+import LumoraBuddy from '../../components/LumoraBuddy';
 
 function TabIcon({ iconName, label, focused }: { iconName: keyof typeof Feather.glyphMap; label: string; focused: boolean }) {
   const color = focused ? '#F97316' : '#627D98';
@@ -22,9 +23,13 @@ function TabIcon({ iconName, label, focused }: { iconName: keyof typeof Feather.
 export default function DashboardLayout() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const segments = useSegments();
+  const currentRoute = segments[segments.length - 1];
+  const hideBuddy = ['settings', 'profile'].includes(currentRoute);
 
   return (
-    <Tabs
+    <View style={{ flex: 1 }}>
+      <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
@@ -85,6 +90,8 @@ export default function DashboardLayout() {
           href: null,
         }}
       />
-    </Tabs>
+      </Tabs>
+      {!hideBuddy && <LumoraBuddy />}
+    </View>
   );
 }
