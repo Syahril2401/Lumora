@@ -448,7 +448,15 @@ async function fetchSessions() {
           
           // Deduplicate: filter out Google events that already exist in localSessions
           const localGoogleIds = localSessions.map(s => s.google_event_id).filter(id => id)
-          const filteredGoogle = googleEvents.filter(ge => !localGoogleIds.includes(ge.id))
+          const filteredGoogle = googleEvents.filter(ge => {
+            if (localGoogleIds.includes(ge.id)) return false;
+            // Fallback deduplication by title and date
+            return !localSessions.some(s => {
+              if (!s.date || !ge.date) return false;
+              const sDate = s.date.split('T')[0].split(' ')[0];
+              return s.title === ge.title && sDate === ge.date;
+            });
+          })
           
           sessions.value = [...localSessions, ...filteredGoogle]
         } catch (eventErr) {

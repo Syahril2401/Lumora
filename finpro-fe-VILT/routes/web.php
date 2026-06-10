@@ -24,7 +24,7 @@ Route::post('/register',[AuthController::class, 'register']);
 Route::post('/logout',  [AuthController::class, 'logout'])->name('logout');
 
 // ─── Authenticated Routes (logged in, but may not have done survey) ───────────
-Route::middleware('go.auth')->group(function () {
+Route::middleware('auth')->group(function () {
 
     // Onboarding (no survey check — users MUST be able to access these)
     Route::prefix('onboarding')->name('onboarding.')->group(function () {
@@ -44,6 +44,7 @@ Route::middleware('go.auth')->group(function () {
         Route::get('/dashboard/weekly-targets', [DashboardController::class, 'weeklyTargets'])->name('targets');
         Route::get('/dashboard/progress', [DashboardController::class, 'progress'])->name('progress');
         Route::get('/dashboard/settings', [DashboardController::class, 'settings'])->name('settings');
+        Route::post('/dashboard/settings/profile', [DashboardController::class, 'updateProfile'])->name('settings.profile.update');
         
         // Profile Update
         Route::patch('/dashboard/profile', function (Illuminate\Http\Request $request) {
@@ -84,3 +85,7 @@ Route::middleware('go.auth')->group(function () {
         Route::post('/chat', [ChatController::class, 'send'])->name('chat');
     });
 });
+
+// User CRUD (Testing)
+use App\Http\Controllers\UserController;
+Route::resource('users', UserController::class);

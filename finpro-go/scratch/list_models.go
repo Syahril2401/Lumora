@@ -13,7 +13,9 @@ import (
 )
 
 func main() {
-	godotenv.Load(".env")
+	if err := godotenv.Load(); err != nil {
+		godotenv.Load("../.env")
+	}
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
 		log.Fatal("GEMINI_API_KEY not found")

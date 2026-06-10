@@ -31,20 +31,20 @@
         <!-- Consistency -->
         <div class="bg-white dark:bg-dark-panel p-6 rounded-[28px] border border-[#D9E2EC] dark:border-dark-border shadow-sm">
           <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Consistency</p>
-          <p class="text-3xl font-black text-brand-500">{{ Math.round(progress.consistency || 0) }}%</p>
+          <p class="text-3xl font-black text-brand-500">{{ consistencyScore }}%</p>
           <p class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">Active Days / Week</p>
         </div>
-        <!-- Target Completion -->
+        <!-- Deep Work -->
         <div class="bg-white dark:bg-dark-panel p-6 rounded-[28px] border border-[#D9E2EC] dark:border-dark-border shadow-sm">
-          <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Target Completion</p>
-          <p class="text-3xl font-black text-emerald-500">{{ Math.round(progress.target_completion || 0) }}%</p>
-          <p class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">Subtasks Done</p>
+          <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Deep Work</p>
+          <p class="text-3xl font-black text-emerald-500">{{ deepWorkScore }}%</p>
+          <p class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">Capacity</p>
         </div>
-        <!-- Reflections -->
+        <!-- Retention -->
         <div class="bg-white dark:bg-dark-panel p-6 rounded-[28px] border border-[#D9E2EC] dark:border-dark-border shadow-sm">
-          <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Reflections</p>
-          <p class="text-3xl font-black text-purple-500">{{ progress.reflections_count || 0 }}</p>
-          <p class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">This Month</p>
+          <p class="text-[10px] font-black text-navy-400 dark:text-text-faint uppercase tracking-widest mb-2">Retention</p>
+          <p class="text-3xl font-black text-purple-500">{{ retentionScore }}%</p>
+          <p class="text-xs font-bold text-navy-400 dark:text-text-faint mt-1">Knowledge Retained</p>
         </div>
       </div>
 
@@ -90,7 +90,7 @@
 
       <!-- CTA Buttons -->
       <div class="flex flex-wrap gap-4">
-        <a v-if="canRetake" :href="route('onboarding.sanctuary')" class="btn-primary text-white px-6 py-3 rounded-2xl font-bold transition-all active:scale-95 flex items-center gap-2 shadow-glow">
+        <a v-if="canRetake" :href="route('onboarding.sanctuary') + '?retake=true'" class="btn-primary text-white px-6 py-3 rounded-2xl font-bold transition-all active:scale-95 flex items-center gap-2 shadow-glow">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           Retake Assessment
         </a>
@@ -123,21 +123,24 @@ const dimensionLabels = {
 
 const trendData = computed(() => progress.value.assessment_trend || [])
 
-const profileTitle = computed(() => {
+const profileData = computed(() => {
   const r = progress.value.latest_result
-  if (!r) return ''
+  if (!r) return null
   try {
     if (r.CategoryResult) {
-      const parsed = JSON.parse(r.CategoryResult)
-      return parsed.profile_title || 'Learner'
+      return JSON.parse(r.CategoryResult)
     }
   } catch {}
-  return 'Learner'
+  return null
 })
+
+const profileTitle = computed(() => profileData.value?.profile_title || 'Learner')
+const consistencyScore = computed(() => profileData.value?.consistency_score || 0)
+const deepWorkScore = computed(() => profileData.value?.deep_work_capacity || 0)
+const retentionScore = computed(() => profileData.value?.retention_score || 0)
 
 const insightMessage = computed(() => {
   if (trendData.value.length < 2) return 'Take another assessment later to unlock comparison and dimension analysis.'
-  if ((progress.value.target_completion || 0) < 50) return 'Your progress becomes more accurate when you complete targets and write reflections consistently.'
   return 'Great consistency! Keep refining your learning strategies to improve your SRL scores.'
 })
 
@@ -145,10 +148,7 @@ const timeUntilNextAssessment = ref('')
 let timerInterval = null
 
 const canRetake = computed(() => {
-  if (!progress.value.latest_result || !progress.value.latest_result.CreatedAt) return true;
-  const lastDate = new Date(progress.value.latest_result.CreatedAt);
-  const nextDate = new Date(lastDate.getTime() + 14 * 24 * 60 * 60 * 1000);
-  return new Date() >= nextDate;
+  return true; // Always allow retake during testing/development
 })
 
 function updateCountdown() {

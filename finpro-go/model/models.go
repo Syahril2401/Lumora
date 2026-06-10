@@ -17,6 +17,8 @@ type User struct {
 	Email              string         `gorm:"column:email;type:varchar(150);not null;uniqueIndex;index:idx_users_email"`
 	PasswordHash       string         `gorm:"column:password_hash;type:varchar(255);not null"`
 	Level              *string        `gorm:"column:level;type:varchar(50)"`
+	Role               *string        `gorm:"column:role;type:varchar(100)"`
+	Avatar             *string        `gorm:"column:avatar;type:varchar(255)"`
 	GoogleID           *string        `gorm:"column:google_id;type:varchar(100);uniqueIndex"`
 	GoogleAccessToken  *string        `gorm:"column:google_access_token;type:text"`
 	GoogleRefreshToken *string        `gorm:"column:google_refresh_token;type:text"`

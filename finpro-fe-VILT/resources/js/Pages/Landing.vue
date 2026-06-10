@@ -23,7 +23,7 @@
             </div>
           </button>
           <Link :href="route('login')" class="text-sm font-medium text-navy-500 dark:text-slate-400 hover:text-navy-900 dark:hover:text-text-primary transition-colors">Log In</Link>
-          <Link :href="route('register')" class="btn-primary text-sm font-semibold px-5 py-2.5 rounded-lg">Get Started</Link>
+          <Link :href="route('register')" class="btn-primary text-sm font-semibold px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg">Get Started</Link>
         </div>
       </div>
     </nav>
@@ -63,7 +63,7 @@
             </div>
           </div>
           <!-- Right: Dashboard mockup (main focal point) -->
-          <div class="lg:col-span-3 relative hero-mockup gsap-hover cursor-default">
+          <div class="lg:col-span-3 relative hero-mockup gsap-hover cursor-default mt-12 lg:mt-0">
             <div class="absolute -left-6 top-20 w-px h-40 bg-gradient-to-b from-brand-300/30 to-transparent rotate-12 dark:from-brand-500/20"></div>
             <div class="rounded-2xl border border-[#D9E2EC] dark:border-slate-700 shadow-2xl bg-white dark:bg-[#0C1222] overflow-hidden">
               <!-- Browser chrome -->
@@ -74,7 +74,7 @@
                   <div class="w-2.5 h-2.5 rounded-full bg-green-400/80"></div>
                 </div>
                 <div class="flex-1 flex justify-center">
-                  <div class="bg-white dark:bg-slate-900 rounded-md px-4 py-1 text-[9px] text-navy-400 dark:text-slate-500 font-mono border border-[#E8EDF2] dark:border-slate-700">app.lumora.ai/dashboard</div>
+                  <div class="bg-white dark:bg-slate-900 rounded-md px-4 py-1 text-[9px] text-navy-400 dark:text-slate-500 font-mono border border-[#E8EDF2] dark:border-slate-700 hidden sm:block">app.lumora.ai/dashboard</div>
                 </div>
               </div>
               <!-- Dashboard content -->

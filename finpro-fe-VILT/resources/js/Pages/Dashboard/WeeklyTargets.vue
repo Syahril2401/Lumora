@@ -307,11 +307,14 @@ async function saveTarget() {
 
   isSaving.value = true
   try {
+    const payload = { ...targetForm.value }
+    if (!payload.due_date) delete payload.due_date
+
     if (editingTarget.value) {
-      await targetsApi.updateTarget(editingTarget.value.id, targetForm.value)
+      await targetsApi.updateTarget(editingTarget.value.id, payload)
       showToast('Target updated!')
     } else {
-      await targetsApi.createTarget(targetForm.value)
+      await targetsApi.createTarget(payload)
       showToast('Target created!')
     }
     showTargetModal.value = false

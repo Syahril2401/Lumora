@@ -2,9 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\GoApiService;
+use App\Models\ResultSummary;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -14,14 +15,19 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class SurveyCompleted
 {
-    public function __construct(protected GoApiService $api) {}
-
     public function handle(Request $request, Closure $next): Response
     {
         // Cache the survey completion status in the session to avoid
-        // an API call on every page load.
+        // a database query on every page load.
         if (!Session::has('survey_completed')) {
-            $completed = $this->api->hasSurveyResult();
+            $userId = Auth::id();
+            $completed = false;
+            
+            if ($userId) {
+                // Check directly in database if result exists
+                $completed = ResultSummary::where('user_id', $userId)->exists();
+            }
+            
             Session::put('survey_completed', $completed);
         }
 

@@ -7,10 +7,14 @@ import (
 	"os"
 
 	"github.com/google/generative-ai-go/genai"
+	"github.com/joho/godotenv"
 	"google.golang.org/api/option"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		godotenv.Load("../.env")
+	}
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
 		log.Fatal("GEMINI_API_KEY is empty")

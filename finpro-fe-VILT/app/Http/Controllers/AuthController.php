@@ -30,6 +30,11 @@ class AuthController extends Controller
         $result = $this->api->login($validated);
 
         if ($result['success'] ?? false) {
+            $user = \App\Models\User::where('email', $validated['email'])->first();
+            if ($user) {
+                \Illuminate\Support\Facades\Auth::login($user);
+            }
+
             $request->session()->forget('survey_completed');
             return redirect()->route('dashboard');
         }
@@ -67,6 +72,10 @@ class AuthController extends Controller
             ]);
 
             if ($loginResult['success'] ?? false) {
+                $user = \App\Models\User::where('email', $validated['email'])->first();
+                if ($user) {
+                    \Illuminate\Support\Facades\Auth::login($user);
+                }
                 return redirect()->route('onboarding.sanctuary');
             }
         }

@@ -97,9 +97,23 @@ func (s *dashboardService) GetDashboardData(userID string) (map[string]interface
 		taskEfficiency = int((completedTargets * 100) / totalTargets)
 	}
 
+	var role string
+	var avatar string
+	if user != nil {
+		userName = user.Name
+		if user.Role != nil {
+			role = *user.Role
+		}
+		if user.Avatar != nil {
+			avatar = *user.Avatar
+		}
+	}
+
 	data := map[string]interface{}{
 		"user": map[string]interface{}{
 			"name":   userName,
+			"role":   role,
+			"avatar": avatar,
 			"status": "online",
 		},
 		"metrics": map[string]interface{}{

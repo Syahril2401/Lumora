@@ -213,8 +213,8 @@ const currentTheme = ref(localStorage.getItem('lumora_theme') === 'light' ? 'lig
 const savedAvatar = localStorage.getItem('lumora_avatar')
 const profileForm = ref({
   name: user.name,
-  role: 'Graduate Student • Cognitive Science',
-  avatar: savedAvatar === 'none' ? null : (savedAvatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200&h=200')
+  role: user.role || 'Graduate Student • Cognitive Science',
+  avatar: user.avatar || (savedAvatar === 'none' ? null : (savedAvatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200&h=200'))
 })
 
 function setTheme(theme) {

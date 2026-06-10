@@ -364,6 +364,13 @@ watch([answers, currentSegmentIndex, currentQuestionIndex], saveProgress, { deep
   background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
 }
 
+.btn-primary:disabled {
+  background: #CBD5E1 !important; /* slate-300 */
+}
+.dark .btn-primary:disabled {
+  background: #334155 !important; /* slate-700 */
+}
+
 .shadow-glow {
   box-shadow: 0 4px 16px rgba(249, 115, 22, 0.25);
 }

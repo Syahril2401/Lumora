@@ -395,7 +395,6 @@ const showLogoutModal = ref(false)
 
 // User Avatar state
 const savedAvatar = localStorage.getItem('lumora_avatar')
-const userAvatar = ref(savedAvatar === 'none' ? null : (savedAvatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200&h=200'))
 
 const props = defineProps({
     showBuddy: { type: Boolean, default: true },
@@ -405,6 +404,8 @@ const props = defineProps({
 
 const page = usePage()
 const user = computed(() => page.props.auth?.user || { name: 'User' })
+
+const userAvatar = ref(page.props.auth?.user?.avatar || (savedAvatar === 'none' ? null : (savedAvatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200&h=200')))
 
 // Initialize the Go API token for all pages that use this layout
 if (page.props.go_token) {

@@ -93,6 +93,7 @@ func main() {
 	targetCtrl := controller.NewTargetController(targetService)
 	workspaceCtrl := controller.NewWorkspaceController(plannerRepo, targetRepo, noteRepo, notifRepo, assessRepo)
 	googleCalCtrl := controller.NewGoogleCalendarController(googleCalService)
+	profileCtrl := controller.NewProfileController(userRepo)
 
 	// Router
 	r := gin.Default()
@@ -105,7 +106,11 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	routes.SetupRoutes(r, authCtrl, assessCtrl, dashCtrl, adminCtrl, testCtrl, noteCtrl, plannerCtrl, targetCtrl, workspaceCtrl, googleCalCtrl)
+	routes.SetupRoutes(r, authCtrl, assessCtrl, dashCtrl, adminCtrl, testCtrl, noteCtrl, plannerCtrl, targetCtrl, workspaceCtrl, googleCalCtrl, profileCtrl)
+
+	// Serve uploaded avatar files
+	r.Static("/uploads", "./uploads")
+	r.Static("/storage", "../finpro-fe-VILT/storage/app/public")
 
 	// Server
 	port := os.Getenv("PORT")

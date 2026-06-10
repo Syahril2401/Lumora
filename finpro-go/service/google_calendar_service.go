@@ -52,15 +52,14 @@ func (s *GoogleCalendarService) ExchangeCode(ctx context.Context, code string) (
 }
 
 func (s *GoogleCalendarService) SaveTokensForUser(userID string, token *oauth2.Token) error {
-	updates := map[string]interface{}{
-		"google_access_token": token.AccessToken,
-	}
-	if token.RefreshToken != "" {
-		updates["google_refresh_token"] = token.RefreshToken
-	}
+	at := token.AccessToken
+	rt := token.RefreshToken
 	return config.DB.Model(&model.User{}).
 		Where("user_id = ?", userID).
-		Updates(updates).Error
+		Updates(map[string]interface{}{
+			"google_access_token":  at,
+			"google_refresh_token": rt,
+		}).Error
 }
 
 func (s *GoogleCalendarService) GetCalendarEvents(userID string, timeMin, timeMax time.Time) ([]*calendar.Event, error) {
@@ -77,7 +76,14 @@ func (s *GoogleCalendarService) GetCalendarEvents(userID string, timeMin, timeMa
 		tok.RefreshToken = *user.GoogleRefreshToken
 	}
 
-
+	// Refresh token if needed
+	newTok, err := s.oauthConfig.TokenSource(context.Background(), tok).Token()
+	if err == nil && newTok.AccessToken != tok.AccessToken {
+		if e := s.SaveTokensForUser(userID, newTok); e != nil {
+			log.Printf("Warning: failed to persist refreshed token: %v", e)
+		}
+		tok = newTok
+	}
 
 	client := s.oauthConfig.Client(context.Background(), tok)
 	srv, err := calendar.NewService(context.Background(), option.WithHTTPClient(client))
@@ -93,26 +99,7 @@ func (s *GoogleCalendarService) GetCalendarEvents(userID string, timeMin, timeMa
 		MaxResults(50).
 		Do()
 	if err != nil {
-		// Token might be expired. Force a refresh and retry.
-		tok.Expiry = time.Now().Add(-1 * time.Hour)
-		newTok, refreshErr := s.oauthConfig.TokenSource(context.Background(), tok).Token()
-		if refreshErr == nil && newTok.AccessToken != tok.AccessToken {
-			if e := s.SaveTokensForUser(userID, newTok); e != nil {
-				log.Printf("Warning: failed to persist refreshed token: %v", e)
-			}
-			client = s.oauthConfig.Client(context.Background(), newTok)
-			srv, _ = calendar.NewService(context.Background(), option.WithHTTPClient(client))
-			events, err = srv.Events.List("primary").
-				TimeMin(timeMin.Format(time.RFC3339)).
-				TimeMax(timeMax.Format(time.RFC3339)).
-				SingleEvents(true).
-				OrderBy("startTime").
-				MaxResults(50).
-				Do()
-		}
-		if err != nil {
-			return nil, fmt.Errorf("failed to fetch events: %w", err)
-		}
+		return nil, fmt.Errorf("failed to fetch events: %w", err)
 	}
 	return events.Items, nil
 }
@@ -137,33 +124,48 @@ func (s *GoogleCalendarService) SyncSessionToGoogle(userID string, session model
 		return "", fmt.Errorf("calendar service init failed: %w", err)
 	}
 
-	loc, _ := time.LoadLocation("Asia/Jakarta")
-	startT, _ := time.ParseInLocation("2006-01-02 15:04", session.Date+" "+session.StartTime, loc)
-	endT, _ := time.ParseInLocation("2006-01-02 15:04", session.Date+" "+session.EndTime, loc)
+	// Normalize Date: try parsing YYYY-MM-DD, then MM/DD/YYYY
+	parsedDate, err := time.Parse("2006-01-02", session.Date)
+	if err != nil {
+		parsedDate, err = time.Parse("01/02/2006", session.Date)
+		if err != nil {
+			log.Printf("GoogleCalendar Sync Error: Invalid date format %s", session.Date)
+			return "", fmt.Errorf("invalid date format")
+		}
+	}
+	dateStr := parsedDate.Format("2006-01-02")
+
+	// Normalize Time: try parsing HH:MM (24h) then hh:mm PM (12h)
+	parseTime := func(timeStr string) string {
+		t, err := time.Parse("15:04", timeStr)
+		if err == nil {
+			return t.Format("15:04:00")
+		}
+		t, err = time.Parse("03:04 PM", timeStr)
+		if err == nil {
+			return t.Format("15:04:00")
+		}
+		t, err = time.Parse("15:04:05", timeStr)
+		if err == nil {
+			return t.Format("15:04:00")
+		}
+		return "00:00:00"
+	}
+
+	startStr := parseTime(session.StartTime)
+	endStr := parseTime(session.EndTime)
 
 	event := &calendar.Event{
 		Summary:     session.Title,
 		Description: session.Description + "\n\n[Lumora - " + session.FocusDimension + "]",
-		Start:       &calendar.EventDateTime{DateTime: startT.Format(time.RFC3339), TimeZone: "Asia/Jakarta"},
-		End:         &calendar.EventDateTime{DateTime: endT.Format(time.RFC3339), TimeZone: "Asia/Jakarta"},
+		Start:       &calendar.EventDateTime{DateTime: fmt.Sprintf("%sT%s", dateStr, startStr), TimeZone: "Asia/Jakarta"},
+		End:         &calendar.EventDateTime{DateTime: fmt.Sprintf("%sT%s", dateStr, endStr), TimeZone: "Asia/Jakarta"},
 	}
 
 	created, err := srv.Events.Insert("primary", event).Do()
 	if err != nil {
-		// Retry on token expiration
-		tok.Expiry = time.Now().Add(-1 * time.Hour)
-		newTok, refreshErr := s.oauthConfig.TokenSource(context.Background(), tok).Token()
-		if refreshErr == nil && newTok.AccessToken != tok.AccessToken {
-			if e := s.SaveTokensForUser(userID, newTok); e != nil {
-				log.Printf("Warning: failed to persist refreshed token: %v", e)
-			}
-			client = s.oauthConfig.Client(context.Background(), newTok)
-			srv, _ = calendar.NewService(context.Background(), option.WithHTTPClient(client))
-			created, err = srv.Events.Insert("primary", event).Do()
-		}
-		if err != nil {
-			return "", fmt.Errorf("failed to create event: %w", err)
-		}
+		log.Printf("GoogleCalendar API Error creating event: %v", err)
+		return "", fmt.Errorf("failed to create event: %w", err)
 	}
 	return created.Id, nil
 }
@@ -193,20 +195,74 @@ func (s *GoogleCalendarService) DeleteGoogleEvent(userID string, eventID string)
 
 	err = srv.Events.Delete("primary", eventID).Do()
 	if err != nil {
-		// Retry on token expiration
-		tok.Expiry = time.Now().Add(-1 * time.Hour)
-		newTok, refreshErr := s.oauthConfig.TokenSource(context.Background(), tok).Token()
-		if refreshErr == nil && newTok.AccessToken != tok.AccessToken {
-			if e := s.SaveTokensForUser(userID, newTok); e != nil {
-				log.Printf("Warning: failed to persist refreshed token: %v", e)
-			}
-			client = s.oauthConfig.Client(context.Background(), newTok)
-			srv, _ = calendar.NewService(context.Background(), option.WithHTTPClient(client))
-			err = srv.Events.Delete("primary", eventID).Do()
-		}
+		return fmt.Errorf("failed to delete google event: %w", err)
+	}
+	return nil
+}
+
+func (s *GoogleCalendarService) UpdateGoogleEvent(userID string, eventID string, session model.Schedule) error {
+	if eventID == "" {
+		return nil
+	}
+	var user model.User
+	if err := config.DB.Where("user_id = ?", userID).First(&user).Error; err != nil {
+		return fmt.Errorf("user not found: %w", err)
+	}
+	if user.GoogleAccessToken == nil || *user.GoogleAccessToken == "" {
+		return fmt.Errorf("google calendar not connected")
+	}
+
+	tok := &oauth2.Token{AccessToken: *user.GoogleAccessToken}
+	if user.GoogleRefreshToken != nil {
+		tok.RefreshToken = *user.GoogleRefreshToken
+	}
+
+	client := s.oauthConfig.Client(context.Background(), tok)
+	srv, err := calendar.NewService(context.Background(), option.WithHTTPClient(client))
+	if err != nil {
+		return fmt.Errorf("calendar service init failed: %w", err)
+	}
+
+	// Normalize Date
+	parsedDate, err := time.Parse("2006-01-02", session.Date)
+	if err != nil {
+		parsedDate, err = time.Parse("01/02/2006", session.Date)
 		if err != nil {
-			return fmt.Errorf("failed to delete google event: %w", err)
+			return fmt.Errorf("invalid date format")
 		}
+	}
+	dateStr := parsedDate.Format("2006-01-02")
+
+	// Normalize Time
+	parseTime := func(timeStr string) string {
+		t, err := time.Parse("15:04", timeStr)
+		if err == nil {
+			return t.Format("15:04:00")
+		}
+		t, err = time.Parse("03:04 PM", timeStr)
+		if err == nil {
+			return t.Format("15:04:00")
+		}
+		t, err = time.Parse("15:04:05", timeStr)
+		if err == nil {
+			return t.Format("15:04:00")
+		}
+		return "00:00:00"
+	}
+
+	startStr := parseTime(session.StartTime)
+	endStr := parseTime(session.EndTime)
+
+	event := &calendar.Event{
+		Summary:     session.Title,
+		Description: session.Description + "\n\n[Lumora - " + session.FocusDimension + "]",
+		Start:       &calendar.EventDateTime{DateTime: fmt.Sprintf("%sT%s", dateStr, startStr), TimeZone: "Asia/Jakarta"},
+		End:         &calendar.EventDateTime{DateTime: fmt.Sprintf("%sT%s", dateStr, endStr), TimeZone: "Asia/Jakarta"},
+	}
+
+	_, err = srv.Events.Update("primary", eventID, event).Do()
+	if err != nil {
+		return fmt.Errorf("failed to update google event: %w", err)
 	}
 	return nil
 }

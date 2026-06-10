@@ -19,6 +19,7 @@ func SetupRoutes(
 	targetCtrl *controller.TargetController,
 	workspaceCtrl *controller.WorkspaceController,
 	googleCalCtrl *controller.GoogleCalendarController,
+	profileCtrl *controller.ProfileController,
 ) {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
@@ -38,6 +39,8 @@ func SetupRoutes(
 		{
 			auth.POST("/register", authCtrl.Register)
 			auth.POST("/login", authCtrl.Login)
+			auth.GET("/me", middleware.AuthMiddleware(), profileCtrl.GetProfile)
+			auth.PUT("/profile", middleware.AuthMiddleware(), profileCtrl.UpdateProfile)
 
 			// Google OAuth (public — no auth middleware)
 			auth.GET("/google/login", googleCalCtrl.GoogleLogin)

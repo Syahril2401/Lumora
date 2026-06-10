@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\GoApiService;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function __construct(protected GoApiService $api) {}
-
     public function index(): Response
     {
         return Inertia::render('Dashboard');
@@ -44,4 +42,27 @@ class DashboardController extends Controller
     {
         return Inertia::render('RecommendationDetail', ['id' => $id]);
     }
+
+    public function updateProfile(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'role' => 'nullable|string|max:255',
+            'avatar' => 'nullable|image|max:5120' // max 5MB
+        ]);
+
+        $user = Auth::user();
+        $user->name = $request->name;
+        $user->role = $request->role;
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = '/storage/' . $path;
+        }
+
+        $user->save();
+
+        return redirect()->back()->with('message', 'Profile updated successfully.');
+    }
 }
+

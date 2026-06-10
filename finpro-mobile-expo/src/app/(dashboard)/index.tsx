@@ -26,7 +26,7 @@ export default function DashboardScreen() {
     try {
       const metrics = await dashboardApi.getMetrics();
       setData(metrics.data || metrics);
-      setRecentSessions((metrics.data || metrics).recent_sessions || []);
+      setRecentSessions((metrics.data || metrics).focus_sessions || []);
 
       // Fetch Recent Notes
       try {
@@ -120,9 +120,27 @@ export default function DashboardScreen() {
             
             {/* Contextual Empty State or Next Session */}
             <View className="mt-4">
-              <Text className="text-slate-300 text-sm font-medium italic">
-                No sessions planned for today. 
-              </Text>
+              {recentSessions.length === 0 ? (
+                <Text className="text-slate-300 text-sm font-medium italic">
+                  No sessions planned for today. 
+                </Text>
+              ) : (
+                <View style={{ gap: 12 }}>
+                  {recentSessions.slice(0, 3).map((session, i) => (
+                    <View key={i} className="bg-white/10 p-3 rounded-xl flex-row items-center justify-between">
+                      <View className="flex-1 mr-3">
+                        <Text className="text-white font-bold text-sm" numberOfLines={1}>{session.title}</Text>
+                        <Text className="text-slate-300 text-xs mt-0.5">{session.time} • {session.duration}</Text>
+                      </View>
+                      <View className={`px-2 py-1 rounded-md ${session.status === 'completed' ? 'bg-emerald-500/20' : 'bg-brand-500/20'}`}>
+                        <Text className={`text-[10px] font-black uppercase ${session.status === 'completed' ? 'text-emerald-400' : 'text-brand-400'}`}>
+                          {session.status || 'upcoming'}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
 
             {/* Subtle Gradient Overlay */}

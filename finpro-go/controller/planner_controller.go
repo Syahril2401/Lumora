@@ -52,19 +52,16 @@ func (ctrl *PlannerController) CreateSession(c *gin.Context) {
 		return
 	}
 	
-	// Sync to Google Calendar asynchronously if connected
-	go func() {
-		googleService := service.NewGoogleCalendarService()
-		if googleService.IsConnected(userID) {
-			googleID, err := googleService.SyncSessionToGoogle(userID, *session)
-			if err == nil && googleID != "" {
-				// Update database with google_event_id
-				// Assuming config.DB is accessible, or using service method. 
-				// The cleanest way is to use the repository, but we don't have it directly.
-				config.DB.Model(&model.Schedule{}).Where("schedule_id = ?", session.ScheduleID).Update("google_event_id", googleID)
-			}
+	// Sync to Google Calendar if connected
+	googleService := service.NewGoogleCalendarService()
+	if googleService.IsConnected(userID) {
+		googleID, err := googleService.SyncSessionToGoogle(userID, *session)
+		if err == nil && googleID != "" {
+			// Update database and in-memory model with google_event_id
+			config.DB.Model(&model.Schedule{}).Where("schedule_id = ?", session.ScheduleID).Update("google_event_id", googleID)
+			session.GoogleEventID = &googleID
 		}
-	}()
+	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Session created", "data": session})
 }
@@ -82,6 +79,17 @@ func (ctrl *PlannerController) UpdateSession(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Update Google Calendar event if synced
+	if session.GoogleEventID != nil && *session.GoogleEventID != "" {
+		go func() {
+			googleService := service.NewGoogleCalendarService()
+			if googleService.IsConnected(userID) {
+				_ = googleService.UpdateGoogleEvent(userID, *session.GoogleEventID, *session)
+			}
+		}()
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Session updated", "data": session})
 }
 

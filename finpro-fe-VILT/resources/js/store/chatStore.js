@@ -55,15 +55,21 @@ export const sendChatMessage = async (text, srlProfile, scrollToBottomCallback) 
                 }
             }
 
-            // 2. Check plain lines
-            const plainLines = cleanReply.split('\n');
-            for (const line of plainLines) {
-                const trimmed = line.trim();
-                if (trimmed.startsWith('{"action"') && trimmed.endsWith('}')) {
+            // 2. Check plain lines with regex to catch single/double quotes
+            const actionRegex = /\{[\s]*["']action["']\s*:[\s\S]*?\}/g;
+            const matches = cleanReply.match(actionRegex);
+            if (matches) {
+                for (const match of matches) {
                     try {
-                        actionDataList.push(JSON.parse(trimmed));
-                        cleanReply = cleanReply.replace(line, '');
-                    } catch (e) {}
+                        // Replace single quotes with double quotes for valid JSON parsing
+                        let jsonStr = match.replace(/'/g, '"');
+                        actionDataList.push(JSON.parse(jsonStr));
+                        cleanReply = cleanReply.replace(match, '');
+                    } catch (e) {
+                        console.error('Failed to parse AI action:', e);
+                        // Strip it anyway to hide it from UI
+                        cleanReply = cleanReply.replace(match, '');
+                    }
                 }
             }
             

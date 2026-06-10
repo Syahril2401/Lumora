@@ -110,10 +110,9 @@ import { Head, Link, router } from '@inertiajs/vue3'
 import { onMounted } from 'vue'
 
 onMounted(() => {
-    if (localStorage.getItem('lumora_survey_completed') === 'true') {
-        router.replace(route('dashboard'))
-        return
-    }
+    // If the user reaches this page, the server has allowed it (either new survey or retake)
+    // Clear the completed flag so Questionnaire doesn't redirect them immediately
+    localStorage.removeItem('lumora_survey_completed')
 
     // Theme sync
     const saved = localStorage.getItem('theme')

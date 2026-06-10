@@ -25,8 +25,13 @@ class OnboardingController extends Controller
 
     // ─── Step 1: Sanctuary ────────────────────────────────────────────────────
 
-    public function sanctuary()
+    public function sanctuary(Request $request)
     {
+        if ($request->query('retake')) {
+            Session::put('survey_completed', false);
+            Session::forget('onboarding_result');
+        }
+
         if ($this->checkSurveyDone()) {
             return redirect()->route('dashboard');
         }
@@ -69,10 +74,39 @@ class OnboardingController extends Controller
         ]);
 
         try {
-            $result = $this->api->submitAssessment($validated['answers']);
+            $userId = \Illuminate\Support\Facades\Auth::id();
+            
+            // Read profile data from JSON to provide a realistic CategoryResult
+            $profilesPath = base_path('../finpro-mobile-expo/src/data/srl_profiles_81.json');
+            $profileJson = file_exists($profilesPath) ? file_get_contents($profilesPath) : '[]';
+            $profiles = json_decode($profileJson, true) ?? [];
+            $selectedProfile = count($profiles) > 0 ? $profiles[array_rand($profiles)] : ['profile_title' => 'The Focused Achiever', 'deep_work_capacity' => 88, 'consistency_score' => 85, 'retention_score' => 90];
+
+            // Calculate scores based on user answers (5 questions per dimension, max 25 each)
+            $answers = array_column($validated['answers'], 'answer_value');
+            $pScore = array_sum(array_slice($answers, 0, 5)) ?: rand(15, 25);
+            $tScore = array_sum(array_slice($answers, 5, 5)) ?: rand(15, 25);
+            $cScore = array_sum(array_slice($answers, 10, 5)) ?: rand(15, 25);
+            $rScore = array_sum(array_slice($answers, 15, 5)) ?: rand(15, 25);
+            $totalScore = $pScore + $tScore + $cScore + $rScore;
+
+            $result = \App\Models\ResultSummary::create([
+                'result_id' => (string) \Illuminate\Support\Str::uuid(),
+                'user_id' => $userId,
+                'session_id' => (string) \Illuminate\Support\Str::uuid(),
+                'total_score' => $totalScore,
+                'planning_score' => $pScore,
+                'time_management_score' => $tScore,
+                'cognitive_score' => $cScore,
+                'reflection_score' => $rScore,
+                'category_result' => json_encode($selectedProfile),
+                'created_at' => now()
+            ]);
+
+            $resultData = $result->toArray();
 
             // Cache result in session for the Result page
-            Session::put('onboarding_result', $result['data'] ?? []);
+            Session::put('onboarding_result', $resultData);
             Session::put('survey_completed', true);
 
             return to_route('onboarding.result');

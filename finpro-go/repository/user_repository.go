@@ -13,6 +13,7 @@ type UserRepository interface {
 	FindAll() ([]model.User, error)
 	SaveAILog(log *model.AILog) error
 	GetAILogByUserID(userID string) (*model.AILog, error)
+	UpdateUser(user *model.User) error
 }
 
 type userRepository struct {
@@ -56,4 +57,8 @@ func (r *userRepository) GetAILogByUserID(userID string) (*model.AILog, error) {
 		return nil, err
 	}
 	return &log, nil
+}
+
+func (r *userRepository) UpdateUser(user *model.User) error {
+	return r.db.Save(user).Error
 }
