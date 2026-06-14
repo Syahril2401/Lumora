@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Modal, TextInput, Alert, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Modal, TextInput, Alert, ActivityIndicator, RefreshControl, Image } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
+import { useFocusEffect } from 'expo-router';
 import { notesApi } from '../../services/api';
 
 // Template definitions (matching web)
@@ -29,6 +31,7 @@ export default function NotesScreen() {
   const [showEditor, setShowEditor] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
+  const [noteImage, setNoteImage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -49,7 +52,11 @@ export default function NotesScreen() {
     setRefreshing(false);
   }, []);
 
-  useEffect(() => { loadNotes(); }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadNotes();
+    }, [loadNotes])
+  );
 
   const handleSelectTemplate = async (template: typeof TEMPLATES[0]) => {
     setShowTemplateModal(false);
@@ -82,18 +89,54 @@ export default function NotesScreen() {
     setSelectedNote(note);
     setEditTitle(note.title || '');
     setEditContent(note.content_text || note.content || '');
+    
+    // Parse image from content_json if exists
+    let imgBase64 = null;
+    try {
+      if (note.content_json) {
+        const parsed = JSON.parse(note.content_json);
+        const imgBlock = parsed.blocks?.find((b: any) => b.type === 'image');
+        if (imgBlock && imgBlock.content) {
+          imgBase64 = imgBlock.content;
+        }
+      }
+    } catch (e) {}
+    setNoteImage(imgBase64);
+
     setShowEditor(true);
+  };
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.5,
+      base64: true,
+    });
+
+    if (!result.canceled && result.assets && result.assets[0].base64) {
+      setNoteImage(`data:image/jpeg;base64,${result.assets[0].base64}`);
+    }
   };
 
   const handleSaveNote = async () => {
     if (!selectedNote) return;
     setIsSaving(true);
     try {
-      const blocks = editContent.split('\n').map((line: string, i: number) => ({
+      const blocks: any[] = editContent.split('\n').map((line: string, i: number) => ({
         id: `block-${i}`,
         type: 'paragraph',
         content: line,
       }));
+
+      if (noteImage) {
+        blocks.push({
+          id: `img-${Date.now()}`,
+          type: 'image',
+          content: noteImage
+        });
+      }
+
       await notesApi.updateNote(selectedNote.id, {
         title: editTitle,
         content_json: JSON.stringify({ blocks }),
@@ -299,6 +342,45 @@ export default function NotesScreen() {
             </View>
           </View>
 
+          {/* Formatting Toolbar */}
+          <View className="bg-white dark:bg-dark-panel border-b border-navy-100 dark:border-dark-border">
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 10, gap: 4 }}>
+              {[
+                { icon: '↩', action: () => {} },
+                { icon: '↪', action: () => {} },
+                { icon: '│', action: null },
+                { icon: '🖼️', action: pickImage },
+                { icon: '│', action: null },
+                { icon: '≡', action: () => setEditContent(prev => prev + '\n• ') },
+                { icon: '≡₊', action: () => setEditContent(prev => prev + '\n1. ') },
+                { icon: '☐', action: () => setEditContent(prev => prev + '\n☐ ') },
+                { icon: '│', action: null },
+                { icon: '─', action: () => setEditContent(prev => prev + '\n───────────\n') },
+                { icon: '💡', action: () => setEditContent(prev => prev + '\n💡 Insight: ') },
+                { icon: '⭐', action: () => setEditContent(prev => prev + '\n⭐ Key Point: ') },
+                { icon: '│', action: null },
+                { icon: '🗑', action: () => { setEditContent(''); setEditTitle(''); setNoteImage(null); } },
+              ].map((item, i) => {
+                if (item.action === null) {
+                  return (
+                    <View key={i} style={{ width: 1, height: 24, backgroundColor: colorScheme === 'dark' ? 'rgba(255,255,255,0.1)' : '#D9E2EC', marginHorizontal: 4 }} />
+                  );
+                }
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    onPress={item.action}
+                    className="bg-surface-warm dark:bg-dark-bg border border-navy-100 dark:border-dark-border rounded-lg items-center justify-center"
+                    style={{ width: 36, height: 36 }}
+                    activeOpacity={0.6}
+                  >
+                    <Text className="text-navy-700 dark:text-text-secondary font-bold" style={{ fontSize: 14 }}>{item.icon}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+
           <ScrollView className="flex-1 px-6 pt-6" keyboardShouldPersistTaps="handled">
             {/* Title */}
             <TextInput
@@ -308,6 +390,19 @@ export default function NotesScreen() {
               placeholderTextColor="#9FB3C8"
               className="text-[28px] font-black text-navy-900 dark:text-text-primary mb-4"
             />
+
+            {/* Image Preview */}
+            {noteImage && (
+              <View className="mb-4 relative">
+                <Image source={{ uri: noteImage }} className="w-full h-48 rounded-xl bg-slate-100" resizeMode="cover" />
+                <TouchableOpacity 
+                  onPress={() => setNoteImage(null)}
+                  className="absolute top-2 right-2 bg-black/50 p-2 rounded-lg"
+                >
+                  <Text className="text-white text-xs font-bold">✕</Text>
+                </TouchableOpacity>
+              </View>
+            )}
 
             {/* Content */}
             <TextInput

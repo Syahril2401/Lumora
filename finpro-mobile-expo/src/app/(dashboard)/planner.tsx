@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator, Alert, Modal, TextInput, StyleSheet, Image, Linking } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
+import { useFocusEffect } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { plannerApi, getBaseUrl, getToken } from '../../services/api';
 
@@ -259,6 +260,61 @@ function WeeklyView({ currentDate, onAddEvent, onEditEvent, sessions }: { curren
   );
 }
 
+// Mini Calendar Component for Date Picker
+function MiniCalendar({ selectedDate, onSelect, COLORS }: { selectedDate: string, onSelect: (dateStr: string) => void, COLORS: any }) {
+  const initDate = selectedDate ? new Date(selectedDate) : new Date();
+  const [currentMonth, setCurrentMonth] = useState(new Date(initDate.getFullYear(), initDate.getMonth(), 1));
+
+  const year = currentMonth.getFullYear();
+  const month = currentMonth.getMonth();
+
+  const handlePrev = () => setCurrentMonth(new Date(year, month - 1, 1));
+  const handleNext = () => setCurrentMonth(new Date(year, month + 1, 1));
+
+  const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const grid = [];
+  for (let i = 0; i < firstDay; i++) grid.push(null);
+  for (let i = 1; i <= daysInMonth; i++) grid.push(i);
+
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+  return (
+    <View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <TouchableOpacity onPress={handlePrev} style={{ padding: 4 }}><Text style={{ color: COLORS.muted, fontWeight: 'bold' }}>{'<'}</Text></TouchableOpacity>
+        <Text style={{ fontWeight: 'bold', color: COLORS.navy, fontSize: 12 }}>{months[month]} {year}</Text>
+        <TouchableOpacity onPress={handleNext} style={{ padding: 4 }}><Text style={{ color: COLORS.muted, fontWeight: 'bold' }}>{'>'}</Text></TouchableOpacity>
+      </View>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+        {days.map((d, i) => (
+          <View key={`h-${i}`} style={{ width: '14.28%', alignItems: 'center', marginBottom: 8 }}>
+            <Text style={{ color: COLORS.muted, fontSize: 10, fontWeight: 'bold' }}>{d}</Text>
+          </View>
+        ))}
+        {grid.map((d, i) => {
+          if (!d) return <View key={`e-${i}`} style={{ width: '14.28%' }} />;
+          const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          const isSelected = dateStr === selectedDate;
+          return (
+            <TouchableOpacity 
+              key={`d-${i}`} 
+              onPress={() => onSelect(dateStr)}
+              style={{ width: '14.28%', aspectRatio: 1, alignItems: 'center', justifyContent: 'center' }}
+            >
+              <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: isSelected ? COLORS.orange : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ color: isSelected ? '#fff' : COLORS.navy, fontSize: 10, fontWeight: 'bold' }}>{d}</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
 export default function PlannerScreen() {
   const { colorScheme } = useColorScheme();
   const COLORS = getColors(colorScheme);
@@ -277,6 +333,37 @@ export default function PlannerScreen() {
   const [formDate, setFormDate] = useState('');
   const [formStart, setFormStart] = useState('10:00 AM');
   const [formEnd, setFormEnd] = useState('11:00 PM');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
+
+  // Generate date options (14 days before and after today)
+  const generateDateOptions = () => {
+    const options: string[] = [];
+    const today = new Date();
+    for (let i = -14; i <= 30; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      options.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+    }
+    return options;
+  };
+
+  // Generate time options (30 min intervals)
+  const generateTimeOptions = () => {
+    const options: string[] = [];
+    for (let h = 0; h < 24; h++) {
+      for (const m of ['00', '30']) {
+        const ampm = h < 12 ? 'AM' : 'PM';
+        const displayH = h === 0 ? 12 : h > 12 ? h - 12 : h;
+        options.push(`${displayH < 10 ? '0' + displayH : displayH}:${m} ${ampm}`);
+      }
+    }
+    return options;
+  };
+
+  const dateOptions = generateDateOptions();
+  const timeOptions = generateTimeOptions();
 
   const openNewEvent = (dateStr?: string | any, timeStr?: string) => {
     setEditingSession(null);
@@ -468,9 +555,11 @@ export default function PlannerScreen() {
     ]);
   };
 
-  useEffect(() => {
-    loadSessions();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadSessions();
+    }, [])
+  );
 
   if (isLoading) {
     return (
@@ -635,44 +724,74 @@ export default function PlannerScreen() {
             </View>
 
             <View style={{ flexDirection: 'row', gap: 16, marginBottom: 28 }}>
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, zIndex: 30 }}>
                 <Text style={styles.fieldLabel}>DATE *</Text>
-                <View style={styles.fieldReadonly}>
-                  <TextInput
-                    value={formDate}
-                    onChangeText={setFormDate}
-                    placeholder="YYYY-MM-DD"
-                    placeholderTextColor="#94A3B8"
-                    style={{ color: COLORS.navy, fontWeight: 'bold', fontSize: 12, padding: 0, flex: 1 }}
-                  />
+                <TouchableOpacity
+                  onPress={() => { setShowDatePicker(!showDatePicker); setShowStartPicker(false); setShowEndPicker(false); }}
+                  style={styles.fieldReadonly}
+                >
+                  <Text style={{ color: COLORS.navy, fontWeight: 'bold', fontSize: 12, flex: 1 }}>{formDate || 'Select date'}</Text>
                   <Text style={{ color: COLORS.muted, fontSize: 12 }}>📅</Text>
-                </View>
+                </TouchableOpacity>
+                {showDatePicker && (
+                  <View style={{ position: 'absolute', top: 62, left: 0, width: 240, zIndex: 100, backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border, borderRadius: 12, padding: 12, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }}>
+                    <MiniCalendar 
+                      selectedDate={formDate} 
+                      onSelect={(d) => { setFormDate(d); setShowDatePicker(false); }} 
+                      COLORS={COLORS} 
+                    />
+                  </View>
+                )}
               </View>
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, zIndex: 20 }}>
                 <Text style={styles.fieldLabel}>START *</Text>
-                <View style={styles.fieldReadonly}>
-                  <TextInput
-                    value={formStart}
-                    onChangeText={setFormStart}
-                    placeholder="hh:mm AM"
-                    placeholderTextColor="#94A3B8"
-                    style={{ color: COLORS.navy, fontWeight: 'bold', fontSize: 12, padding: 0, flex: 1 }}
-                  />
+                <TouchableOpacity
+                  onPress={() => { setShowStartPicker(!showStartPicker); setShowDatePicker(false); setShowEndPicker(false); }}
+                  style={styles.fieldReadonly}
+                >
+                  <Text style={{ color: COLORS.navy, fontWeight: 'bold', fontSize: 12, flex: 1 }}>{formStart}</Text>
                   <Text style={{ color: COLORS.muted, fontSize: 12 }}>🕒</Text>
-                </View>
+                </TouchableOpacity>
+                {showStartPicker && (
+                  <View style={{ position: 'absolute', top: 62, left: 0, right: 0, zIndex: 100, backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border, borderRadius: 12, maxHeight: 200 }}>
+                    <ScrollView nestedScrollEnabled>
+                      {timeOptions.map(t => (
+                        <TouchableOpacity
+                          key={t}
+                          onPress={() => { setFormStart(t); setShowStartPicker(false); }}
+                          style={{ padding: 10, backgroundColor: formStart === t ? COLORS.orange : 'transparent', borderRadius: 8, margin: 2 }}
+                        >
+                          <Text style={{ color: formStart === t ? '#FFF' : COLORS.navy, fontWeight: 'bold', fontSize: 12 }}>{t}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  </View>
+                )}
               </View>
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, zIndex: 10 }}>
                 <Text style={styles.fieldLabel}>END *</Text>
-                <View style={styles.fieldReadonly}>
-                  <TextInput
-                    value={formEnd}
-                    onChangeText={setFormEnd}
-                    placeholder="hh:mm PM"
-                    placeholderTextColor="#94A3B8"
-                    style={{ color: COLORS.navy, fontWeight: 'bold', fontSize: 12, padding: 0, flex: 1 }}
-                  />
+                <TouchableOpacity
+                  onPress={() => { setShowEndPicker(!showEndPicker); setShowDatePicker(false); setShowStartPicker(false); }}
+                  style={styles.fieldReadonly}
+                >
+                  <Text style={{ color: COLORS.navy, fontWeight: 'bold', fontSize: 12, flex: 1 }}>{formEnd}</Text>
                   <Text style={{ color: COLORS.muted, fontSize: 12 }}>🕒</Text>
-                </View>
+                </TouchableOpacity>
+                {showEndPicker && (
+                  <View style={{ position: 'absolute', top: 62, left: 0, right: 0, zIndex: 100, backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border, borderRadius: 12, maxHeight: 200 }}>
+                    <ScrollView nestedScrollEnabled>
+                      {timeOptions.map(t => (
+                        <TouchableOpacity
+                          key={t}
+                          onPress={() => { setFormEnd(t); setShowEndPicker(false); }}
+                          style={{ padding: 10, backgroundColor: formEnd === t ? COLORS.orange : 'transparent', borderRadius: 8, margin: 2 }}
+                        >
+                          <Text style={{ color: formEnd === t ? '#FFF' : COLORS.navy, fontWeight: 'bold', fontSize: 12 }}>{t}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  </View>
+                )}
               </View>
             </View>
 

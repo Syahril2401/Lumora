@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { Image } from 'expo-image';
 import srlProfiles from '../../data/srl_profiles_81.json';
+import { assessmentApi } from '../../services/api';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -19,11 +20,11 @@ const SEGMENTS = [
     icon: '🎯',
     description: 'Focus: study planning',
     questions: [
-      { id: 'p1', text: 'I create a study schedule before I start studying.' },
-      { id: 'p2', text: 'I set clear study goals.' },
-      { id: 'p3', text: 'I plan which materials to study.' },
-      { id: 'p4', text: 'I set a regular study time.' },
-      { id: 'p5', text: 'I prepare my study materials before starting.' },
+      { id: '11111111-0001-0001-0001-000000000001', text: 'I make a study schedule before starting to study.' },
+      { id: '11111111-0001-0001-0001-000000000002', text: 'I set clear learning goals.' },
+      { id: '11111111-0001-0001-0001-000000000003', text: 'I plan the materials to be studied.' },
+      { id: '11111111-0001-0001-0001-000000000004', text: 'I determine a routine study time.' },
+      { id: '11111111-0001-0001-0001-000000000005', text: 'I prepare study materials before starting.' },
     ],
   },
   {
@@ -32,11 +33,11 @@ const SEGMENTS = [
     icon: '⏰',
     description: 'Focus: time management',
     questions: [
-      { id: 't1', text: 'I manage my study time well.' },
-      { id: 't2', text: 'I complete tasks on time.' },
-      { id: 't3', text: 'I rarely procrastinate.' },
-      { id: 't4', text: 'I prioritize important tasks.' },
-      { id: 't5', text: 'I am consistent with my study schedule.' },
+      { id: '11111111-0001-0001-0002-000000000006', text: 'I manage my study time well.' },
+      { id: '11111111-0001-0001-0002-000000000007', text: 'I complete tasks on time.' },
+      { id: '11111111-0001-0001-0002-000000000008', text: 'I rarely procrastinate.' },
+      { id: '11111111-0001-0001-0002-000000000009', text: 'I prioritize important tasks.' },
+      { id: '11111111-0001-0001-0002-000000000010', text: 'I am consistent with my study schedule.' },
     ],
   },
   {
@@ -45,11 +46,11 @@ const SEGMENTS = [
     icon: '🧠',
     description: 'Focus: learning strategies (thinking process)',
     questions: [
-      { id: 'c1', text: 'I use specific study methods (taking notes, summarizing, etc.).' },
-      { id: 'c2', text: 'I try different study methods to find the most effective one.' },
-      { id: 'c3', text: 'I understand the material, not just memorize it.' },
-      { id: 'c4', text: 'I review the material to strengthen my understanding.' },
-      { id: 'c5', text: 'I connect the material with my prior knowledge.' },
+      { id: '11111111-0001-0001-0003-000000000011', text: 'I use specific study methods (taking notes, summarizing, etc.).' },
+      { id: '11111111-0001-0001-0003-000000000012', text: 'I try various study methods to find an effective one.' },
+      { id: '11111111-0001-0001-0003-000000000013', text: 'I understand the material, not just memorize it.' },
+      { id: '11111111-0001-0001-0003-000000000014', text: 'I review material to strengthen understanding.' },
+      { id: '11111111-0001-0001-0003-000000000015', text: 'I connect new material with previous knowledge.' },
     ],
   },
   {
@@ -58,11 +59,11 @@ const SEGMENTS = [
     icon: '🔍',
     description: 'Focus: self-evaluation',
     questions: [
-      { id: 's1', text: 'I check if I understand the material.' },
-      { id: 's2', text: 'I realize when I do not understand something.' },
-      { id: 's3', text: 'I evaluate my study methods.' },
-      { id: 's4', text: 'I improve my study strategies if they are ineffective.' },
-      { id: 's5', text: 'I learn from my past mistakes.' },
+      { id: '11111111-0001-0001-0004-000000000016', text: 'I check if I understand the material.' },
+      { id: '11111111-0001-0001-0004-000000000017', text: 'I realize when I don\'t understand something.' },
+      { id: '11111111-0001-0001-0004-000000000018', text: 'I evaluate my study methods.' },
+      { id: '11111111-0001-0001-0004-000000000019', text: 'I improve my learning strategy if it is less effective.' },
+      { id: '11111111-0001-0001-0004-000000000020', text: 'I learn from previous mistakes.' },
     ],
   },
 ];
@@ -79,10 +80,10 @@ const LIKERT_OPTIONS = [
 function calculateProfile(answers: Record<string, number>) {
   // Calculate average score per dimension
   const dims = [
-    { keys: ['p1', 'p2', 'p3', 'p4', 'p5'], label: 'planning' },
-    { keys: ['t1', 't2', 't3', 't4', 't5'], label: 'time' },
-    { keys: ['c1', 'c2', 'c3', 'c4', 'c5'], label: 'cognitive' },
-    { keys: ['s1', 's2', 's3', 's4', 's5'], label: 'evaluation' },
+    { keys: ['11111111-0001-0001-0001-000000000001', '11111111-0001-0001-0001-000000000002', '11111111-0001-0001-0001-000000000003', '11111111-0001-0001-0001-000000000004', '11111111-0001-0001-0001-000000000005'], label: 'planning' },
+    { keys: ['11111111-0001-0001-0002-000000000006', '11111111-0001-0001-0002-000000000007', '11111111-0001-0001-0002-000000000008', '11111111-0001-0001-0002-000000000009', '11111111-0001-0001-0002-000000000010'], label: 'time' },
+    { keys: ['11111111-0001-0001-0003-000000000011', '11111111-0001-0001-0003-000000000012', '11111111-0001-0001-0003-000000000013', '11111111-0001-0001-0003-000000000014', '11111111-0001-0001-0003-000000000015'], label: 'cognitive' },
+    { keys: ['11111111-0001-0001-0004-000000000016', '11111111-0001-0001-0004-000000000017', '11111111-0001-0001-0004-000000000018', '11111111-0001-0001-0004-000000000019', '11111111-0001-0001-0004-000000000020'], label: 'evaluation' },
   ];
 
   const levels = dims.map((dim) => {
@@ -155,6 +156,12 @@ export default function SurveyScreen() {
 
     setIsSubmitting(true);
     try {
+      const payload = Object.keys(answers).map(id => ({
+        question_id: id,
+        answer_value: answers[id],
+      }));
+      await assessmentApi.submit(payload);
+
       const profile = calculateProfile(answers);
       // Save the profile result locally
       await SecureStore.setItemAsync('srl_profile', JSON.stringify(profile));
@@ -163,6 +170,7 @@ export default function SurveyScreen() {
       // Navigate to the result screen briefly, then to dashboard
       router.replace(`/(auth)/survey-result?profileId=${profile.combination_id}`);
     } catch (e) {
+      console.log('Error submitting survey:', e);
       Alert.alert('Error', 'Failed to save your profile. Please try again.');
     } finally {
       setIsSubmitting(false);

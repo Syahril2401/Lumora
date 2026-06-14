@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from 'nativewind';
@@ -12,32 +12,40 @@ export default function ProgressScreen() {
   const [profile, setProfile] = useState<any>(null);
   const [progressData, setProgressData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadData = async () => {
+    try {
+      const stored = await SecureStore.getItemAsync('srl_profile');
+      if (stored) {
+        try {
+          setProfile(JSON.parse(stored));
+        } catch (e) {}
+      }
+      
+      const res = await dashboardApi.getProgress();
+      if (res.data) {
+        setProgressData(res.data);
+        if (res.data.latest_result?.CategoryResult) {
+          setProfile(JSON.parse(res.data.latest_result.CategoryResult));
+        }
+      }
+    } catch (err) {
+      console.log('Error loading progress:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const stored = await SecureStore.getItemAsync('srl_profile');
-        if (stored) {
-          try {
-            setProfile(JSON.parse(stored));
-          } catch (e) {}
-        }
-        
-        const res = await dashboardApi.getProgress();
-        if (res.data) {
-          setProgressData(res.data);
-          if (res.data.latest_result?.CategoryResult) {
-            setProfile(JSON.parse(res.data.latest_result.CategoryResult));
-          }
-        }
-      } catch (err) {
-        console.log('Error loading progress:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
     loadData();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
 
   if (isLoading) {
     return (
@@ -55,10 +63,32 @@ export default function ProgressScreen() {
     { key: 'reflection', label: 'Reflection' }
   ];
 
+  let canRetake = true;
+  let daysUntilRetake = 0;
+  if (progressData?.latest_result?.CreatedAt) {
+    const lastDate = new Date(progressData.latest_result.CreatedAt);
+    const now = new Date();
+    const diffTime = now.getTime() - lastDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 14) {
+      // TEMPORARILY DISABLED FOR DEMO RECORDING
+      // canRetake = false; 
+      // daysUntilRetake = 14 - diffDays;
+      canRetake = true;
+    }
+  }
+
   return (
     <View className="flex-1 bg-surface-warm dark:bg-dark-bg">
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 32 }}>
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ paddingBottom: 32 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#F97316']} tintColor="#F97316" />
+        }
+      >
         
         {/* Header */}
         <View className="px-6 pt-16 pb-6 border-b border-navy-100 dark:border-dark-border">
@@ -169,10 +199,19 @@ export default function ProgressScreen() {
         {/* CTA Buttons */}
         <View className="px-6">
           <TouchableOpacity 
-            className="bg-brand-500 px-6 py-4 rounded-2xl w-full items-center shadow-sm flex-row justify-center gap-2"
-            onPress={() => router.push('/(auth)/survey')}
+            className={`${canRetake ? 'bg-brand-500' : 'bg-brand-300 dark:bg-brand-500/50'} px-6 py-4 rounded-2xl w-full items-center shadow-sm flex-row justify-center gap-2`}
+            onPress={() => {
+              if (canRetake) {
+                router.push('/(auth)/survey');
+              } else {
+                alert(`You can retake the assessment in ${daysUntilRetake} days.`);
+              }
+            }}
+            activeOpacity={canRetake ? 0.7 : 1}
           >
-            <Text className="text-white font-black text-sm">⟳ Retake Assessment</Text>
+            <Text className="text-white font-black text-sm">
+              {canRetake ? '⟳ Retake Assessment' : `⟳ Available in ${daysUntilRetake} days`}
+            </Text>
           </TouchableOpacity>
         </View>
 

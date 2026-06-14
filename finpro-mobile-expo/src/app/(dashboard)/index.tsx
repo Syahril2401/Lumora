@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useRouter } from 'expo-router';
-import { dashboardApi, plannerApi, notesApi } from '../../services/api';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { dashboardApi, plannerApi, notesApi, targetsApi } from '../../services/api';
 
 import { useColorScheme } from 'nativewind';
 
@@ -12,6 +12,7 @@ export default function DashboardScreen() {
   const [data, setData] = useState<any>({});
   const [recentSessions, setRecentSessions] = useState<any[]>([]);
   const [recentNotes, setRecentNotes] = useState<any[]>([]);
+  const [weeklyTargets, setWeeklyTargets] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -25,8 +26,73 @@ export default function DashboardScreen() {
   const loadDashboard = async () => {
     try {
       const metrics = await dashboardApi.getMetrics();
-      setData(metrics.data || metrics);
-      setRecentSessions((metrics.data || metrics).focus_sessions || []);
+      const dbData = metrics.data || metrics;
+      setData(dbData);
+      
+      let sessions = dbData.focus_sessions || [];
+
+      // Fetch Planner Sessions directly to guarantee client-side timezone accuracy
+      try {
+        const plannerRes = await plannerApi.getSessions();
+        const allSessions = plannerRes.data || [];
+        const localDate = new Date();
+        const todayStr = localDate.getFullYear() + '-' + String(localDate.getMonth() + 1).padStart(2, '0') + '-' + String(localDate.getDate()).padStart(2, '0');
+        
+        const todaySessions = allSessions.filter((s: any) => {
+          const d = s.date ? s.date.split('T')[0].split(' ')[0] : '';
+          return d === todayStr;
+        }).map((s: any) => ({
+          title: s.title,
+          time: s.start_time || '00:00',
+          duration: `${s.duration_minutes || 60}m`,
+          status: s.status || 'planned'
+        }));
+        
+        sessions = todaySessions;
+      } catch (err) {
+        console.log('Failed to fetch local planner sessions:', err);
+      }
+
+      // Fetch Google Events
+      try {
+        const gStatus = await plannerApi.getGoogleStatus();
+        if (gStatus?.connected) {
+          const gEvents = await plannerApi.getGoogleEvents();
+          if (gEvents && gEvents.length > 0) {
+            const localDate = new Date();
+            const todayStr = localDate.getFullYear() + '-' + String(localDate.getMonth() + 1).padStart(2, '0') + '-' + String(localDate.getDate()).padStart(2, '0');
+
+            const todayGoogleEvents = gEvents.filter((e: any) => {
+              const eDate = e.date?.split('T')[0]?.split(' ')[0];
+              return eDate === todayStr;
+            });
+
+            const localTitlesAndTimes = sessions.map((s: any) => s.title + s.time);
+            const uniqueGoogleEvents = todayGoogleEvents.filter((ge: any) => {
+              return !localTitlesAndTimes.includes(ge.title + ge.start_time);
+            });
+
+            const formattedGoogle = uniqueGoogleEvents.map((ge: any) => {
+              const [startH, startM] = (ge.start_time || '00:00').split(':').map(Number);
+              const [endH, endM] = (ge.end_time || '01:00').split(':').map(Number);
+              const dur = (endH * 60 + endM) - (startH * 60 + startM);
+              return {
+                title: ge.title,
+                time: ge.start_time,
+                duration: `${dur > 0 ? dur : 60}m`,
+                status: 'planned'
+              };
+            });
+
+            sessions = [...sessions, ...formattedGoogle];
+            sessions.sort((a: any, b: any) => a.time.localeCompare(b.time));
+          }
+        }
+      } catch (err) {
+        console.log('Failed to fetch google events for dashboard:', err);
+      }
+
+      setRecentSessions(sessions);
 
       // Fetch Recent Notes
       try {
@@ -35,6 +101,14 @@ export default function DashboardScreen() {
         setRecentNotes(allNotes.slice(0, 2));
       } catch (err) {
         console.log('Failed to fetch recent notes:', err);
+      }
+
+      // Fetch Weekly Targets
+      try {
+        const tRes = await targetsApi.getTargets();
+        setWeeklyTargets((tRes.data || []).slice(0, 3));
+      } catch (err) {
+        console.log('Failed to fetch weekly targets:', err);
       }
     } catch (err) {
       console.log('Dashboard load error:', err);
@@ -49,9 +123,11 @@ export default function DashboardScreen() {
     setRefreshing(false);
   }, []);
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadDashboard();
+    }, [])
+  );
 
   const metrics = [
     { label: 'Focus Sessions', value: data.focus_sessions || 0, icon: '🎯', bg: 'bg-indigo-50' },
@@ -183,6 +259,37 @@ export default function DashboardScreen() {
               <Text className="text-navy-500 dark:text-text-muted text-sm font-medium">No recent notes found.</Text>
             </View>
           )}
+        </View>
+
+        {/* This Week's Targets */}
+        <View className="px-6 mb-6">
+          <View className="bg-white dark:bg-dark-panel border border-navy-100 dark:border-dark-border p-6 rounded-3xl shadow-sm">
+            <Text className="text-lg font-black text-navy-900 dark:text-text-primary mb-6">This Week's Targets</Text>
+            {weeklyTargets.length === 0 ? (
+              <Text className="text-navy-500 dark:text-text-muted font-medium text-sm py-2">
+                No active targets for this week.
+              </Text>
+            ) : (
+              <View className="space-y-5" style={{ gap: 20 }}>
+                {weeklyTargets.map((target, index) => (
+                  <View key={target.id || index}>
+                    <View className="flex-row justify-between items-end mb-2">
+                      <Text className="text-xs font-bold text-navy-900 dark:text-text-primary flex-1 mr-2" numberOfLines={1}>{target.title}</Text>
+                      <Text className={`text-[10px] font-black ${(target.progress || 0) >= 100 ? 'text-emerald-500' : 'text-brand-500'}`}>
+                        {target.progress || 0}%
+                      </Text>
+                    </View>
+                    <View className="w-full bg-[#E8EDF2] dark:bg-dark-border rounded-full h-2 overflow-hidden">
+                      <View 
+                        className={`h-full rounded-full transition-all duration-500 ${(target.progress || 0) >= 100 ? 'bg-emerald-500' : 'bg-brand-500'}`} 
+                        style={{ width: `${target.progress || 0}%` }}
+                      />
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Quick Actions */}

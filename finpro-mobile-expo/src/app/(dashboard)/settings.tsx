@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authApi, getAvatarUrl, plannerApi } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -186,18 +187,7 @@ export default function SettingsScreen() {
               </>
             )}
 
-            <View className="w-full h-px bg-navy-50 dark:bg-dark-surface mb-6" />
 
-            <View className="flex-row items-center w-full justify-around mb-8">
-              <View className="items-center">
-                <Text className="text-navy-900 dark:text-text-primary text-2xl font-black mb-1">124</Text>
-                <Text className="text-navy-500 dark:text-text-muted text-[9px] font-black uppercase tracking-widest">Sessions</Text>
-              </View>
-              <View className="items-center">
-                <Text className="text-navy-900 dark:text-text-primary text-2xl font-black mb-1">92%</Text>
-                <Text className="text-navy-500 dark:text-text-muted text-[9px] font-black uppercase tracking-widest">Focus Rate</Text>
-              </View>
-            </View>
 
             <TouchableOpacity
               className="w-12 h-12 bg-navy-900 dark:bg-dark-surface rounded-full items-center justify-center shadow-sm absolute -bottom-6"
@@ -221,10 +211,13 @@ export default function SettingsScreen() {
               </View>
             </View>
 
-                        <View className="flex-row justify-between" style={{ gap: 12 }}>
+            <View className="flex-row justify-between" style={{ gap: 12 }}>
               <TouchableOpacity
                 className={`flex-1 bg-surface-warm dark:bg-dark-bg border-2 rounded-2xl p-4 items-center ${colorScheme !== 'dark' ? 'border-brand-500' : 'border-transparent'}`}
-                onPress={() => setColorScheme('light')}
+                onPress={async () => {
+                  setColorScheme('light');
+                  await AsyncStorage.setItem('user_theme', 'light');
+                }}
               >
                 <View className="w-full h-12 bg-white rounded-lg mb-3 border border-navy-100 dark:border-dark-border" />
                 <Text className="text-navy-900 dark:text-text-primary text-xs font-black">Premium Light</Text>
@@ -232,7 +225,10 @@ export default function SettingsScreen() {
 
               <TouchableOpacity
                 className={`flex-1 bg-navy-900 dark:bg-dark-surface border-2 rounded-2xl p-4 items-center shadow-sm ${colorScheme === 'dark' ? 'border-brand-500' : 'border-transparent'}`}
-                onPress={() => setColorScheme('dark')}
+                onPress={async () => {
+                  setColorScheme('dark');
+                  await AsyncStorage.setItem('user_theme', 'dark');
+                }}
               >
                 <View className="w-full h-12 bg-[#161C2D] rounded-lg mb-3 border border-white/5" />
                 <Text className="text-white text-xs font-black">Premium Dark</Text>
@@ -272,18 +268,7 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Current Plan */}
-        <View className="px-6 mb-6">
-          <View className="bg-white dark:bg-dark-panel border border-navy-100 dark:border-dark-border p-6 rounded-3xl shadow-sm">
-            <Text className="text-brand-500 text-[9px] font-black uppercase tracking-widest mb-2">Current Plan</Text>
-            <Text className="text-navy-900 dark:text-text-primary text-xl font-black mb-1">Lumora Pro Alpha</Text>
-            <Text className="text-navy-500 dark:text-text-muted text-xs mb-6">Your subscription renews on Jan 12, 2025.</Text>
 
-            <TouchableOpacity className="bg-surface-warm dark:bg-dark-bg py-3 rounded-xl items-center border border-navy-100 dark:border-dark-border shadow-sm">
-              <Text className="text-navy-900 dark:text-text-primary font-black text-sm">Manage Billing</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
 
         {/* Logout */}
         <View className="px-6">

@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Modal, TextInput, Alert, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Modal, TextInput, Alert, ActivityIndicator, RefreshControl } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { useFocusEffect } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import { targetsApi } from '../../services/api';
 
@@ -16,6 +17,7 @@ export default function WeeklyTargetsScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [editingTarget, setEditingTarget] = useState<any>(null);
   const [newSubtaskText, setNewSubtaskText] = useState<Record<string, string>>({});
+  const [refreshing, setRefreshing] = useState(false);
 
   // Form state
   const [form, setForm] = useState({
@@ -43,9 +45,17 @@ export default function WeeklyTargetsScreen() {
       setIsLoading(false);
     }
   }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchTargets();
+    }, [fetchTargets])
+  );
 
-  useEffect(() => { fetchTargets(); }, []);
-
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchTargets();
+    setRefreshing(false);
+  }, [fetchTargets]);
   const openModal = (target: any = null) => {
     setEditingTarget(target);
     if (target) {
@@ -170,7 +180,13 @@ export default function WeeklyTargetsScreen() {
   return (
     <View className="flex-1 bg-surface-warm dark:bg-dark-bg">
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 32 }}>
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ paddingBottom: 32 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#F97316']} tintColor="#F97316" />
+        }
+      >
 
         {/* Header */}
         <View className="px-6 pt-16 pb-6 border-b border-navy-100 dark:border-dark-border">
@@ -186,25 +202,25 @@ export default function WeeklyTargetsScreen() {
         {/* Dashboard Cards */}
         <View className="px-6 py-6" style={{ gap: 12 }}>
           <View className="flex-row" style={{ gap: 12 }}>
-            <View className="flex-1 bg-navy-900 dark:bg-dark-panel p-4 rounded-2xl">
-              <Text className="text-[9px] font-black text-navy-300 uppercase tracking-widest mb-1">Total Targets</Text>
-              <Text className="text-white text-2xl font-black">{targets.length}</Text>
+            <View className="flex-1 bg-white dark:bg-dark-panel border border-navy-100 dark:border-dark-border p-4 rounded-2xl shadow-sm">
+              <Text className="text-[9px] font-black text-navy-500 dark:text-navy-300 uppercase tracking-widest mb-1">Total Targets</Text>
+              <Text className="text-navy-900 dark:text-white text-2xl font-black">{targets.length}</Text>
             </View>
-            <View className="flex-1 bg-navy-900 dark:bg-dark-panel p-4 rounded-2xl">
-              <Text className="text-[9px] font-black text-emerald-300 uppercase tracking-widest mb-1">Completed</Text>
-              <Text className="text-emerald-400 text-2xl font-black">{targets.filter((t: any) => t.status === 'completed').length}</Text>
+            <View className="flex-1 bg-white dark:bg-dark-panel border border-navy-100 dark:border-dark-border p-4 rounded-2xl shadow-sm">
+              <Text className="text-[9px] font-black text-emerald-500 dark:text-emerald-300 uppercase tracking-widest mb-1">Completed</Text>
+              <Text className="text-emerald-500 dark:text-emerald-400 text-2xl font-black">{targets.filter((t: any) => t.status === 'completed').length}</Text>
             </View>
           </View>
           <View className="flex-row" style={{ gap: 12 }}>
-            <View className="flex-1 bg-navy-900 dark:bg-dark-panel p-4 rounded-2xl">
-              <Text className="text-[9px] font-black text-brand-300 uppercase tracking-widest mb-1">Completion Rate</Text>
-              <Text className="text-brand-400 text-2xl font-black">
+            <View className="flex-1 bg-white dark:bg-dark-panel border border-navy-100 dark:border-dark-border p-4 rounded-2xl shadow-sm">
+              <Text className="text-[9px] font-black text-brand-500 dark:text-brand-300 uppercase tracking-widest mb-1">Completion Rate</Text>
+              <Text className="text-brand-500 dark:text-brand-400 text-2xl font-black">
                 {targets.length > 0 ? Math.round((targets.filter((t: any) => t.status === 'completed').length / targets.length) * 100) : 0}%
               </Text>
             </View>
-            <View className="flex-1 bg-navy-900 dark:bg-dark-panel p-4 rounded-2xl">
-              <Text className="text-[9px] font-black text-navy-300 uppercase tracking-widest mb-1">Primary Focus</Text>
-              <Text className="text-white text-sm font-bold mt-1">
+            <View className="flex-1 bg-white dark:bg-dark-panel border border-navy-100 dark:border-dark-border p-4 rounded-2xl shadow-sm">
+              <Text className="text-[9px] font-black text-navy-500 dark:text-navy-300 uppercase tracking-widest mb-1">Primary Focus</Text>
+              <Text className="text-navy-900 dark:text-white text-sm font-bold mt-1">
                 {targets.length > 0 ? targets[0].focus_dimension || 'General' : 'No focus yet'}
               </Text>
             </View>
@@ -325,9 +341,17 @@ export default function WeeklyTargetsScreen() {
         <View style={{ flex: 1, backgroundColor: 'rgba(11,17,32,0.5)', justifyContent: 'center', padding: 20 }}>
           <View className="bg-white dark:bg-dark-panel rounded-3xl p-6" style={{ maxHeight: '85%' }}>
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text className="text-xl font-black text-navy-900 dark:text-text-primary mb-5">
-                {editingTarget ? 'Edit Target' : 'Add Weekly Target'}
-              </Text>
+              <View className="flex-row items-center justify-between mb-5">
+                <Text className="text-xl font-black text-navy-900 dark:text-text-primary">
+                  {editingTarget ? 'Edit Target' : 'Add Weekly Target'}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setShowModal(false)}
+                  className="w-8 h-8 rounded-full bg-surface-warm dark:bg-dark-bg border border-navy-100 dark:border-dark-border items-center justify-center"
+                >
+                  <Text className="text-navy-500 dark:text-text-muted font-bold text-sm">✕</Text>
+                </TouchableOpacity>
+              </View>
 
               {/* Title */}
               <Text className="text-[9px] font-black text-navy-500 dark:text-text-muted uppercase tracking-widest mb-1">Title *</Text>

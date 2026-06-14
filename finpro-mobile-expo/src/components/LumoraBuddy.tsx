@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Modal, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useColorScheme } from 'nativewind';
-import { assessmentApi } from '../services/api';
+import { assessmentApi, targetsApi, plannerApi, notesApi } from '../services/api';
 
 export default function LumoraBuddy() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +21,48 @@ export default function LumoraBuddy() {
     }
   }, [isOpen, messages]);
 
+  const executeAction = async (data: any) => {
+    try {
+      switch(data.action) {
+        case 'create_target':
+          await targetsApi.createTarget({
+            title: data.title,
+            due_date: data.due_date,
+            subtasks: data.subtasks ? data.subtasks.map((t: string) => ({ title: t })) : [],
+            focus_dimension: 'General',
+            priority: 'medium'
+          });
+          break;
+        case 'edit_target':
+          await targetsApi.updateTarget(data.id, data);
+          break;
+        case 'delete_target':
+          await targetsApi.deleteTarget(data.id);
+          break;
+        case 'create_planner':
+          await plannerApi.createSession(data);
+          break;
+        case 'edit_planner':
+          await plannerApi.updateSession(data.id, data);
+          break;
+        case 'delete_planner':
+          await plannerApi.deleteSession(data.id);
+          break;
+        case 'create_note':
+          await notesApi.createNote(data);
+          break;
+        case 'edit_note':
+          await notesApi.updateNote(data.id, data);
+          break;
+        case 'delete_note':
+          await notesApi.deleteNote(data.id);
+          break;
+      }
+    } catch (e) {
+      console.error('Failed to execute AI action:', e);
+    }
+  };
+
   const handleSend = async () => {
     if (!inputText.trim() || isLoading) return;
     const userText = inputText.trim();
@@ -31,7 +73,24 @@ export default function LumoraBuddy() {
     try {
       const res = await assessmentApi.chat(userText);
       if (res && res.data && res.data.reply) {
-        setMessages(prev => [...prev, { role: 'assistant', content: res.data.reply }]);
+        const replyText = res.data.reply;
+        
+        // Execute actions if they exist in the reply
+        const actionRegex = /\{[\s]*["']action["']\s*:[\s\S]*?\}/g;
+        const matches = replyText.match(actionRegex);
+        
+        if (matches) {
+          for (const match of matches) {
+            try {
+              const actionData = JSON.parse(match);
+              await executeAction(actionData);
+            } catch (e) {
+              console.error("Failed to parse action JSON:", e);
+            }
+          }
+        }
+        
+        setMessages(prev => [...prev, { role: 'assistant', content: replyText }]);
       }
     } catch (error) {
       console.error('Chat error:', error);
