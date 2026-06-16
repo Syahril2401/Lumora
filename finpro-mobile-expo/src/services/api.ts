@@ -89,6 +89,10 @@ const apiRequest = async (
   const data = await response.json();
 
   if (!response.ok) {
+    // Auto-clear invalid token on 401
+    if (response.status === 401) {
+      await removeToken();
+    }
     throw new Error(data.message || `HTTP ${response.status}`);
   }
 

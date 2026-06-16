@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getToken, removeToken } from '../services/api';
+import { getToken, removeToken, getBaseUrl } from '../services/api';
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -32,8 +32,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const storedToken = await getToken();
         if (storedToken) {
-          setIsLoggedIn(true);
-          setTokenState(storedToken);
+          // Verify if token is actually valid
+          try {
+            const baseUrl = getBaseUrl();
+            // We use standard fetch here to avoid circular dependency with apiRequest
+            const res = await fetch(`${baseUrl}/api/auth/me`, {
+              headers: { 'Authorization': `Bearer ${storedToken}` }
+            });
+            if (res.ok) {
+              setIsLoggedIn(true);
+              setTokenState(storedToken);
+            } else {
+              await removeToken();
+            }
+          } catch (e) {
+            // Network error but token might be valid, let them in for now
+            setIsLoggedIn(true);
+            setTokenState(storedToken);
+          }
         }
       } catch (error) {
         console.log('Auth check failed:', error);

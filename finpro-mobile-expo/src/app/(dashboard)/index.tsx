@@ -110,7 +110,11 @@ export default function DashboardScreen() {
       } catch (err) {
         console.log('Failed to fetch weekly targets:', err);
       }
-    } catch (err) {
+    } catch (err: any) {
+      if (err?.message?.includes('Unauthorized') || err?.message?.includes('401')) {
+        router.replace('/(auth)/login');
+        return;
+      }
       console.log('Dashboard load error:', err);
     } finally {
       setIsLoading(false);

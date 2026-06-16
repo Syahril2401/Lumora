@@ -72,10 +72,8 @@ export default function ProgressScreen() {
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     
     if (diffDays < 14) {
-      // TEMPORARILY DISABLED FOR DEMO RECORDING
-      // canRetake = false; 
-      // daysUntilRetake = 14 - diffDays;
-      canRetake = true;
+      canRetake = false; 
+      daysUntilRetake = 14 - diffDays;
     }
   }
 

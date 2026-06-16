@@ -17,7 +17,7 @@ func NewProfileController(userRepo repository.UserRepository) *ProfileController
 }
 
 func (ctrl *ProfileController) GetProfile(c *gin.Context) {
-	userID, exists := c.Get("user_id")
+	userID, exists := c.Get("userID")
 	if !exists {
 		utils.ResponseJSON(c, http.StatusUnauthorized, false, "Unauthorized", nil)
 		return
@@ -33,7 +33,7 @@ func (ctrl *ProfileController) GetProfile(c *gin.Context) {
 }
 
 func (ctrl *ProfileController) UpdateProfile(c *gin.Context) {
-	userID, exists := c.Get("user_id")
+	userID, exists := c.Get("userID")
 	if !exists {
 		utils.ResponseJSON(c, http.StatusUnauthorized, false, "Unauthorized", nil)
 		return

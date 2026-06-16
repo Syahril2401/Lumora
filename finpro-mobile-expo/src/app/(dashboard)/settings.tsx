@@ -40,9 +40,15 @@ export default function SettingsScreen() {
         const statusRes = await plannerApi.getGoogleStatus();
         setIsGoogleConnected(statusRes.data?.connected || false);
       } catch (err) {
-        console.error('Failed to get google status', err);
+        // Silently ignore Google status errors
       }
-    } catch (e) {
+    } catch (e: any) {
+      // If unauthorized, force logout and redirect to login
+      if (e?.message?.includes('Unauthorized') || e?.message?.includes('401')) {
+        await logout();
+        router.replace('/(auth)/login');
+        return;
+      }
       console.error('Failed to load profile', e);
     } finally {
       setLoading(false);

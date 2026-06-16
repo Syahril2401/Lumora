@@ -148,7 +148,12 @@ const timeUntilNextAssessment = ref('')
 let timerInterval = null
 
 const canRetake = computed(() => {
-  return true; // Always allow retake during testing/development
+  if (!progress.value.latest_result || !progress.value.latest_result.CreatedAt) return true;
+  const lastDate = new Date(progress.value.latest_result.CreatedAt);
+  const now = new Date();
+  const diffTime = now.getTime() - lastDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays >= 14;
 })
 
 function updateCountdown() {
