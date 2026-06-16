@@ -24,7 +24,7 @@ type aiService struct {
 
 func NewAIService() AIService {
 	apiKey := os.Getenv("OPENROUTER_API_KEY")
-	modelName := "google/gemini-2.5-flash"
+	modelName := "owl-alpha"
 
 	if apiKey == "" {
 		log.Printf("[AI] WARNING: OPENROUTER_API_KEY is not set. Using mock responses.")
@@ -48,7 +48,6 @@ func (s *aiService) callOpenRouter(ctx context.Context, systemContext, userPromp
 
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"model": s.model,
-		"max_tokens": 2000,
 		"messages": []map[string]string{
 			{"role": "system", "content": systemContext},
 			{"role": "user", "content": userPrompt},
