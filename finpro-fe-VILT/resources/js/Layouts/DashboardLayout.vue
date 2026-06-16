@@ -341,7 +341,9 @@ const isSidebarOpen = ref(true)
 
 const parseMarkdown = (text) => {
     if (!text) return '';
-    return text
+    // Strip JSON actions from history
+    let cleanText = text.replace(/\{[\s]*["']action["']\s*:[\s\S]*?\}/g, '').trim();
+    return cleanText
         .replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-brand-500">$1</strong>')
         .replace(/\*(.*?)\*/g, '<em class="italic opacity-90">$1</em>')
         .replace(/### (.*?)(\n|$)/g, '<h3 class="font-black text-[13px] mt-2 mb-1">$1</h3>\n')
