@@ -43,26 +43,26 @@ func (ctrl *GoogleCalendarController) GoogleCallback(c *gin.Context) {
 	state := c.Query("state") // this is the userID we passed as state
 
 	if code == "" {
-		c.Redirect(http.StatusTemporaryRedirect, "http://localhost:8000/dashboard/planner?google_error=Missing+authorization+code")
+		c.Redirect(http.StatusTemporaryRedirect, "http://127.0.0.1:8000/dashboard/planner?google_error=Missing+authorization+code")
 		return
 	}
 
 	token, err := ctrl.calendarService.ExchangeCode(c.Request.Context(), code)
 	if err != nil {
-		c.Redirect(http.StatusTemporaryRedirect, "http://localhost:8000/dashboard/planner?google_error=Failed+to+exchange+code")
+		c.Redirect(http.StatusTemporaryRedirect, "http://127.0.0.1:8000/dashboard/planner?google_error=Failed+to+exchange+code")
 		return
 	}
 
 	// Save tokens for the user
 	if state != "" && state != "anonymous" {
 		if err := ctrl.calendarService.SaveTokensForUser(state, token); err != nil {
-			c.Redirect(http.StatusTemporaryRedirect, "http://localhost:8000/dashboard/planner?google_error=Failed+to+save+tokens")
+			c.Redirect(http.StatusTemporaryRedirect, "http://127.0.0.1:8000/dashboard/planner?google_error=Failed+to+save+tokens")
 			return
 		}
 	}
 
 	// Redirect back to the planner page
-	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:8000/dashboard/planner?google_connected=true")
+	c.Redirect(http.StatusTemporaryRedirect, "http://127.0.0.1:8000/dashboard/planner?google_connected=true")
 }
 
 // GetEvents returns Google Calendar events for the authenticated user

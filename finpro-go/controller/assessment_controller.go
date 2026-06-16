@@ -97,7 +97,13 @@ func (ctrl *AssessmentController) Chat(c *gin.Context) {
 	}
 	userContextBytes, _ := json.Marshal(userContext)
 
-	reply, err := ctrl.aiSvc.Chat(c.Request.Context(), body.Message, body.LearningProfile, string(userContextBytes))
+	var historyJSON string
+	aiLog, err := ctrl.userRepo.GetAILogByUserID(userID)
+	if err == nil && aiLog != nil {
+		historyJSON = string(aiLog.History)
+	}
+
+	reply, err := ctrl.aiSvc.Chat(c.Request.Context(), body.Message, body.LearningProfile, string(userContextBytes), historyJSON)
 	if err != nil {
 		utils.ResponseJSON(c, http.StatusInternalServerError, false, "AI service error: "+err.Error(), nil)
 		return
@@ -113,8 +119,7 @@ func (ctrl *AssessmentController) Chat(c *gin.Context) {
 		{Role: "bot", Content: reply},
 	}
 
-	aiLog, err := ctrl.userRepo.GetAILogByUserID(userID)
-	if err != nil {
+	if aiLog == nil {
 		importJson, _ := json.Marshal(newMessages)
 		aiLog = &model.AILog{
 			AILogID: uuid.New().String(),

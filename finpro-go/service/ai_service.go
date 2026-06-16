@@ -9,12 +9,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"time"
 )
 
 type AIService interface {
 	AnalyzeLearningStyle(ctx context.Context, prompt string) (string, error)
-	Chat(ctx context.Context, userMessage string, learningProfile string, userContextJSON string) (string, error)
+	Chat(ctx context.Context, userMessage string, learningProfile string, userContextJSON string, historyJSON string) (string, error)
 }
 
 type aiService struct {
@@ -39,7 +40,7 @@ func NewAIService() AIService {
 	}
 }
 
-func (s *aiService) callOpenRouter(ctx context.Context, systemContext, userPrompt string) (string, error) {
+func (s *aiService) callOpenRouter(ctx context.Context, messages []map[string]string) (string, error) {
 	if s.apiKey == "" {
 		return "This is a mock response from OpenRouter. Please add OPENROUTER_API_KEY to your .env.", nil
 	}
@@ -48,10 +49,7 @@ func (s *aiService) callOpenRouter(ctx context.Context, systemContext, userPromp
 
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"model": s.model,
-		"messages": []map[string]string{
-			{"role": "system", "content": systemContext},
-			{"role": "user", "content": userPrompt},
-		},
+		"messages": messages,
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to marshal request: %w", err)
@@ -106,9 +104,37 @@ func (s *aiService) AnalyzeLearningStyle(ctx context.Context, prompt string) (st
 	return "{}", nil
 }
 
-func (s *aiService) Chat(ctx context.Context, userMessage string, learningProfile string, userContextJSON string) (string, error) {
+func (s *aiService) Chat(ctx context.Context, userMessage string, learningProfile string, userContextJSON string, historyJSON string) (string, error) {
 	currentDateTime := time.Now().Format("2006-01-02 15:04:05 MST")
 	
+	historyText := "No previous history."
+	if historyJSON != "" {
+		var history []struct {
+			Role    string `json:"role"`
+			Content string `json:"content"`
+		}
+		if err := json.Unmarshal([]byte(historyJSON), &history); err == nil {
+			if len(history) > 6 {
+				history = history[len(history)-6:]
+			}
+			text := ""
+			for _, h := range history {
+				role := "User"
+				if h.Role == "bot" {
+					role = "Lumora AI"
+				}
+				
+				// Strip action JSON to prevent AI from getting confused and repeating past actions
+				cleanContent := h.Content
+				actionRegex := regexp.MustCompile(`\{[\s]*["']action["']\s*:[\s\S]*?\}`)
+				cleanContent = actionRegex.ReplaceAllString(cleanContent, "")
+				
+				text += fmt.Sprintf("%s: %s\n", role, cleanContent)
+			}
+			historyText = text
+		}
+	}
+
 	systemContext := fmt.Sprintf(`
 You are Lumora AI, an educational explainer module and Study Buddy powered by OpenRouter.
 Your SOLE purpose is to assist the user with academic topics, study planning, productivity, and explaining their study profile.
@@ -164,7 +190,15 @@ Guidelines:
 - NEVER wrap the action JSON in markdown code blocks. Output it as plain text on the last line.
 - The JSON must be valid and parseable. Do not add trailing commas or comments.
 - Respond in the language the student uses.
-`, currentDateTime, userContextJSON, learningProfile)
 
-	return s.callOpenRouter(ctx, systemContext, userMessage)
+PREVIOUS CHAT HISTORY (For context only, do not repeat):
+%s
+`, currentDateTime, userContextJSON, learningProfile, historyText)
+
+	messages := []map[string]string{
+		{"role": "system", "content": systemContext},
+		{"role": "user", "content": userMessage},
+	}
+
+	return s.callOpenRouter(ctx, messages)
 }
