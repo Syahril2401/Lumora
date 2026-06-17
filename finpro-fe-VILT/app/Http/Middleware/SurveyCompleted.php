@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\ResultSummary;
+use Illuminate\Support\Facades\DB;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +25,7 @@ class SurveyCompleted
             
             if ($userId) {
                 // Check directly in database if result exists
-                $completed = ResultSummary::where('user_id', $userId)->exists();
+                $completed = DB::table('result_summary')->where('user_id', $userId)->exists();
             }
             
             Session::put('survey_completed', $completed);

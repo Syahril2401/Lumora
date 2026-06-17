@@ -77,10 +77,9 @@ class OnboardingController extends Controller
             $userId = \Illuminate\Support\Facades\Auth::id();
             
             // Read profile data from JSON to provide a realistic CategoryResult
-            $profilesPath = base_path('../finpro-mobile-expo/src/data/srl_profiles_81.json');
+            $profilesPath = base_path('srl_profiles_81.json');
             $profileJson = file_exists($profilesPath) ? file_get_contents($profilesPath) : '[]';
             $profiles = json_decode($profileJson, true) ?? [];
-            $selectedProfile = count($profiles) > 0 ? $profiles[array_rand($profiles)] : ['profile_title' => 'The Focused Achiever', 'deep_work_capacity' => 88, 'consistency_score' => 85, 'retention_score' => 90];
 
             // Calculate scores based on user answers (5 questions per dimension, max 25 each)
             $answers = array_column($validated['answers'], 'answer_value');
@@ -90,7 +89,23 @@ class OnboardingController extends Controller
             $rScore = array_sum(array_slice($answers, 15, 5)) ?: rand(15, 25);
             $totalScore = $pScore + $tScore + $cScore + $rScore;
 
-            $result = \App\Models\ResultSummary::create([
+            $getLabel = function($score) {
+                if ($score <= 11) return 'L';
+                if ($score <= 18) return 'M';
+                return 'H';
+            };
+            
+            $combId = $getLabel($pScore) . '-' . $getLabel($tScore) . '-' . $getLabel($cScore) . '-' . $getLabel($rScore);
+            
+            $selectedProfile = ['profile_title' => 'The Focused Achiever', 'deep_work_capacity' => 88, 'consistency_score' => 85, 'retention_score' => 90]; // fallback
+            foreach ($profiles as $profile) {
+                if (($profile['combination_id'] ?? '') === $combId) {
+                    $selectedProfile = $profile;
+                    break;
+                }
+            }
+
+            $resultData = [
                 'result_id' => (string) \Illuminate\Support\Str::uuid(),
                 'user_id' => $userId,
                 'session_id' => (string) \Illuminate\Support\Str::uuid(),
@@ -101,9 +116,12 @@ class OnboardingController extends Controller
                 'reflection_score' => $rScore,
                 'category_result' => json_encode($selectedProfile),
                 'created_at' => now()
-            ]);
+            ];
 
-            $resultData = $result->toArray();
+            \Illuminate\Support\Facades\DB::table('result_summary')->insert($resultData);
+
+            // Decode the category_result string back to an array/object for the session
+            $resultData['category_result'] = json_decode($resultData['category_result'], true);
 
             // Cache result in session for the Result page
             Session::put('onboarding_result', $resultData);
@@ -111,6 +129,7 @@ class OnboardingController extends Controller
 
             return to_route('onboarding.result');
         } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Onboarding Submit Error: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
             return back()->withErrors(['error' => 'Analysis failed: ' . $e->getMessage()]);
         }
     }

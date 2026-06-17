@@ -113,10 +113,12 @@
 
         <!-- Cognitive Style (narrower, 2/5) -->
         <div class="md:col-span-2 bg-white dark:bg-dark-panel rounded-3xl p-8 shadow-lg border border-[#D9E2EC] dark:border-dark-border text-center flex flex-col items-center justify-center relative overflow-hidden">
-            <div class="w-20 h-20 rounded-full overflow-hidden mb-5 border-4 border-white dark:border-dark-surface shadow-xl rotate-[-3deg] relative z-10 flex items-center justify-center bg-[#E8EDF2] dark:bg-[#1E293B] text-navy-400 dark:text-[#64748B]">
-                <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
+            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-brand-500 to-navy-600 p-[3px] shadow-xl rotate-[-3deg] relative z-10 mb-5 flex items-center justify-center">
+                <div class="w-full h-full rounded-full border-[3px] border-white dark:border-[#0B1120] bg-[#E8EDF2] dark:bg-[#1E293B] text-navy-400 dark:text-[#64748B] flex items-center justify-center overflow-hidden">
+                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
             </div>
             <h3 class="text-lg font-bold text-navy-900 dark:text-text-primary mb-1 relative z-10">Your Cognitive Style</h3>
             <p class="text-brand-500 font-mono font-bold text-[11px] uppercase tracking-widest relative z-10">{{ cognitiveStyle }}</p>
@@ -256,12 +258,16 @@ const loading = ref(true)
 function tryParseAI(obj) {
     if (!obj || typeof obj !== 'object') return null
     const raw = obj.CategoryResult || obj.category_result
-    if (raw && typeof raw === 'string') {
-        try {
-            const parsed = JSON.parse(raw)
-            if (parsed && parsed.profile_title) return parsed
-        } catch (e) {
-            console.warn('Failed to parse CategoryResult:', e)
+    if (raw) {
+        if (typeof raw === 'string') {
+            try {
+                const parsed = JSON.parse(raw)
+                if (parsed && parsed.profile_title) return parsed
+            } catch (e) {
+                console.warn('Failed to parse CategoryResult:', e)
+            }
+        } else if (typeof raw === 'object' && raw.profile_title) {
+            return raw
         }
     }
     if (obj.profile_title) return obj

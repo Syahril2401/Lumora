@@ -465,7 +465,7 @@
       <div class="max-w-[1600px] mx-auto px-6 lg:px-12">
         <div class="grid md:grid-cols-5 gap-8 mb-10">
           <div class="md:col-span-2">
-            <div class="text-lg font-bold mb-2"><span class="text-brand-500">Lum</span><span class="text-navy-500 dark:text-navy-300">ora</span></div>
+            <div class="text-lg font-bold mb-2"><span class="text-brand-500">Lumora</span></div>
             <p class="text-navy-400 dark:text-slate-500 text-sm leading-relaxed max-w-xs">Your AI-powered self-regulated learning platform. Build better study habits with clarity.</p>
           </div>
           <div>

@@ -12,7 +12,6 @@
         <img src="/image/lumora_icon.svg" alt="Lumora logo" class="w-8 h-8 object-contain" />
         <span class="text-xl font-bold tracking-tight text-brand-500">Lumora</span>
       </Link>
-      <button class="text-sm font-bold text-navy-500 dark:text-text-muted hover:text-navy-900 dark:hover:text-text-primary transition-colors">Save & Exit</button>
     </nav>
 
     <div class="max-w-[1200px] mx-auto pt-32 px-6 flex flex-col lg:flex-row gap-12 relative z-10">
@@ -289,6 +288,7 @@ async function submitAll() {
         router.post(route('onboarding.submit'), {
             answers: payload
         }, {
+            replace: true,
             onStart: () => { submitting.value = true },
             onFinish: () => { submitting.value = false },
             onSuccess: (page) => {
