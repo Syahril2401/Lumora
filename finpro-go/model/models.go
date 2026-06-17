@@ -17,7 +17,8 @@ type User struct {
 	Email              string         `gorm:"column:email;type:varchar(150);not null;uniqueIndex;index:idx_users_email"`
 	PasswordHash       string         `gorm:"column:password_hash;type:varchar(255);not null"`
 	Level              *string        `gorm:"column:level;type:varchar(50)"`
-	Role               *string        `gorm:"column:role;type:varchar(100)"`
+	Profession         *string        `gorm:"column:profession;type:varchar(100)"`
+	Role               *string        `gorm:"column:role;type:varchar(255)"`
 	Avatar             *string        `gorm:"column:avatar;type:varchar(255)"`
 	GoogleID           *string        `gorm:"column:google_id;type:varchar(100);uniqueIndex"`
 	GoogleAccessToken  *string        `gorm:"column:google_access_token;type:text"`
@@ -27,12 +28,12 @@ type User struct {
 	IsActive           bool           `gorm:"column:is_active;type:tinyint(1);not null;default:1"`
 	DeletedAt          gorm.DeletedAt `gorm:"column:deleted_at;index"`
 
-	ResultSummaries     []ResultSummary      `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
-	AILogs              []AILog              `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
-	Schedules           []Schedule           `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
-	Targets             []Target             `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
-	Notes               []Note               `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
-	Evaluations         []Evaluation         `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
+	ResultSummaries []ResultSummary `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
+	AILogs          []AILog         `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
+	Schedules       []Schedule      `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
+	Targets         []Target        `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
+	Notes           []Note          `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
+	Evaluations     []Evaluation    `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE"`
 }
 
 // =========================
@@ -65,7 +66,7 @@ type Question struct {
 	CreatedAt    time.Time `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	IsActive     bool      `gorm:"column:is_active;type:tinyint(1);not null;default:1" json:"is_active"`
 
-	CreatedBy *Admin               `gorm:"foreignKey:CreatedByID;references:AdminID;constraint:OnDelete:SET NULL"`
+	CreatedBy *Admin `gorm:"foreignKey:CreatedByID;references:AdminID;constraint:OnDelete:SET NULL"`
 }
 
 // Removed ASSESSMENT_RESPONSES
@@ -124,20 +125,20 @@ type AILog struct {
 // =========================
 
 type Schedule struct {
-	ScheduleID      string     `gorm:"column:schedule_id;type:char(36);primaryKey" json:"id"`
-	UserID          string     `gorm:"column:user_id;type:char(36);not null" json:"user_id"`
-	Title           string     `gorm:"column:title;type:varchar(200);not null" json:"title"`
-	Description     string     `gorm:"column:description;type:text" json:"description"`
-	Date            string     `gorm:"column:date;type:date;not null" json:"date"`
-	StartTime       string     `gorm:"column:start_time;type:varchar(10);not null" json:"start_time"`
-	EndTime         string     `gorm:"column:end_time;type:varchar(10);not null" json:"end_time"`
-	DurationMinutes int        `gorm:"column:duration_minutes;default:0" json:"duration_minutes"`
-	FocusDimension  string     `gorm:"column:focus_dimension;type:varchar(100);default:'General'" json:"focus_dimension"`
-	Status          string     `gorm:"column:status;type:varchar(50);default:'planned'" json:"status"`
-	TargetID        *string    `gorm:"column:target_id;type:char(36)" json:"target_id"`
-	GoogleEventID   *string    `gorm:"column:google_event_id;type:varchar(255)" json:"google_event_id"`
-	CreatedAt       time.Time  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt       time.Time  `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+	ScheduleID      string    `gorm:"column:schedule_id;type:char(36);primaryKey" json:"id"`
+	UserID          string    `gorm:"column:user_id;type:char(36);not null" json:"user_id"`
+	Title           string    `gorm:"column:title;type:varchar(200);not null" json:"title"`
+	Description     string    `gorm:"column:description;type:text" json:"description"`
+	Date            string    `gorm:"column:date;type:date;not null" json:"date"`
+	StartTime       string    `gorm:"column:start_time;type:varchar(10);not null" json:"start_time"`
+	EndTime         string    `gorm:"column:end_time;type:varchar(10);not null" json:"end_time"`
+	DurationMinutes int       `gorm:"column:duration_minutes;default:0" json:"duration_minutes"`
+	FocusDimension  string    `gorm:"column:focus_dimension;type:varchar(100);default:'General'" json:"focus_dimension"`
+	Status          string    `gorm:"column:status;type:varchar(50);default:'planned'" json:"status"`
+	TargetID        *string   `gorm:"column:target_id;type:char(36)" json:"target_id"`
+	GoogleEventID   *string   `gorm:"column:google_event_id;type:varchar(255)" json:"google_event_id"`
+	CreatedAt       time.Time `gorm:"column:created_at;autoCreateTime" json:"created_at"`
+	UpdatedAt       time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 
 	User User `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE" json:"-"`
 }
@@ -208,6 +209,9 @@ type Note struct {
 	NoteID           string    `gorm:"column:note_id;type:char(36);primaryKey" json:"id"`
 	UserID           string    `gorm:"column:user_id;type:char(36);not null" json:"user_id"`
 	Title            string    `gorm:"column:title;type:varchar(200);default:'Untitled'" json:"title"`
+	Content          string    `gorm:"column:content;type:text;not null" json:"content"`
+	Category         *string   `gorm:"column:category;type:varchar(80)" json:"category"`
+	IsFavorite       bool      `gorm:"column:is_favorite;type:tinyint(1);default:0" json:"is_favorite"`
 	ContentJSON      string    `gorm:"column:content_json;type:longtext" json:"content_json"`
 	ContentText      string    `gorm:"column:content_text;type:longtext" json:"content_text"`
 	FocusDimension   string    `gorm:"column:focus_dimension;type:varchar(100);default:'General'" json:"focus_dimension"`

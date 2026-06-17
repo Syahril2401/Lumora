@@ -23,6 +23,12 @@ func NewAuthService(userRepo repository.UserRepository) AuthService {
 }
 
 func (s *authService) Register(name, email, password string) (string, error) {
+	// Check if email already exists
+	existingUser, _ := s.userRepo.FindByEmail(email)
+	if existingUser != nil {
+		return "", errors.New("email already registered")
+	}
+
 	hashedPassword, err := utils.HashPassword(password)
 	if err != nil {
 		return "", err
