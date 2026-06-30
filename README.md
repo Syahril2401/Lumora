@@ -50,7 +50,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Register API](link_screenshot_register)
+  ![Register API](.github/assets/1.%20Register.png)
 
 #### Login
 * **Endpoint:** POST /auth/login => `http://localhost:8008/api/auth/login`
@@ -73,7 +73,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Login API](link_screenshot_login)
+  ![Login API](.github/assets/2.%20Login.png)
 
 #### Get Current User
 * **Endpoint:** GET /auth/me => `http://localhost:8008/api/auth/me`
@@ -115,7 +115,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Chat AI API](link_screenshot_chat)
+  ![Chat AI API](.github/assets/4.%20Assessment%20Chat.png)
 
 #### Get Chat History
 * **Endpoint:** GET /assessment/chat/history => `http://localhost:8008/api/assessment/chat/history`
@@ -162,7 +162,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Get Planner API](link_screenshot_planner_get)
+  ![Get Planner API](.github/assets/6.%20Get%20planner.png)
 
 #### Create Planner
 * **Endpoint:** POST /dashboard/planner => `http://localhost:8008/api/dashboard/planner`
@@ -186,7 +186,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Create Planner API](link_screenshot_planner_post)
+  ![Create Planner API](.github/assets/7.%20Create%20planner.png)
 
 ### Targets & Goals
 
@@ -209,7 +209,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Get Targets API](link_screenshot_targets_get)
+  ![Get Targets API](.github/assets/8.%20Get%20target.png)
 
 #### Create Target
 * **Endpoint:** POST /dashboard/weekly-targets => `http://localhost:8008/api/dashboard/weekly-targets`
@@ -230,7 +230,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Create Target API](link_screenshot_targets_post)
+  ![Create Target API](.github/assets/9.%20Create%20target.png)
 
 #### Update Target
 * **Endpoint:** PUT /dashboard/weekly-targets/:id => `http://localhost:8008/api/dashboard/weekly-targets/1`
@@ -244,7 +244,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Toggle Target API](link_screenshot_targets_toggle)
+  ![Toggle Target API](.github/assets/10.%20Toggle%20target.png)
 
 ### Notes Management
 
@@ -266,7 +266,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Get Notes API](link_screenshot_notes_get)
+  ![Get Notes API](.github/assets/12.%20get%20note.png)
 
 #### Create Note
 * **Endpoint:** POST /dashboard/notes => `http://localhost:8008/api/dashboard/notes`
@@ -287,7 +287,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Create Note API](link_screenshot_notes_post)
+  ![Create Note API](.github/assets/11.%20Create%20note.png)
 
 ### Assessment (SRL Profile)
 
@@ -310,7 +310,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Get Questions API](link_screenshot_assessment_questions)
+  ![Get Questions API](.github/assets/15.%20Get%20question.png)
 
 #### Submit Assessment
 * **Endpoint:** POST /assessment/submit => `http://localhost:8008/api/assessment/submit`
@@ -347,7 +347,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Submit Assessment API](link_screenshot_assessment_submit)
+  ![Submit Assessment API](.github/assets/13.%20Submit%20Assessment.png)
 
 #### Get Assessment Status
 * **Endpoint:** GET /assessment/status => `http://localhost:8008/api/assessment/status`
@@ -364,7 +364,7 @@ http://localhost:8008/api
   }
   ```
 * **Screenshot:**
-  ![Assessment Status API](link_screenshot_assessment_status)
+  ![Assessment Status API](.github/assets/14.%20Get%20assessment%20status.png)
 
 ---
 
