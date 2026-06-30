@@ -13,13 +13,17 @@
 ## System Architecture
 
 ### Use Case Diagram
-![Use Case Diagram](link_use_case_diagram_disini)
+![Use Case Diagram](.github/assets/Use_Case_Planner.png)
+
+**Actors:**
+
+- User (Mahasiswa / Pelajar)
 
 ### Class Diagram
-![Class Diagram](link_class_diagram_disini)
+![Class Diagram](.github/assets/Class%20Diagram.png)
 
 ### Entity Relationship Diagram (ERD)
-![ERD](link_erd_disini)
+![ERD](.github/assets/ERD.png)
 
 ## API Documentation
 
@@ -386,23 +390,6 @@ Tujuan dari sistem Lumora adalah:
 - Meningkatkan efisiensi pengelolaan waktu pengguna melalui sinkronisasi kalender terintegrasi
 - Membantu pengguna dalam mempertahankan fokus dan motivasi melalui target harian
 - Menyediakan sistem evaluasi dan pemantauan gaya belajar melalui kuesioner terstruktur
-
----
-
-**Desain Sistem**
-
-### Class Diagram
-![Class Diagram](.github/assets/Class%20Diagram.png)
-
-### Entity Relationship Diagram (ERD)
-![ERD](.github/assets/ERD.png)
-
-### Use Case Diagram
-![Use Case Planner](.github/assets/Use_Case_Planner.png)
-
-**Actors:**
-
-- User (Mahasiswa / Pelajar)
 
 ---
 
