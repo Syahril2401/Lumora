@@ -25,7 +25,7 @@ type aiService struct {
 
 func NewAIService() AIService {
 	apiKey := os.Getenv("OPENROUTER_API_KEY")
-	modelName := "owl-alpha"
+	modelName := "google/gemma-2-9b-it:free"
 
 	if apiKey == "" {
 		log.Printf("[AI] WARNING: OPENROUTER_API_KEY is not set. Using mock responses.")
@@ -42,7 +42,7 @@ func NewAIService() AIService {
 
 func (s *aiService) callOpenRouter(ctx context.Context, messages []map[string]string) (string, error) {
 	if s.apiKey == "" {
-		return "This is a mock response from OpenRouter. Please add OPENROUTER_API_KEY to your .env.", nil
+		return "Siap! Aku sudah buatkan target mingguan untuk Matematika.\n{\"action\": \"create_target\", \"title\": \"Belajar Matematika\", \"due_date\": \"2026-10-20\"}", nil
 	}
 
 	url := "https://openrouter.ai/api/v1/chat/completions"

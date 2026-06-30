@@ -1,44 +1,5 @@
 # Lumora
 
-## Deskripsi Sistem
-
-Lumora adalah platform pendamping belajar berbasis web dan mobile yang dirancang untuk membantu mahasiswa dan pelajar mengelola proses pembelajaran mandiri (Self-Regulated Learning) dengan memanfaatkan teknologi Agentic Artificial Intelligence (AI).
-
-Sistem ini memungkinkan pengguna untuk mengelola target mingguan, menyusun jadwal harian secara otomatis melalui obrolan dengan AI, mencatat materi penting, serta memantau progres belajar secara terstruktur dan efisien.
-
----
-
-## Tujuan Sistem
-
-Tujuan dari sistem Lumora adalah:
-
-* Mempercepat proses penyusunan jadwal belajar dengan bantuan fungsi otomatisasi AI
-* Meningkatkan efisiensi pengelolaan waktu pengguna melalui sinkronisasi kalender terintegrasi
-* Membantu pengguna dalam mempertahankan fokus dan motivasi melalui target harian
-* Menyediakan sistem evaluasi dan pemantauan gaya belajar melalui kuesioner terstruktur
-
----
-
-## Workflow Sistem (Berdasarkan Role)
-
-Workflow sistem Lumora difokuskan pada pengguna utama (pelajar/mahasiswa) untuk memastikan seluruh proses berjalan sesuai dengan kebutuhan pengelolaan waktu mereka.
-
----
-
-**Student (Pengguna)**
-
-1. Student melakukan registrasi akun ke sistem
-2. Student melakukan login ke sistem
-3. Student mengisi kuesioner awal (Onboarding) untuk penentuan profil belajar
-4. Student berinteraksi dengan AI (Lumora Buddy) untuk meminta saran target mingguan atau harian
-5. Student menerima jadwal yang dibuat secara otomatis oleh AI di halaman Planner
-6. Student menyinkronkan jadwal belajarnya dengan Google Calendar
-7. Student menandai tugas yang sudah selesai pada halaman Targets
-8. Student mencatat rangkuman pelajaran pada fitur Notes
-9. Student logout dari sistem
-
----
-
 | Layer       | Technology                                 |
 | ----------- | ------------------------------------------ |
 | Backend     | Go (Gin Framework)                         |
@@ -133,20 +94,6 @@ http://localhost:8008/api
 * **Screenshot:**
   ![Get Current User API](link_screenshot_me)
 
-#### Logout
-* **Endpoint:** POST /auth/logout => `http://localhost:8008/api/auth/logout`
-* **Deskripsi:** Digunakan untuk mengakhiri sesi login pengguna.
-* **Header:** `Authorization: Bearer <token>`
-* **Response:**
-  ```json
-  {
-    "success": true,
-    "message": "Logout successful"
-  }
-  ```
-* **Screenshot:**
-  ![Logout API](link_screenshot_logout)
-
 ### AI Service (Lumora Buddy)
 
 #### Chat with AI
@@ -219,7 +166,7 @@ http://localhost:8008/api
 
 #### Create Planner
 * **Endpoint:** POST /dashboard/planner => `http://localhost:8008/api/dashboard/planner`
-* **Deskripsi:** Digunakan untuk menambahkan jadwal studi baru.
+* **Deskripsi:** Digunakan untuk menambahkan jadwal studi baru. **Catatan:** Jika akun pengguna telah terhubung, sistem akan otomatis melakukan *sync* jadwal ini ke Google Calendar di balik layar tanpa perlu memanggil endpoint tambahan.
 * **Header:** `Authorization: Bearer <token>`
 * **Request:**
   ```json
@@ -241,24 +188,10 @@ http://localhost:8008/api
 * **Screenshot:**
   ![Create Planner API](link_screenshot_planner_post)
 
-#### Sync to Google Calendar
-* **Endpoint:** POST /google/sync => `http://localhost:8008/api/google/sync`
-* **Deskripsi:** Digunakan untuk menyinkronkan jadwal Planner internal ke Google Calendar pengguna.
-* **Header:** `Authorization: Bearer <token>`
-* **Response:**
-  ```json
-  {
-    "success": true,
-    "message": "Synced 3 events to Google Calendar"
-  }
-  ```
-* **Screenshot:**
-  ![Sync Google Calendar API](link_screenshot_google_sync)
-
 ### Targets & Goals
 
 #### Get Targets
-* **Endpoint:** GET /dashboard/targets => `http://localhost:8008/api/dashboard/targets`
+* **Endpoint:** GET /dashboard/weekly-targets => `http://localhost:8008/api/dashboard/weekly-targets`
 * **Deskripsi:** Mengambil semua target mingguan pengguna.
 * **Header:** `Authorization: Bearer <token>`
 * **Response:**
@@ -279,7 +212,7 @@ http://localhost:8008/api
   ![Get Targets API](link_screenshot_targets_get)
 
 #### Create Target
-* **Endpoint:** POST /dashboard/targets => `http://localhost:8008/api/dashboard/targets`
+* **Endpoint:** POST /dashboard/weekly-targets => `http://localhost:8008/api/dashboard/weekly-targets`
 * **Deskripsi:** Menambahkan target mingguan baru.
 * **Header:** `Authorization: Bearer <token>`
 * **Request:**
@@ -299,9 +232,9 @@ http://localhost:8008/api
 * **Screenshot:**
   ![Create Target API](link_screenshot_targets_post)
 
-#### Toggle Target Completion
-* **Endpoint:** PUT /dashboard/targets/:id/toggle => `http://localhost:8008/api/dashboard/targets/1/toggle`
-* **Deskripsi:** Mengubah status target antara selesai atau belum selesai.
+#### Update Target
+* **Endpoint:** PUT /dashboard/weekly-targets/:id => `http://localhost:8008/api/dashboard/weekly-targets/1`
+* **Deskripsi:** Mengubah detail target, seperti mengganti judul atau batas waktu.
 * **Header:** `Authorization: Bearer <token>`
 * **Response:**
   ```json
@@ -358,19 +291,47 @@ http://localhost:8008/api
 
 ### Assessment (SRL Profile)
 
+#### Get Assessment Questions
+* **Endpoint:** GET /assessment/questions => `http://localhost:8008/api/assessment/questions`
+* **Deskripsi:** Mengambil daftar pertanyaan kuesioner yang harus dijawab oleh pengguna untuk menentukan profil belajar mereka (memuat UUID tiap pertanyaan yang dibutuhkan saat *submit*).
+* **Header:** `Authorization: Bearer <token>`
+* **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Success",
+    "data": [
+      {
+        "id": "11111111-0001-0001-0001-000000000001",
+        "text": "Saya merencanakan apa yang ingin saya capai sebelum mulai belajar.",
+        "category": "planning"
+      }
+    ]
+  }
+  ```
+* **Screenshot:**
+  ![Get Questions API](link_screenshot_assessment_questions)
+
 #### Submit Assessment
 * **Endpoint:** POST /assessment/submit => `http://localhost:8008/api/assessment/submit`
 * **Deskripsi:** Mengirim jawaban kuesioner Self-Regulated Learning (SRL) untuk menghitung profil belajar pengguna.
 * **Header:** `Authorization: Bearer <token>`
 * **Request:**
   ```json
-  {
-    "answers": {
-      "q1": 4,
-      "q2": 5,
-      "q3": 3
+  [
+    {
+      "question_id": "Q1",
+      "answer_value": 4
+    },
+    {
+      "question_id": "Q2",
+      "answer_value": 5
+    },
+    {
+      "question_id": "Q3",
+      "answer_value": 3
     }
-  }
+  ]
   ```
 * **Response:**
   ```json
@@ -378,7 +339,10 @@ http://localhost:8008/api
     "success": true,
     "message": "Assessment submitted successfully",
     "data": {
-      "profile": "Advanced Learner"
+      "ResultID": "5609cff9-...",
+      "TotalScore": 12,
+      "PlanningScore": 12,
+      "CategoryResult": "{...}"
     }
   }
   ```
@@ -393,6 +357,7 @@ http://localhost:8008/api
   ```json
   {
     "success": true,
+    "message": "Status fetched",
     "data": {
       "has_completed": true
     }
@@ -400,3 +365,102 @@ http://localhost:8008/api
   ```
 * **Screenshot:**
   ![Assessment Status API](link_screenshot_assessment_status)
+
+---
+
+**Documentation Report (LO3)**
+
+**Deskripsi Sistem**
+
+Lumora adalah platform pendamping belajar berbasis web dan mobile yang dirancang untuk membantu mahasiswa dan pelajar mengelola proses pembelajaran mandiri (Self-Regulated Learning) dengan memanfaatkan teknologi Agentic Artificial Intelligence (AI).
+
+Sistem ini memungkinkan pengguna untuk mengelola target mingguan, menyusun jadwal harian secara otomatis melalui obrolan dengan AI, mencatat materi penting, serta memantau progres belajar secara terstruktur dan efisien.
+
+---
+
+**Tujuan Sistem**
+
+Tujuan dari sistem Lumora adalah:
+
+- Mempercepat proses penyusunan jadwal belajar dengan bantuan fungsi otomatisasi AI
+- Meningkatkan efisiensi pengelolaan waktu pengguna melalui sinkronisasi kalender terintegrasi
+- Membantu pengguna dalam mempertahankan fokus dan motivasi melalui target harian
+- Menyediakan sistem evaluasi dan pemantauan gaya belajar melalui kuesioner terstruktur
+
+---
+
+**Workflow Sistem Lumora (Berdasarkan Role)**
+
+Workflow sistem Lumora difokuskan pada pengguna utama (pelajar/mahasiswa) untuk memastikan seluruh proses berjalan sesuai dengan kebutuhan pengelolaan waktu mereka.
+
+---
+
+**User (Student)**
+
+1. Student melakukan registrasi akun ke sistem
+2. Student melakukan login ke sistem
+3. Student mengisi kuesioner awal (Onboarding) untuk penentuan profil belajar
+4. Student berinteraksi dengan AI (Lumora Buddy) untuk meminta saran target mingguan atau harian
+5. Student menerima jadwal yang dibuat secara otomatis oleh AI di halaman Planner
+6. Student menyinkronkan jadwal belajarnya dengan Google Calendar
+7. Student menandai tugas yang sudah selesai pada halaman Targets
+8. Student mencatat rangkuman pelajaran pada fitur Notes
+9. Student logout dari sistem
+
+---
+
+**AI System (External Service)**
+
+1. Sistem menerima pesan chat dari Student
+2. Sistem menyusun context prompt berdasarkan profil belajar dan jadwal harian Student
+3. Sistem mengirim prompt ke layanan OpenRouter API
+4. AI memproses konteks dan menghasilkan respon percakapan beserta JSON Action
+5. Sistem menerima respon, membersihkan format, dan mengeksekusi JSON Action ke database
+
+---
+
+**Teknologi yang Digunakan**
+
+- Web Frontend: Vue.js (VILT Stack: Vue, Inertia, Laravel)
+- Mobile App: React Native (Expo)
+- Backend: Go (Gin Framework)
+- Database: MySQL (GORM)
+- AI Service: OpenRouter API (Agentic Function Calling)
+- Authentication: Token-based authentication (JWT)
+- API Testing: Postman
+
+---
+
+**Security**
+
+- Token-based authentication (JWT) digunakan untuk mengamankan setiap endpoint lintas platform
+- Password dienkripsi dengan algoritma bcrypt sebelum disimpan ke database
+- Validasi ketat pada setiap permintaan API untuk mencegah penyalahgunaan data
+
+---
+
+**Keunggulan Sistem**
+
+- Tersedia di dua platform (Web dan Mobile) yang tersinkronisasi secara real-time
+- Terintegrasi dengan Agentic AI cerdas yang memiliki memori kontekstual (Context Injection)
+- AI mampu mengeksekusi aksi otomatis (Function Calling) tanpa intervensi manual
+- UI/UX yang dinamis, modern, dan sangat responsif
+
+---
+
+**Keterbatasan Sistem**
+
+- Fitur AI membutuhkan koneksi internet yang stabil untuk mengakses OpenRouter API
+- Saat ini baru mendukung integrasi kalender eksklusif hanya untuk Google Calendar
+- AI kadang membutuhkan waktu beberapa detik untuk men-generate respon dan aksi
+
+---
+
+**Pengembangan Selanjutnya**
+
+- Penambahan fitur notifikasi dan pengingat push (Push Notifications) di Mobile App
+- Dukungan integrasi ke platform kalender lain seperti Apple Calendar atau Outlook
+- Fitur kolaborasi belajar bersama teman secara berkelompok
+- Peningkatan akurasi LLM untuk bahasa yang lebih natural dan pemahaman konteks emosional
+
+---
