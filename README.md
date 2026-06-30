@@ -20,7 +20,7 @@
 - User (Mahasiswa / Pelajar)
 
 ### Class Diagram
-![Class Diagram](.github/assets/Class%20Diagram.png)
+![Class Diagram](.github/assets/Class_Diagram.png)
 
 ### Entity Relationship Diagram (ERD)
 ![ERD](.github/assets/ERD.png)
