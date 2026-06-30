@@ -389,6 +389,23 @@ Tujuan dari sistem Lumora adalah:
 
 ---
 
+**Desain Sistem**
+
+### Class Diagram
+![Class Diagram](.github/assets/Class%20Diagram.png)
+
+### Entity Relationship Diagram (ERD)
+![ERD](.github/assets/ERD.png)
+
+### Use Case Diagram
+![Use Case Planner](.github/assets/Use_Case_Planner.png)
+
+**Actors:**
+
+- User (Mahasiswa / Pelajar)
+
+---
+
 **Workflow Sistem Lumora (Berdasarkan Role)**
 
 Workflow sistem Lumora difokuskan pada pengguna utama (pelajar/mahasiswa) untuk memastikan seluruh proses berjalan sesuai dengan kebutuhan pengelolaan waktu mereka.
