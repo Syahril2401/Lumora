@@ -20,10 +20,24 @@
 - User (Mahasiswa / Pelajar)
 
 ### Class Diagram
-![Class Diagram](.github/assets/Class_Diagram.png)
+![Class Diagram](.github/assets/ClassDiagramNew.png)
 
 ### Entity Relationship Diagram (ERD)
-![ERD](.github/assets/ERD.png)
+![ERD](.github/assets/ERDnew.png)
+
+## Cara Menggunakan Website Lumora
+
+Berikut adalah panduan lengkap langkah demi langkah untuk memaksimalkan penggunaan platform Lumora:
+
+1. **Registrasi Akun:** Kunjungi halaman pendaftaran (Register) dan buat akun baru menggunakan email yang valid.
+2. **Login:** Masuk ke dalam sistem menggunakan email dan kata sandi yang telah didaftarkan.
+3. **Onboarding (Assessment Awal):** Saat pertama kali masuk, Anda diwajibkan untuk mengisi kuesioner singkat. Kuesioner ini dirancang untuk mengidentifikasi kebiasaan serta tingkat Self-Regulated Learning (SRL) Anda.
+4. **Dashboard Utama:** Setelah kuesioner selesai, Anda akan diarahkan ke Dashboard. Di sini, Anda bisa melihat skor profil belajar Anda beserta statistik penggunaan fitur.
+5. **Menetapkan Target Belajar:** Buka menu **Targets** untuk menyusun tujuan belajar spesifik (contoh: "Memahami Bab 1 Kalkulus"). Target ini bisa dipantau status penyelesaiannya.
+6. **Membangun Jadwal (Planner) dengan AI:** Buka menu **Planner** dan kirimkan pesan kepada *Lumora Buddy* (AI). Anda bisa meminta AI untuk menjadwalkan sesi belajar berdasarkan target yang sudah Anda buat. AI akan secara otomatis menghasilkan jadwal terstruktur di dalam sistem.
+7. **Sinkronisasi Google Calendar:** Jika diperlukan, Anda dapat mengintegrasikan dan menyinkronkan jadwal yang ada di Lumora dengan akun Google Calendar Anda agar tidak melewatkan sesi belajar.
+8. **Mencatat Ringkasan:** Gunakan menu **Notes** untuk merangkum materi yang sudah dipelajari. Catatan ini bersifat privat dan tersimpan secara aman.
+9. **Evaluasi Diri:** Secara berkala, Anda dapat menandai target yang telah selesai dan meninjau kembali riwayat jadwal Anda untuk melihat kemajuan proses belajar mandiri Anda.
 
 ## API Documentation
 
